@@ -1,4 +1,4 @@
-package org.apache.tika.pipes;
+package org.apache.tika.pipes.config;
 
 import javax.annotation.PostConstruct;
 
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class TikaPipesApplicationConfiguration {
 	@PostConstruct
 	public void init() {
-		log.info("Initializing Tika Pipes GRPC Services...");
+		log.info("Initializing Tika Pipes GRPC Services on Server Port : ?");
 	}
 	@Bean
 	public ObjectMapper objectMapper() {

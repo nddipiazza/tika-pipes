@@ -2,18 +2,18 @@ package org.apache.tika.pipes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.net.InetAddress;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -24,16 +24,15 @@ import org.apache.tika.SaveFetcherReply;
 import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TikaPipesApplicationConfiguration.class)
-@EnableAutoConfiguration
+@SpringBootTest
 @Testcontainers
 class TikaPipesApplicationTests {
 	@Container
-	public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0");
-
+	static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0");
 	@Autowired
 	ObjectMapper objectMapper;
+	@Value("${grpc.server.port}")
+	Integer port;
 
 	@DynamicPropertySource
 	static void mongoProperties(DynamicPropertyRegistry registry) {
@@ -45,9 +44,9 @@ class TikaPipesApplicationTests {
 
 	@Test
 	void fetchersCrud() throws Exception {
-		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090) // Ensure the port is correct
-									   .usePlaintext()
-									   .build();
+		ManagedChannel channel = ManagedChannelBuilder.forAddress(InetAddress.getLocalHost().getHostAddress(), port) // Ensure the port is correct
+													  .usePlaintext()
+													  .build();
 		TikaGrpc.TikaBlockingStub tikaBlockingStub = TikaGrpc.newBlockingStub(channel);
 
 		SaveFetcherReply saveFetcherReply = tikaBlockingStub.saveFetcher(SaveFetcherRequest

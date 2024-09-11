@@ -9,6 +9,8 @@ import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 
 import org.apache.tika.DeleteFetcherReply;
 import org.apache.tika.DeleteFetcherRequest;
@@ -26,6 +28,7 @@ import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.repo.FetcherRepository;
 
 @GrpcService
+@Service
 @Slf4j
 public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     @Autowired
@@ -33,6 +36,9 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Autowired
     private FetcherRepository fetcherRepository;
+
+    @Autowired
+    private Environment environment;
 
     @Override
     public void saveFetcher(SaveFetcherRequest request, StreamObserver<SaveFetcherReply> responseObserver) {
