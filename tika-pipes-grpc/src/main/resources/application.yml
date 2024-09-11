@@ -6,3 +6,6 @@ spring:
       host: localhost
       port: 27017
       database: tika
+grpc:
+  server:
+    port: 9090

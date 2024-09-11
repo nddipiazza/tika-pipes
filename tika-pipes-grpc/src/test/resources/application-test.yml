@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: tika-pipes
+  data:
+    mongodb:
+      port: 0
+      database: testdb
+grpc:
+  client:
+    tika:
+      address: localhost:9090
+      negotiation-type: plaintext

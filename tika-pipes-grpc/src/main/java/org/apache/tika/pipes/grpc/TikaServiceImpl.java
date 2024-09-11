@@ -28,7 +28,8 @@ import org.apache.tika.pipes.repo.FetcherRepository;
 @GrpcService
 @Slf4j
 public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private FetcherRepository fetcherRepository;
@@ -39,10 +40,13 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             FetcherConfig fetcherConfig = new FetcherConfig()
                     .setFetcherId(request.getFetcherId())
                     .setPluginId(request.getPluginId())
-                    .setConfig(OBJECT_MAPPER.readValue(request
+                    .setConfig(objectMapper.readValue(request
                             .getFetcherConfigJsonBytes()
                             .toByteArray(), new TypeReference<>() {}));
             fetcherRepository.save(fetcherConfig);
+            responseObserver.onNext(SaveFetcherReply.newBuilder()
+                    .setFetcherId(request.getFetcherId())
+                    .build());
         } catch (IOException e) {
             responseObserver.onError(e);
         }
@@ -53,6 +57,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     public void getFetcher(GetFetcherRequest request, StreamObserver<GetFetcherReply> responseObserver) {
         FetcherConfig fetcherConfig = fetcherRepository.findByFetcherId(request.getFetcherId());
         log.info("Fetcher config: {}", fetcherConfig);
+        responseObserver.onNext(GetFetcherReply.newBuilder()
+                .setFetcherId(request.getFetcherId())
+                .build());
+        responseObserver.onCompleted();
     }
 
     @Override
