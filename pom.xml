@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.3</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+  <groupId>org.apache.tika</groupId>
+  <artifactId>tika-pipes-parent</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>tika-pipes-parent</name>
+  <description>Tika Pipes Parent Pom</description>
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <pf4j.version>3.12.0</pf4j.version>
+  </properties>
+  <packaging>pom</packaging>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.pf4j</groupId>
+        <artifactId>pf4j</artifactId>
+        <version>${pf4j.version}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <modules>
+    <module>tika-pipes-grpc</module>
+    <module>tika-pipes-core</module>
+    <module>tika-pipes-fetchers/tika-fetcher-http</module>
+  </modules>
+</project>

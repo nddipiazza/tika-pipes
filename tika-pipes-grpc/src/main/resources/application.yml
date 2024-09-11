@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: tika-pipes
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: tika
