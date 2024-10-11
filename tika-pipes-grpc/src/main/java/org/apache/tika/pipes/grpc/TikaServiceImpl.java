@@ -104,6 +104,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Override
     public void fetchAndParse(FetchAndParseRequest request, StreamObserver<FetchAndParseReply> responseObserver) {
+        FetcherConfig fetcherConfig = fetcherRepository.findByFetcherId(request.getFetcherId());
+        if (fetcherConfig == null) {
+            responseObserver.onError(new IOException("Could not find fetcher with ID " + request.getFetcherId()));
+        }
 
     }
 

@@ -2,7 +2,6 @@ package org.apache.tika.pipes.server;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,11 +66,7 @@ public final class TikaServerConstants {
   public static final int HTTPCLIENT_SOCKET_TIMEOUT = Integer.parseInt(Props.getProp("HTTPCLIENT_SOCKET_TIMEOUT", "30000"));
   public static final int HTTPCLIENT_DEFAULT_MAX_PER_ROUTE = Integer.parseInt(Props.getProp("HTTPCLIENT_DEFAULT_MAX_PER_ROUTE", "1000"));
   public static final int HTTPCLIENT_DEFAULT_MAX_TOTAL = Integer.parseInt(Props.getProp("HTTPCLIENT_DEFAULT_MAX_TOTAL", "5000"));
-
-  public static final String TIKA_CMD_LINE_IDENTIFIER = "-DtikaFrom=LucidworksFusion";
   public static final String DTIKA_CMD_UNIQUE_SYSPROP = "-DtikaUniqueId";
-  public static final String DFUSION_MANAGER_ID = "-D" + StringUtils.replace(System.getProperty("serviceName", ""), "-", "") + "FusionManagerId=";
-
   public static final String TIKA_LOG4J_XML_TEMPLATE = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
       "<!DOCTYPE log4j:configuration SYSTEM \"log4j.dtd\">\n" +
       "<log4j:configuration>\n" +

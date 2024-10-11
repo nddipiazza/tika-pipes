@@ -49,7 +49,7 @@ import org.apache.tika.metadata.Property;
 import org.apache.tika.pipes.util.CharsetUtil;
 
 public class TikaServerClient implements AutoCloseable {
-  private static final Logger log = LoggerFactory.getLogger(TikaServerManager.class);
+  private static final Logger log = LoggerFactory.getLogger(TikaServerClient.class);
 
   private static final ObjectMapper OM = new ObjectMapper();
 

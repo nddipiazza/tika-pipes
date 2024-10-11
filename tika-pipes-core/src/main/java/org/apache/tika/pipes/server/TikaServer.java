@@ -83,7 +83,7 @@ public class TikaServer implements AutoCloseable {
     if (isRunning()) {
       return;
     }
-    host = System.getProperty("tika.remote.bindAddress", System.getProperty("com.lucidworks.apollo.app.bindAddress"));
+    host = System.getProperty("tika.remote.bindAddress");
     port = OSUtils.findAvailablePort(
         TikaServerConstants.SPAWNED_SERVER_PORT_RANGE_START, TikaServerConstants.SPAWNED_SERVER_PORT_RANGE_END);
 
@@ -97,7 +97,6 @@ public class TikaServer implements AutoCloseable {
     String tikaServerUniqueId = TikaServerConstants.DTIKA_CMD_UNIQUE_SYSPROP + "=" + UUID.randomUUID();
     List<String> tikaCommand = new ArrayList<>(Arrays.asList("java",
         "-XX:+SuppressFatalErrorMessage",
-        TikaServerConstants.TIKA_CMD_LINE_IDENTIFIER,
         tikaServerManagerSysProp,
         tikaServerUniqueId,
         "-Dlog4j.configuration=" + log4jFile.toURI(),

@@ -13,6 +13,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.fork.ForkParser;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
+import org.apache.tika.pipes.fetcher.Fetcher;
 import org.apache.tika.sax.BodyContentHandler;
 
 @Service
@@ -25,7 +26,7 @@ public class TikaForkParserService {
     private Executor forkParserExecutor;
 
     @Async("forkParserExecutor")
-    public String parseFileAsync(InputStream inputStream) throws IOException, TikaException, SAXException {
+    public String parseFileAsync(Fetcher fetcher, InputStream inputStream) throws IOException, TikaException, SAXException {
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         forkParser.parse(inputStream, handler, metadata, new ParseContext());
