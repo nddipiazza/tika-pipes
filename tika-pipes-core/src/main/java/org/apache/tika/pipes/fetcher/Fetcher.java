@@ -1,4 +1,4 @@
-package fetcher;
+package org.apache.tika.pipes.fetcher;
 
 import java.io.InputStream;
 import java.util.Map;

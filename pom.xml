@@ -10,12 +10,14 @@
   </parent>
   <groupId>org.apache.tika</groupId>
   <artifactId>tika-pipes-parent</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
   <name>tika-pipes-parent</name>
   <description>Tika Pipes Parent Pom</description>
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
     <pf4j.version>3.12.0</pf4j.version>
+    <commons.io.version>2.16.1</commons.io.version>
+    <commons.lang3.version>3.16.0</commons.lang3.version>
   </properties>
   <packaging>pom</packaging>
   <dependencyManagement>
@@ -26,11 +28,21 @@
         <version>${pf4j.version}</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons.io.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons.lang3.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <modules>
     <module>tika-pipes-grpc</module>
     <module>tika-pipes-core</module>
-    <module>tika-pipes-fetchers/tika-fetcher-http</module>
+    <module>tika-pipes-fetchers</module>
   </modules>
 </project>

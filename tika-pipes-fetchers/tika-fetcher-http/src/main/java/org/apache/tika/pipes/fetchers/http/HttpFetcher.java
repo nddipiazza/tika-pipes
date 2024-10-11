@@ -3,9 +3,10 @@ package org.apache.tika.pipes.fetchers.http;
 import java.io.InputStream;
 import java.util.Map;
 
-import fetcher.Fetcher;
-import fetcher.FetcherConfig;
 import org.springframework.stereotype.Component;
+
+import org.apache.tika.pipes.fetcher.Fetcher;
+import org.apache.tika.pipes.fetcher.FetcherConfig;
 
 @Component
 public class HttpFetcher implements Fetcher {

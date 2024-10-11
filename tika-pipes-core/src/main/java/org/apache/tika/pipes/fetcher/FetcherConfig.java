@@ -1,11 +1,9 @@
-package fetcher;
+package org.apache.tika.pipes.fetcher;
 
+import java.io.Serializable;
 import java.util.Map;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "fetchers")
-public class FetcherConfig {
+public class FetcherConfig implements Serializable {
     private String pluginId;
     private String fetcherId;
     private Map<String, Object> config;

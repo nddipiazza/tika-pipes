@@ -1,10 +1,20 @@
 package org.apache.tika.pipes.repo;
 
-import fetcher.FetcherConfig;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.List;
+
+import org.apache.ignite.springdata.repository.IgniteRepository;
+import org.apache.ignite.springdata.repository.config.RepositoryConfig;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Repository;
 
+import org.apache.tika.pipes.fetcher.FetcherConfig;
+
 @Repository
-public interface FetcherRepository extends MongoRepository<FetcherConfig, String> {
+@RepositoryConfig(cacheName = "FetcherCache")
+@DependsOn("igniteRepositoryConfiguration")
+public interface FetcherRepository extends IgniteRepository<FetcherConfig, String> {
     FetcherConfig findByFetcherId(String fetcherId);
+    List<FetcherConfig> findAll();
+    void deleteByFetcherId(String fetcherId);
+    boolean existsByFetcherId(String fetcherId);
 }

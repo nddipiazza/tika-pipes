@@ -14,7 +14,16 @@ import org.springframework.context.annotation.Configuration;
 public class TikaPipesApplicationConfiguration {
 	@PostConstruct
 	public void init() {
-		log.info("Initializing Tika Pipes GRPC Services on Server Port : ?");
+		log.info("""
+        
+        ___________  __     __   ___       __             _______   __       _______    _______   ________ \s
+        ("     _   ")|" \\   |/"| /  ")     /""\\           |   __ "\\ |" \\     |   __ "\\  /"     "| /"       )\s
+        )__/  \\\\__/ ||  |  (: |/   /     /    \\          (. |__) :)||  |    (. |__) :)(: ______)(:   \\___/ \s
+            \\\\_ /    |:  |  |    __/     /' /\\  \\         |:  ____/ |:  |    |:  ____/  \\/    |   \\___  \\   \s
+            |.  |    |.  |  (// _  \\    //  __'  \\        (|  /     |.  |    (|  /      // ___)_   __/  \\\\  \s
+            \\:  |    /\\  |\\ |: | \\  \\  /   /  \\\\  \\      /|__/ \\    /\\  |\\  /|__/ \\    (:      "| /" \\   :) \s
+             \\__|   (__\\_|_)(__|  \\__)(___/    \\___)    (_______)  (__\\_|_)(_______)    \\_______)(_______/  \s
+        """);
 	}
 	@Bean
 	public ObjectMapper objectMapper() {
