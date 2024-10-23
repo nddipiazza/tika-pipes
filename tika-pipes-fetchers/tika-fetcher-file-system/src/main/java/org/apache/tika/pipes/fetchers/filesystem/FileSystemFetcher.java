@@ -43,7 +43,7 @@ public class FileSystemFetcher implements Fetcher {
     FileSystemFetcherConfig fileSystemFetcherConfig = new FileSystemFetcherConfig();
     {
         fileSystemFetcherConfig.setExtractFileSystemMetadata(true);
-        fileSystemFetcherConfig.setBasePath("/home/ndipiazza/Downloads/docx");
+        // todo
     }
     @Override
     public InputStream fetch(String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) {

@@ -27,8 +27,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tika-fetchers</artifactId>
-  <name>Apache Tika fetchers</name>
+  <artifactId>tika-pipes-fetchers</artifactId>
+  <name>Tika Pipes Fetchers</name>
   <url>https://tika.apache.org/</url>
   <packaging>pom</packaging>
 

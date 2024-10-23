@@ -31,6 +31,22 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>tika-parsers-standard-package</artifactId>
+      <version>${project.version}</version>
+      <!-- this is brought in by tika-server-core. Don't duplicate -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.tika</groupId>
+          <artifactId>tika-parser-digest-commons</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.tika</groupId>
+          <artifactId>tika-parser-zip-commons</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-pipes-core</artifactId>
       <version>${project.version}</version>
