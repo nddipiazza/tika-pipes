@@ -10,3 +10,5 @@ ignite:
   memory:
     default:
       size: 1G
+  sql:
+    log: debug

@@ -3,8 +3,12 @@ package org.apache.tika.pipes.fetcher;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.ignite.cache.query.annotations.QuerySqlField;
+
 public class FetcherConfig implements Serializable {
+    @QuerySqlField(index = true)
     private String pluginId;
+    @QuerySqlField(index = true)
     private String fetcherId;
     private Map<String, Object> config;
 

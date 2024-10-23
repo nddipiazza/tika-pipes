@@ -16,14 +16,11 @@ public class IgniteRepositoryConfiguration {
     @Bean
     public Ignite igniteInstance() {
         IgniteConfiguration cfg = new IgniteConfiguration();
-
         cfg.setIgniteInstanceName("springDataNode");
         cfg.setPeerClassLoadingEnabled(true);
 
-        CacheConfiguration ccfg = new CacheConfiguration("FetcherCache");
-
+        CacheConfiguration<String, FetcherConfig> ccfg = new CacheConfiguration<>("FetcherCache");
         ccfg.setIndexedTypes(String.class, FetcherConfig.class);
-
         cfg.setCacheConfiguration(ccfg);
 
         return Ignition.start(cfg);
