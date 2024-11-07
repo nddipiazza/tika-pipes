@@ -28,11 +28,10 @@ import org.apache.tika.FetchAndParseRequest;
 import org.apache.tika.SaveFetcherReply;
 import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
-import org.apache.tika.pipes.PipesResult;
 import org.apache.tika.pipes.fetchers.filesystem.FileSystemFetcherConfig;
 
 @Slf4j
-public class FileSystemFetcher {
+public class FileSystemFetcherExternalTest {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
     public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -52,7 +51,7 @@ public class FileSystemFetcher {
     private boolean help;
 
     public static void main(String[] args) throws IOException {
-        FileSystemFetcher bulkParser = new FileSystemFetcher();
+        FileSystemFetcherExternalTest bulkParser = new FileSystemFetcherExternalTest();
         JCommander commander = JCommander
                 .newBuilder()
                 .addObject(bulkParser)
@@ -97,8 +96,7 @@ public class FileSystemFetcher {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
                 log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
-                if (PipesResult.STATUS.FETCH_EXCEPTION
-                        .name()
+                if ("FetchException"
                         .equals(fetchAndParseReply.getStatus())) {
                     errors.add(fetchAndParseReply);
                 } else {

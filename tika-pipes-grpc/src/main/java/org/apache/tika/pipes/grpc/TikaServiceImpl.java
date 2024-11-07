@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.stub.StreamObserver;
@@ -31,9 +32,9 @@ import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.PipesResult;
 import org.apache.tika.pipes.core.exception.TikaPipesException;
+import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
 import org.apache.tika.pipes.core.fetcher.Fetcher;
 import org.apache.tika.pipes.core.fetcher.FetcherConfig;
-import org.apache.tika.pipes.core.fetcher.FetcherConfigThreadLocal;
 import org.apache.tika.pipes.core.parser.ParseService;
 import org.apache.tika.pipes.repo.FetcherRepository;
 
@@ -66,17 +67,25 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                 .orElseThrow(() -> new TikaPipesException("Could not find Fetcher extension for plugin " + pluginId));
     }
 
+    private FetcherConfig getFetcherConfig(String pluginId) {
+        return pluginManager
+                .getExtensions(FetcherConfig.class, pluginId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new TikaPipesException("Could not find FetcherConfig extension for plugin " + pluginId));
+    }
+
     @Override
     public void saveFetcher(SaveFetcherRequest request, StreamObserver<SaveFetcherReply> responseObserver) {
         try {
-            FetcherConfig fetcherConfig = new FetcherConfig()
-                    .setFetcherId(request.getFetcherId())
+            FetcherConfig fetcherConfig = getFetcherConfig(request.getPluginId());
+            fetcherConfig.setFetcherId(request.getFetcherId())
                     .setPluginId(request.getPluginId())
                     .setConfig(objectMapper.readValue(request
                             .getFetcherConfigJsonBytes()
                             .toByteArray(), new TypeReference<>() {
                     }));
-            fetcherRepository.save(fetcherConfig.getFetcherId(), fetcherConfig);
+            fetcherRepository.save(fetcherConfig.getFetcherId(), getFetcherConfig(request));
             responseObserver.onNext(SaveFetcherReply
                     .newBuilder()
                     .setFetcherId(request.getFetcherId())
@@ -87,9 +96,17 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         responseObserver.onCompleted();
     }
 
+    private DefaultFetcherConfig getFetcherConfig(SaveFetcherRequest request) throws JsonProcessingException {
+        return new DefaultFetcherConfig()
+                .setFetcherId(request.getFetcherId())
+                .setPluginId(request.getPluginId())
+                .setConfig(objectMapper.readValue(request.getFetcherConfigJson(), new TypeReference<>() {
+                }));
+    }
+
     @Override
     public void getFetcher(GetFetcherRequest request, StreamObserver<GetFetcherReply> responseObserver) {
-        FetcherConfig fetcherConfig = fetcherRepository.findByFetcherId(request.getFetcherId());
+        DefaultFetcherConfig fetcherConfig = fetcherRepository.findByFetcherId(request.getFetcherId());
         responseObserver.onNext(GetFetcherReply
                 .newBuilder()
                 .setFetcherId(request.getFetcherId())
@@ -136,14 +153,14 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     private void fetchAndParseImpl(FetchAndParseRequest request, StreamObserver<FetchAndParseReply> responseObserver) throws IOException {
-        FetcherConfig fetcherConfig = fetcherRepository.findByFetcherId(request.getFetcherId());
+        DefaultFetcherConfig fetcherConfig = fetcherRepository.findByFetcherId(request.getFetcherId());
         if (fetcherConfig == null) {
             throw new IOException("Could not find fetcher with ID " + request.getFetcherId());
         }
-        FetcherConfigThreadLocal.setFetcherConfig(fetcherConfig);
         Fetcher fetcher = getFetcher(fetcherConfig.getPluginId());
         HashMap<String, Object> responseMetadata = new HashMap<>();
-        InputStream inputStream = fetcher.fetch(request.getFetchKey(), objectMapper.readValue(request.getMetadataJson(), MAP_STRING_OBJ_TYPE_REF), responseMetadata);
+        FetcherConfig fetcherConfigConverted = objectMapper.convertValue(fetcherConfig, pluginManager.getExtensionClasses(FetcherConfig.class, fetcherConfig.getPluginId()).get(0));
+        InputStream inputStream = fetcher.fetch(fetcherConfigConverted, request.getFetchKey(), objectMapper.readValue(request.getMetadataJson(), MAP_STRING_OBJ_TYPE_REF), responseMetadata);
         FetchAndParseReply.Builder builder = FetchAndParseReply.newBuilder();
         builder.setStatus(PipesResult.STATUS.EMIT_SUCCESS.name());
         builder.setFetchKey(request.getFetchKey());

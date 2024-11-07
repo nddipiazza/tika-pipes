@@ -8,7 +8,7 @@ import org.apache.ignite.springdata.repository.config.EnableIgniteRepositories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.apache.tika.pipes.core.fetcher.FetcherConfig;
+import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
 
 @Configuration
 @EnableIgniteRepositories
@@ -19,8 +19,8 @@ public class IgniteRepositoryConfiguration {
         cfg.setIgniteInstanceName("springDataNode");
         cfg.setPeerClassLoadingEnabled(true);
 
-        CacheConfiguration<String, FetcherConfig> ccfg = new CacheConfiguration<>("FetcherCache");
-        ccfg.setIndexedTypes(String.class, FetcherConfig.class);
+        CacheConfiguration<String, DefaultFetcherConfig> ccfg = new CacheConfiguration<>("FetcherCache");
+        ccfg.setIndexedTypes(String.class, DefaultFetcherConfig.class);
         cfg.setCacheConfiguration(ccfg);
 
         return Ignition.start(cfg);

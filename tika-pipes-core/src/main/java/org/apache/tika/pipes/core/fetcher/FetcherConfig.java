@@ -3,39 +3,18 @@ package org.apache.tika.pipes.core.fetcher;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.ignite.cache.query.annotations.QuerySqlField;
+import org.pf4j.ExtensionPoint;
 
-public class FetcherConfig implements Serializable {
-    @QuerySqlField(index = true)
-    private String pluginId;
-    @QuerySqlField(index = true)
-    private String fetcherId;
-    private Map<String, Object> config;
+public interface FetcherConfig extends Serializable, ExtensionPoint {
+    String getPluginId();
 
-    public String getPluginId() {
-        return pluginId;
-    }
+    FetcherConfig setPluginId(String pluginId);
 
-    public FetcherConfig setPluginId(String pluginId) {
-        this.pluginId = pluginId;
-        return this;
-    }
+    String getFetcherId();
 
-    public String getFetcherId() {
-        return fetcherId;
-    }
+    FetcherConfig setFetcherId(String fetcherId);
 
-    public FetcherConfig setFetcherId(String fetcherId) {
-        this.fetcherId = fetcherId;
-        return this;
-    }
+    Map<String, Object> getConfig();
 
-    public Map<String, Object> getConfig() {
-        return config;
-    }
-
-    public FetcherConfig setConfig(Map<String, Object> config) {
-        this.config = config;
-        return this;
-    }
+    FetcherConfig setConfig(Map<String, Object> config);
 }

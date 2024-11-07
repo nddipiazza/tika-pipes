@@ -7,14 +7,14 @@ import org.apache.ignite.springdata.repository.config.RepositoryConfig;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 
-import org.apache.tika.pipes.core.fetcher.FetcherConfig;
+import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
 
 @Repository
 @RepositoryConfig(cacheName = "FetcherCache")
-public interface FetcherRepository extends IgniteRepository<FetcherConfig, String> {
-    FetcherConfig findByFetcherId(String fetcherId);
+public interface FetcherRepository extends IgniteRepository<DefaultFetcherConfig, String> {
+    DefaultFetcherConfig findByFetcherId(String fetcherId);
     @NotNull
-    List<FetcherConfig> findAll();
+    List<DefaultFetcherConfig> findAll();
     void deleteByFetcherId(String fetcherId);
     boolean existsByFetcherId(String fetcherId);
 }

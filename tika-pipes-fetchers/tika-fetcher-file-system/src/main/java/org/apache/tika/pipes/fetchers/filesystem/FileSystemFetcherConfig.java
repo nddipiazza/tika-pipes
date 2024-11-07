@@ -1,8 +1,11 @@
 package org.apache.tika.pipes.fetchers.filesystem;
 
-import org.apache.tika.pipes.core.fetcher.FetcherConfig;
+import org.pf4j.Extension;
 
-public class FileSystemFetcherConfig extends FetcherConfig {
+import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
+
+@Extension
+public class FileSystemFetcherConfig extends DefaultFetcherConfig {
     private String basePath;
     private boolean extractFileSystemMetadata;
 

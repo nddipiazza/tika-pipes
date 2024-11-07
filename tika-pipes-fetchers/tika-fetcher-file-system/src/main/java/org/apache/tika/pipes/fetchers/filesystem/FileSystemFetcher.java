@@ -37,16 +37,13 @@ import org.apache.tika.metadata.Property;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.pipes.core.exception.TikaPipesException;
 import org.apache.tika.pipes.core.fetcher.Fetcher;
+import org.apache.tika.pipes.core.fetcher.FetcherConfig;
 
 @Extension
 public class FileSystemFetcher implements Fetcher {
-    FileSystemFetcherConfig fileSystemFetcherConfig = new FileSystemFetcherConfig();
-    {
-        fileSystemFetcherConfig.setExtractFileSystemMetadata(true);
-        // todo
-    }
     @Override
-    public InputStream fetch(String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) {
+    public InputStream fetch(FetcherConfig fetcherConfig, String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) {
+        FileSystemFetcherConfig fileSystemFetcherConfig = (FileSystemFetcherConfig) fetcherConfig;
         try {
             if (fetchKey.contains("\u0000")) {
                 throw new IllegalArgumentException("Path must not contain 'u0000'.");
@@ -66,7 +63,7 @@ public class FileSystemFetcher implements Fetcher {
             }
 
             responseMetadata.put(TikaCoreProperties.SOURCE_PATH.getName(), fetchKey);
-            updateFileSystemMetadata(pathToFetch, responseMetadata);
+            updateFileSystemMetadata(fileSystemFetcherConfig, pathToFetch, responseMetadata);
 
             if (!Files.isRegularFile(pathToFetch)) {
                 if (basePath != null && !Files.isDirectory(basePath)) {
@@ -84,7 +81,7 @@ public class FileSystemFetcher implements Fetcher {
         }
     }
 
-    private void updateFileSystemMetadata(Path p, Map<String, Object> responseMetadata) throws IOException {
+    private void updateFileSystemMetadata(FileSystemFetcherConfig fileSystemFetcherConfig, Path p, Map<String, Object> responseMetadata) throws IOException {
         if (!fileSystemFetcherConfig.isExtractFileSystemMetadata()) {
             return;
         }
