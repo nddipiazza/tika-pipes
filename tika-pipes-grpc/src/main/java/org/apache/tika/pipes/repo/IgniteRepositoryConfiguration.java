@@ -8,7 +8,7 @@ import org.apache.ignite.springdata.repository.config.EnableIgniteRepositories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.apache.tika.pipes.fetcher.FetcherConfig;
+import org.apache.tika.pipes.core.fetcher.FetcherConfig;
 
 @Configuration
 @EnableIgniteRepositories

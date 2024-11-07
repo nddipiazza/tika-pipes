@@ -28,23 +28,23 @@
     <ignite.version>2.16.0</ignite.version>
     <ignite-spring-data-ext.version>3.0.0</ignite-spring-data-ext.version>
     <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
+    <tika-version>3.0.0</tika-version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tika-parsers-standard-package</artifactId>
-      <version>${project.version}</version>
-      <!-- this is brought in by tika-server-core. Don't duplicate -->
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.tika</groupId>
-          <artifactId>tika-parser-digest-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.tika</groupId>
-          <artifactId>tika-parser-zip-commons</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>${tika-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <version>${tika-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parser-microsoft-module</artifactId>
+      <version>${tika-version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>

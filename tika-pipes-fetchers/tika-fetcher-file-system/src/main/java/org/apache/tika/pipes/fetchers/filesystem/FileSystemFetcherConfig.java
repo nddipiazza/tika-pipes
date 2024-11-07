@@ -1,6 +1,6 @@
 package org.apache.tika.pipes.fetchers.filesystem;
 
-import org.apache.tika.pipes.fetcher.FetcherConfig;
+import org.apache.tika.pipes.core.fetcher.FetcherConfig;
 
 public class FileSystemFetcherConfig extends FetcherConfig {
     private String basePath;

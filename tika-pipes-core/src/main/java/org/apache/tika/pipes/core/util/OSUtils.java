@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.util;
+package org.apache.tika.pipes.core.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

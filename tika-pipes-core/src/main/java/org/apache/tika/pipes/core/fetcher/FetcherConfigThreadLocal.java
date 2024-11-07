@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.fetcher;
+package org.apache.tika.pipes.core.fetcher;
 
 public class FetcherConfigThreadLocal {
     private static final ThreadLocal<FetcherConfig> threadLocalConfig = ThreadLocal.withInitial(() -> null);

@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.plugin;
+package org.apache.tika.pipes.core.plugin;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import org.apache.tika.pipes.exception.TikaPipesException;
-import org.apache.tika.pipes.fetcher.Fetcher;
+import org.apache.tika.pipes.core.exception.TikaPipesException;
+import org.apache.tika.pipes.core.fetcher.Fetcher;
 
 @Component
 public class GrpcPluginManager extends DefaultPluginManager {
@@ -58,8 +58,8 @@ public class GrpcPluginManager extends DefaultPluginManager {
     }
 
     private void checkFetcherExtensions(PluginWrapper plugin) {
-        for (Class<?> extensionClass : getExtensionClasses(Fetcher.class, plugin.getPluginId())) {
-            if (!Fetcher.class.isAssignableFrom(extensionClass)) {
+        for (Class<?> extensionClass : getExtensionClasses(org.apache.tika.pipes.core.fetcher.Fetcher.class, plugin.getPluginId())) {
+            if (!org.apache.tika.pipes.core.fetcher.Fetcher.class.isAssignableFrom(extensionClass)) {
                 throw new TikaPipesException("Something is wrong with the classpath. " + Fetcher.class.getName() +
                         " should be assignable from " + extensionClass.getName() +
                         ". Did tika-core accidentally get in your plugin lib?");

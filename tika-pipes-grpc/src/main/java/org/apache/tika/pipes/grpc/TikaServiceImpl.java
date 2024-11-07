@@ -29,11 +29,11 @@ import org.apache.tika.SaveFetcherReply;
 import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.PipesResult;
-import org.apache.tika.pipes.exception.TikaPipesException;
-import org.apache.tika.pipes.fetcher.Fetcher;
-import org.apache.tika.pipes.fetcher.FetcherConfig;
-import org.apache.tika.pipes.fetcher.FetcherConfigThreadLocal;
-import org.apache.tika.pipes.parser.ParseService;
+import org.apache.tika.pipes.core.exception.TikaPipesException;
+import org.apache.tika.pipes.core.fetcher.Fetcher;
+import org.apache.tika.pipes.core.fetcher.FetcherConfig;
+import org.apache.tika.pipes.core.fetcher.FetcherConfigThreadLocal;
+import org.apache.tika.pipes.core.parser.ParseService;
 import org.apache.tika.pipes.repo.FetcherRepository;
 
 @GrpcService

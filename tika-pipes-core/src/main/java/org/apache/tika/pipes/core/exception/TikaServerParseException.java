@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.exception;
+package org.apache.tika.pipes.core.exception;
 
 public class TikaServerParseException extends RuntimeException {
     public TikaServerParseException() {

@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.util;
+package org.apache.tika.pipes.core.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
