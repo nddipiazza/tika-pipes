@@ -1,0 +1,314 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for org.apache.tika:tika-pipes-test:jar:3.0.0-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.projectlombok:lombok:jar -> version 1.18.32 vs (?) @ line 112, column 17
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Detecting the operating system and CPU architecture
+[INFO] ------------------------------------------------------------------------
+[INFO] os.detected.name: linux
+[INFO] os.detected.arch: x86_64
+[INFO] os.detected.bitness: 64
+[INFO] os.detected.version: 6.8
+[INFO] os.detected.version.major: 6
+[INFO] os.detected.version.minor: 8
+[INFO] os.detected.release: ubuntu
+[INFO] os.detected.release.version: 22.04
+[INFO] os.detected.release.like.ubuntu: true
+[INFO] os.detected.release.like.debian: true
+[INFO] os.detected.classifier: linux-x86_64
+[INFO] 
+[INFO] ------------------< org.apache.tika:tika-pipes-test >-------------------
+[INFO] Building Tika Pipes Integration Test Suite 3.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ tika-pipes-test ---
+[INFO] org.apache.tika:tika-pipes-test:jar:3.0.0-SNAPSHOT
+[INFO] +- org.projectlombok:lombok:jar:1.18.34:compile
+[INFO] +- org.apache.tika:tika-grpc:jar:3.0.0:compile
+[INFO] |  +- io.grpc:grpc-netty-shaded:jar:1.68.0:compile
+[INFO] |  |  \- io.perfmark:perfmark-api:jar:0.27.0:runtime
+[INFO] |  +- io.grpc:grpc-protobuf:jar:1.68.0:compile
+[INFO] |  |  +- com.google.api.grpc:proto-google-common-protos:jar:2.41.0:compile
+[INFO] |  |  \- io.grpc:grpc-protobuf-lite:jar:1.68.0:compile
+[INFO] |  +- io.grpc:grpc-services:jar:1.68.0:compile
+[INFO] |  +- io.grpc:grpc-stub:jar:1.68.0:compile
+[INFO] |  +- com.google.protobuf:protobuf-java-util:jar:3.25.5:compile
+[INFO] |  +- com.google.j2objc:j2objc-annotations:jar:3.0.0:compile
+[INFO] |  +- org.apache.tika:tika-async-cli:jar:3.0.0:compile
+[INFO] |  +- org.apache.tika:tika-parsers-standard-package:jar:3.0.0:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-apple-module:jar:3.0.0:compile
+[INFO] |  |  |  +- org.apache.tika:tika-parser-zip-commons:jar:3.0.0:compile
+[INFO] |  |  |  \- com.googlecode.plist:dd-plist:jar:1.28:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-audiovideo-module:jar:3.0.0:compile
+[INFO] |  |  |  \- com.drewnoakes:metadata-extractor:jar:2.19.0:compile
+[INFO] |  |  |     \- com.adobe.xmp:xmpcore:jar:6.1.11:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-cad-module:jar:3.0.0:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-code-module:jar:3.0.0:compile
+[INFO] |  |  |  +- org.codelibs:jhighlight:jar:1.1.0:compile
+[INFO] |  |  |  +- org.ccil.cowan.tagsoup:tagsoup:jar:1.2.1:compile
+[INFO] |  |  |  +- org.ow2.asm:asm:jar:9.7.1:compile
+[INFO] |  |  |  +- com.epam:parso:jar:2.0.14:compile
+[INFO] |  |  |  \- org.tallison:jmatio:jar:1.5:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-crypto-module:jar:3.0.0:compile
+[INFO] |  |  |  +- org.bouncycastle:bcjmail-jdk18on:jar:1.78.1:compile
+[INFO] |  |  |  |  +- org.bouncycastle:bcutil-jdk18on:jar:1.78.1:compile
+[INFO] |  |  |  |  \- org.bouncycastle:bcpkix-jdk18on:jar:1.78.1:compile
+[INFO] |  |  |  \- org.bouncycastle:bcprov-jdk18on:jar:1.78.1:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-digest-commons:jar:3.0.0:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-font-module:jar:3.0.0:compile
+[INFO] |  |  |  \- org.apache.pdfbox:fontbox:jar:3.0.3:compile
+[INFO] |  |  |     \- org.apache.pdfbox:pdfbox-io:jar:3.0.3:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-html-module:jar:3.0.0:compile
+[INFO] |  |  |  \- org.jsoup:jsoup:jar:1.18.1:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-image-module:jar:3.0.0:compile
+[INFO] |  |  |  +- com.github.jai-imageio:jai-imageio-core:jar:1.4.0:compile
+[INFO] |  |  |  \- org.apache.pdfbox:jbig2-imageio:jar:3.0.4:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-mail-module:jar:3.0.0:compile
+[INFO] |  |  |  \- org.apache.tika:tika-parser-mail-commons:jar:3.0.0:compile
+[INFO] |  |  |     +- org.apache.james:apache-mime4j-core:jar:0.8.11:compile
+[INFO] |  |  |     \- org.apache.james:apache-mime4j-dom:jar:0.8.11:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-microsoft-module:jar:3.0.0:compile
+[INFO] |  |  |  +- com.pff:java-libpst:jar:0.9.3:compile
+[INFO] |  |  |  +- org.apache.poi:poi:jar:5.3.0:compile
+[INFO] |  |  |  |  +- org.apache.commons:commons-math3:jar:3.6.1:compile
+[INFO] |  |  |  |  \- com.zaxxer:SparseBitSet:jar:1.3:compile
+[INFO] |  |  |  +- org.apache.poi:poi-scratchpad:jar:5.3.0:compile
+[INFO] |  |  |  +- org.apache.poi:poi-ooxml:jar:5.3.0:compile
+[INFO] |  |  |  |  +- org.apache.poi:poi-ooxml-lite:jar:5.3.0:compile
+[INFO] |  |  |  |  +- org.apache.xmlbeans:xmlbeans:jar:5.2.1:compile
+[INFO] |  |  |  |  \- com.github.virtuald:curvesapi:jar:1.08:compile
+[INFO] |  |  |  +- com.healthmarketscience.jackcess:jackcess:jar:4.0.7:compile
+[INFO] |  |  |  \- com.healthmarketscience.jackcess:jackcess-encrypt:jar:4.0.2:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-miscoffice-module:jar:3.0.0:compile
+[INFO] |  |  |  +- org.apache.commons:commons-collections4:jar:4.4:compile
+[INFO] |  |  |  \- org.glassfish.jaxb:jaxb-runtime:jar:4.0.5:compile
+[INFO] |  |  |     \- org.glassfish.jaxb:jaxb-core:jar:4.0.5:compile
+[INFO] |  |  |        +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:compile
+[INFO] |  |  |        +- jakarta.activation:jakarta.activation-api:jar:2.1.3:compile
+[INFO] |  |  |        +- org.eclipse.angus:angus-activation:jar:2.0.2:runtime
+[INFO] |  |  |        +- org.glassfish.jaxb:txw2:jar:4.0.5:compile
+[INFO] |  |  |        \- com.sun.istack:istack-commons-runtime:jar:4.1.2:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-news-module:jar:3.0.0:compile
+[INFO] |  |  |  \- com.rometools:rome:jar:2.1.0:compile
+[INFO] |  |  |     +- com.rometools:rome-utils:jar:2.1.0:compile
+[INFO] |  |  |     \- org.jdom:jdom2:jar:2.0.6.1:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-ocr-module:jar:3.0.0:compile
+[INFO] |  |  |  \- org.apache.commons:commons-exec:jar:1.4.0:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-pdf-module:jar:3.0.0:compile
+[INFO] |  |  |  +- org.apache.pdfbox:pdfbox:jar:3.0.3:compile
+[INFO] |  |  |  +- org.apache.pdfbox:pdfbox-tools:jar:3.0.3:compile
+[INFO] |  |  |  |  \- info.picocli:picocli:jar:4.7.6:compile
+[INFO] |  |  |  \- org.apache.pdfbox:jempbox:jar:1.8.17:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-pkg-module:jar:3.0.0:compile
+[INFO] |  |  |  +- org.tukaani:xz:jar:1.10:compile
+[INFO] |  |  |  +- org.brotli:dec:jar:0.1.2:compile
+[INFO] |  |  |  \- com.github.junrar:junrar:jar:7.5.5:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-text-module:jar:3.0.0:compile
+[INFO] |  |  |  +- com.github.albfernandez:juniversalchardet:jar:2.5.0:compile
+[INFO] |  |  |  \- org.apache.commons:commons-csv:jar:1.12.0:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-webarchive-module:jar:3.0.0:compile
+[INFO] |  |  |  +- org.netpreserve:jwarc:jar:0.30.0:compile
+[INFO] |  |  |  \- org.apache.commons:commons-compress:jar:1.27.1:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-xml-module:jar:3.0.0:compile
+[INFO] |  |  +- org.apache.tika:tika-parser-xmp-commons:jar:3.0.0:compile
+[INFO] |  |  |  \- org.apache.pdfbox:xmpbox:jar:3.0.3:compile
+[INFO] |  |  +- org.gagravarr:vorbis-java-tika:jar:0.8:compile
+[INFO] |  |  \- org.gagravarr:vorbis-java-core:jar:0.8:compile
+[INFO] |  +- org.apache.logging.log4j:log4j-core:jar:2.23.1:compile
+[INFO] |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:2.0.16:compile
+[INFO] |  +- com.beust:jcommander:jar:1.82:compile
+[INFO] |  \- com.fasterxml.jackson.module:jackson-module-jsonSchema:jar:2.17.2:compile
+[INFO] |     +- javax.validation:validation-api:jar:1.1.0.Final:compile
+[INFO] |     \- com.fasterxml.jackson.core:jackson-core:jar:2.17.2:compile
+[INFO] +- org.apache.tika:tika-fetcher-gcs:jar:3.0.0:compile
+[INFO] |  \- com.google.cloud:google-cloud-storage:jar:2.43.2:compile
+[INFO] |     +- com.google.http-client:google-http-client:jar:1.45.0:compile
+[INFO] |     +- io.opencensus:opencensus-contrib-http-util:jar:0.31.1:compile
+[INFO] |     +- com.google.http-client:google-http-client-jackson2:jar:1.45.0:compile
+[INFO] |     +- com.google.http-client:google-http-client-gson:jar:1.45.0:compile
+[INFO] |     +- com.google.api-client:google-api-client:jar:2.7.0:compile
+[INFO] |     +- commons-codec:commons-codec:jar:1.16.1:compile
+[INFO] |     +- com.google.oauth-client:google-oauth-client:jar:1.36.0:compile
+[INFO] |     +- com.google.http-client:google-http-client-apache-v2:jar:1.45.0:compile
+[INFO] |     +- com.google.apis:google-api-services-storage:jar:v1-rev20240924-2.0.0:compile
+[INFO] |     +- com.google.cloud:google-cloud-core:jar:2.45.0:compile
+[INFO] |     +- com.google.cloud:google-cloud-core-http:jar:2.45.0:compile
+[INFO] |     +- com.google.http-client:google-http-client-appengine:jar:1.45.0:compile
+[INFO] |     +- com.google.api:gax-httpjson:jar:2.55.0:compile
+[INFO] |     +- com.google.cloud:google-cloud-core-grpc:jar:2.45.0:compile
+[INFO] |     +- com.google.api:gax:jar:2.55.0:compile
+[INFO] |     +- com.google.api:gax-grpc:jar:2.55.0:compile
+[INFO] |     +- org.conscrypt:conscrypt-openjdk-uber:jar:2.5.2:compile
+[INFO] |     +- com.google.auth:google-auth-library-credentials:jar:1.28.0:compile
+[INFO] |     +- com.google.auth:google-auth-library-oauth2-http:jar:1.28.0:compile
+[INFO] |     +- com.google.api:api-common:jar:2.38.0:compile
+[INFO] |     +- javax.annotation:javax.annotation-api:jar:1.3.2:compile
+[INFO] |     +- io.opencensus:opencensus-api:jar:0.31.1:compile
+[INFO] |     +- com.google.api.grpc:proto-google-iam-v1:jar:1.41.0:compile
+[INFO] |     +- com.google.android:annotations:jar:4.1.1.4:runtime
+[INFO] |     +- org.codehaus.mojo:animal-sniffer-annotations:jar:1.24:runtime
+[INFO] |     +- org.threeten:threetenbp:jar:1.7.0:compile
+[INFO] |     +- com.google.api.grpc:proto-google-cloud-storage-v2:jar:2.43.2-beta:compile
+[INFO] |     +- com.google.api.grpc:grpc-google-cloud-storage-v2:jar:2.43.2-beta:compile
+[INFO] |     +- com.google.api.grpc:gapic-google-cloud-storage-v2:jar:2.43.2-beta:compile
+[INFO] |     +- io.opentelemetry:opentelemetry-sdk:jar:1.37.0:compile
+[INFO] |     +- io.opentelemetry:opentelemetry-sdk-trace:jar:1.37.0:compile
+[INFO] |     +- io.opentelemetry:opentelemetry-sdk-logs:jar:1.37.0:compile
+[INFO] |     +- io.grpc:grpc-opentelemetry:jar:1.67.1:compile
+[INFO] |     +- io.opentelemetry:opentelemetry-api:jar:1.37.0:compile
+[INFO] |     +- io.opentelemetry:opentelemetry-context:jar:1.37.0:compile
+[INFO] |     +- io.opentelemetry:opentelemetry-sdk-metrics:jar:1.37.0:compile
+[INFO] |     +- io.opentelemetry:opentelemetry-api-incubator:jar:1.42.1-alpha:runtime
+[INFO] |     +- io.opentelemetry:opentelemetry-sdk-common:jar:1.37.0:compile
+[INFO] |     +- io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:jar:1.37.0:compile
+[INFO] |     +- io.opentelemetry.semconv:opentelemetry-semconv:jar:1.25.0-alpha:compile
+[INFO] |     +- com.google.cloud.opentelemetry:exporter-metrics:jar:0.31.0:compile
+[INFO] |     +- com.google.cloud:google-cloud-monitoring:jar:3.31.0:compile
+[INFO] |     +- com.google.api.grpc:proto-google-cloud-monitoring-v3:jar:3.31.0:compile
+[INFO] |     +- commons-logging:commons-logging:jar:1.2:compile
+[INFO] |     +- com.google.cloud.opentelemetry:shared-resourcemapping:jar:0.32.0:runtime
+[INFO] |     +- io.opentelemetry.contrib:opentelemetry-gcp-resources:jar:1.37.0-alpha:compile
+[INFO] |     \- com.google.cloud.opentelemetry:detector-resources-support:jar:0.32.0:runtime
+[INFO] +- org.apache.tika:tika-fetcher-http:jar:3.0.0:compile
+[INFO] |  +- org.apache.tika:tika-httpclient-commons:jar:3.0.0:compile
+[INFO] |  |  \- org.apache.httpcomponents:httpclient:jar:4.5.14:compile
+[INFO] |  |     \- org.apache.httpcomponents:httpcore:jar:4.4.16:compile
+[INFO] |  +- com.nimbusds:nimbus-jose-jwt:jar:9.41.2:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.17.2:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-annotations:jar:2.17.2:compile
+[INFO] +- org.apache.tika:tika-fetcher-s3:jar:3.0.0:compile
+[INFO] |  \- com.amazonaws:aws-java-sdk-s3:jar:1.12.773:compile
+[INFO] |     +- com.amazonaws:aws-java-sdk-kms:jar:1.12.773:compile
+[INFO] |     +- com.amazonaws:aws-java-sdk-core:jar:1.12.773:compile
+[INFO] |     |  +- com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:jar:2.17.2:compile
+[INFO] |     |  \- joda-time:joda-time:jar:2.12.7:compile
+[INFO] |     \- com.amazonaws:jmespath-java:jar:1.12.773:compile
+[INFO] +- org.apache.tika:tika-fetcher-microsoft-graph:jar:3.0.0:compile
+[INFO] |  +- com.azure:azure-identity:jar:1.14.0:compile
+[INFO] |  |  +- com.azure:azure-core:jar:1.53.0:compile
+[INFO] |  |  |  +- com.azure:azure-xml:jar:1.1.0:compile
+[INFO] |  |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.17.2:compile
+[INFO] |  |  |  \- io.projectreactor:reactor-core:jar:3.6.9:compile
+[INFO] |  |  |     \- org.reactivestreams:reactive-streams:jar:1.0.4:compile
+[INFO] |  |  +- com.azure:azure-core-http-netty:jar:1.15.5:compile
+[INFO] |  |  |  +- io.netty:netty-handler:jar:4.1.112.Final:compile
+[INFO] |  |  |  |  +- io.netty:netty-resolver:jar:4.1.112.Final:compile
+[INFO] |  |  |  |  \- io.netty:netty-transport:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-handler-proxy:jar:4.1.112.Final:compile
+[INFO] |  |  |  |  \- io.netty:netty-codec-socks:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-buffer:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-codec:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-codec-http:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-codec-http2:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-transport-native-unix-common:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-transport-native-epoll:jar:linux-x86_64:4.1.112.Final:compile
+[INFO] |  |  |  |  \- io.netty:netty-transport-classes-epoll:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-transport-native-kqueue:jar:osx-x86_64:4.1.112.Final:compile
+[INFO] |  |  |  |  \- io.netty:netty-transport-classes-kqueue:jar:4.1.112.Final:compile
+[INFO] |  |  |  +- io.netty:netty-tcnative-boringssl-static:jar:2.0.65.Final:compile
+[INFO] |  |  |  |  +- io.netty:netty-tcnative-classes:jar:2.0.65.Final:compile
+[INFO] |  |  |  |  +- io.netty:netty-tcnative-boringssl-static:jar:linux-x86_64:2.0.65.Final:compile
+[INFO] |  |  |  |  +- io.netty:netty-tcnative-boringssl-static:jar:linux-aarch_64:2.0.65.Final:compile
+[INFO] |  |  |  |  +- io.netty:netty-tcnative-boringssl-static:jar:osx-x86_64:2.0.65.Final:compile
+[INFO] |  |  |  |  +- io.netty:netty-tcnative-boringssl-static:jar:osx-aarch_64:2.0.65.Final:compile
+[INFO] |  |  |  |  \- io.netty:netty-tcnative-boringssl-static:jar:windows-x86_64:2.0.65.Final:compile
+[INFO] |  |  |  +- io.projectreactor.netty:reactor-netty-http:jar:1.1.22:compile
+[INFO] |  |  |  |  +- io.netty:netty-resolver-dns:jar:4.1.112.Final:compile
+[INFO] |  |  |  |  |  \- io.netty:netty-codec-dns:jar:4.1.112.Final:compile
+[INFO] |  |  |  |  +- io.netty:netty-resolver-dns-native-macos:jar:osx-x86_64:4.1.112.Final:compile
+[INFO] |  |  |  |  |  \- io.netty:netty-resolver-dns-classes-macos:jar:4.1.112.Final:compile
+[INFO] |  |  |  |  \- io.projectreactor.netty:reactor-netty-core:jar:1.1.22:compile
+[INFO] |  |  |  \- io.netty:netty-common:jar:4.1.112.Final:compile
+[INFO] |  |  +- com.azure:azure-json:jar:1.3.0:compile
+[INFO] |  |  \- com.microsoft.azure:msal4j-persistence-extension:jar:1.3.0:compile
+[INFO] |  |     \- net.java.dev.jna:jna:jar:5.13.0:compile
+[INFO] |  +- com.microsoft.graph:microsoft-graph:jar:6.18.0:compile
+[INFO] |  |  +- com.microsoft.graph:microsoft-graph-core:jar:3.3.0:compile
+[INFO] |  |  |  \- com.microsoft.kiota:microsoft-kiota-abstractions:jar:1.5.0:compile
+[INFO] |  |  |     \- io.github.std-uritemplate:std-uritemplate:jar:1.0.6:runtime
+[INFO] |  |  +- com.squareup.okhttp3:okhttp:jar:4.12.0:compile
+[INFO] |  |  |  \- com.squareup.okio:okio:jar:3.6.0:compile
+[INFO] |  |  |     \- com.squareup.okio:okio-jvm:jar:3.6.0:compile
+[INFO] |  |  |        \- org.jetbrains.kotlin:kotlin-stdlib-common:jar:1.9.25:compile
+[INFO] |  |  +- com.microsoft.kiota:microsoft-kiota-authentication-azure:jar:1.5.1:compile
+[INFO] |  |  +- com.microsoft.kiota:microsoft-kiota-http-okHttp:jar:1.5.1:runtime
+[INFO] |  |  +- com.microsoft.kiota:microsoft-kiota-serialization-json:jar:1.5.1:runtime
+[INFO] |  |  +- com.microsoft.kiota:microsoft-kiota-serialization-text:jar:1.5.1:runtime
+[INFO] |  |  +- com.microsoft.kiota:microsoft-kiota-serialization-form:jar:1.5.1:runtime
+[INFO] |  |  \- com.microsoft.kiota:microsoft-kiota-serialization-multipart:jar:1.5.1:runtime
+[INFO] |  +- com.microsoft.azure:msal4j:jar:1.17.2:compile
+[INFO] |  |  +- com.nimbusds:oauth2-oidc-sdk:jar:11.18:compile
+[INFO] |  |  |  +- com.github.stephenc.jcip:jcip-annotations:jar:1.0-1:compile
+[INFO] |  |  |  +- com.nimbusds:content-type:jar:2.3:compile
+[INFO] |  |  |  \- com.nimbusds:lang-tag:jar:1.7:compile
+[INFO] |  |  \- net.minidev:json-smart:jar:2.5.1:compile
+[INFO] |  |     \- net.minidev:accessors-smart:jar:2.5.1:compile
+[INFO] |  \- org.jetbrains.kotlin:kotlin-stdlib:jar:1.9.25:compile
+[INFO] |     \- org.jetbrains:annotations:jar:13.0:compile
+[INFO] +- io.grpc:grpc-xds:jar:1.60.0:compile
+[INFO] |  +- io.opencensus:opencensus-proto:jar:0.2.0:compile
+[INFO] |  +- io.grpc:grpc-core:jar:1.60.0:compile
+[INFO] |  +- io.grpc:grpc-auth:jar:1.60.0:compile
+[INFO] |  +- io.grpc:grpc-alts:jar:1.60.0:compile
+[INFO] |  +- com.google.re2j:re2j:jar:1.7:compile
+[INFO] |  \- com.google.auto.value:auto-value-annotations:jar:1.10.2:compile
+[INFO] +- io.grpc:grpc-rls:jar:1.60.0:compile
+[INFO] |  \- io.grpc:grpc-util:jar:1.60.0:runtime
+[INFO] +- io.grpc:grpc-context:jar:1.60.0:compile
+[INFO] |  \- io.grpc:grpc-api:jar:1.60.0:compile
+[INFO] +- io.grpc:grpc-googleapis:jar:1.60.0:compile
+[INFO] +- io.grpc:grpc-grpclb:jar:1.60.0:compile
+[INFO] |  +- com.google.protobuf:protobuf-java:jar:3.24.0:compile
+[INFO] |  \- com.google.errorprone:error_prone_annotations:jar:2.20.0:compile
+[INFO] +- io.grpc:grpc-inprocess:jar:1.60.0:compile
+[INFO] +- com.google.guava:guava:jar:33.2.1-jre:compile
+[INFO] |  +- com.google.guava:failureaccess:jar:1.0.2:compile
+[INFO] |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile
+[INFO] |  +- com.google.code.findbugs:jsr305:jar:3.0.2:compile
+[INFO] |  \- org.checkerframework:checker-qual:jar:3.42.0:compile
+[INFO] +- org.apache.commons:commons-lang3:jar:3.14.0:compile
+[INFO] +- com.google.code.gson:gson:jar:2.10.1:compile
+[INFO] +- org.pf4j:pf4j:jar:3.12.0:provided
+[INFO] |  +- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO] |  \- com.github.zafarkhaja:java-semver:jar:0.10.2:provided
+[INFO] +- org.apache.tika:tika-core:jar:3.0.0:compile
+[INFO] |  \- commons-io:commons-io:jar:2.16.1:compile
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.4:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  |  \- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] |  |     \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |        \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]       \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.099 s
+[INFO] Finished at: 2024-10-22T20:43:13-05:00
+[INFO] ------------------------------------------------------------------------

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.xml.sax.ContentHandler;
@@ -23,6 +22,7 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.RecursiveParserWrapper;
+import org.apache.tika.parser.ocr.TesseractOCRConfig;
 import org.apache.tika.pipes.HandlerConfig;
 import org.apache.tika.pipes.core.exception.TikaServerParseException;
 import org.apache.tika.sax.BasicContentHandlerFactory;
@@ -33,6 +33,18 @@ import org.apache.tika.sax.RecursiveParserWrapperHandler;
 public class ParseService {
     @Value("${parser.taskTimeoutMillis:50000}")
     private Long taskTimeoutMillis;
+
+    @Value("${parser.writeLimit:5000000}")
+    private Integer writeLimit;
+
+    @Value("${parser.maxEmbeddedResources:-1}")
+    private Integer maxEmbeddedResources;
+
+    @Value("${parser.throwOnWriteLimitReached:false}")
+    private Boolean throwOnWriteLimitReached;
+
+    @Value("${parser.skipOcr:true}")
+    private Boolean skipOcr;
 
     public static Map<String, Object> convertMetadataToMap(Metadata metadata) {
         Map<String, Object> metadataMap = new HashMap<>();
@@ -57,6 +69,10 @@ public class ParseService {
             TikaConfig tikaConfig = new TikaConfig();
             Metadata metadata = new Metadata();
             ParseContext context = new ParseContext();
+            TesseractOCRConfig config = new TesseractOCRConfig();
+            config.setSkipOcr(skipOcr);
+            context.set(TesseractOCRConfig.class, config);
+
             Parser parser = createParser(tikaConfig);
             RecursiveParserWrapper wrapper = new RecursiveParserWrapper(parser);
             RecursiveParserWrapperHandler handler = getRecursiveParserWrapperHandler(context, tikaConfig);
@@ -72,9 +88,8 @@ public class ParseService {
         }
     }
 
-    @NotNull
-    private static RecursiveParserWrapperHandler getRecursiveParserWrapperHandler(ParseContext context, TikaConfig tikaConfig) {
-        HandlerConfig handlerConfig = new HandlerConfig(BasicContentHandlerFactory.HANDLER_TYPE.TEXT, HandlerConfig.PARSE_MODE.RMETA, 50000, 50, false);
+    private RecursiveParserWrapperHandler getRecursiveParserWrapperHandler(ParseContext context, TikaConfig tikaConfig) {
+        HandlerConfig handlerConfig = new HandlerConfig(BasicContentHandlerFactory.HANDLER_TYPE.TEXT, HandlerConfig.PARSE_MODE.RMETA, writeLimit, maxEmbeddedResources, throwOnWriteLimitReached);
         BasicContentHandlerFactory.HANDLER_TYPE type = handlerConfig.getType();
         BasicContentHandlerFactory contentHandlerFactory = new BasicContentHandlerFactory(type, handlerConfig.getWriteLimit(), handlerConfig.isThrowOnWriteLimitReached(), context);
         return new RecursiveParserWrapperHandler(contentHandlerFactory, handlerConfig.getMaxEmbeddedResources(), tikaConfig.getMetadataFilter());

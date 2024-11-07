@@ -25,6 +25,7 @@ import org.apache.tika.GetFetcherReply;
 import org.apache.tika.GetFetcherRequest;
 import org.apache.tika.ListFetchersReply;
 import org.apache.tika.ListFetchersRequest;
+import org.apache.tika.Metadata;
 import org.apache.tika.SaveFetcherReply;
 import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
@@ -146,11 +147,11 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         FetchAndParseReply.Builder builder = FetchAndParseReply.newBuilder();
         builder.setStatus(PipesResult.STATUS.EMIT_SUCCESS.name());
         builder.setFetchKey(request.getFetchKey());
-        parseService
-                .parseDocument(inputStream)
-                .forEach(resultingMetadataDoc -> resultingMetadataDoc.forEach((k, v) -> builder.putFields(k, String.valueOf(v))));
-        for (Map.Entry<String, Object> stringObjectEntry : responseMetadata.entrySet()) {
-            builder.putFields(stringObjectEntry.getKey(), String.valueOf(stringObjectEntry.getValue()));
+
+        for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
+            Metadata.Builder metadataBuilder = Metadata.newBuilder();
+            metadata.forEach((k, v) -> metadataBuilder.putFields(k, String.valueOf(v)));
+            builder.addMetadata(metadataBuilder.build());
         }
         responseObserver.onNext(builder.build());
     }

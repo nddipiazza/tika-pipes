@@ -96,7 +96,7 @@ public class FileSystemFetcher {
         StreamObserver<FetchAndParseRequest> requestStreamObserver = tikaStub.fetchAndParseBiDirectionalStreaming(new StreamObserver<>() {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
-                log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getFieldsMap());
+                log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
                 if (PipesResult.STATUS.FETCH_EXCEPTION
                         .name()
                         .equals(fetchAndParseReply.getStatus())) {

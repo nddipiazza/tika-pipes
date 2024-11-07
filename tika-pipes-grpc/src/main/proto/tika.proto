@@ -88,11 +88,15 @@ message FetchAndParseRequest {
   string metadata_json = 3;
 }
 
+message Metadata {
+  map<string, string> fields = 1;
+}
+
 message FetchAndParseReply {
   // Echoes the fetch_key that was sent in the request.
   string fetch_key = 1;
-  // Metadata fields from the parse output.
-  map<string, string> fields = 2;
+  // List of Metadata fields from the parse output.
+  repeated Metadata metadata = 2;
   // The status from the message. See javadoc for org.apache.tika.pipes.PipesResult.STATUS for the list of status.
   string status = 3;
   // If there was an error, this will contain the error message.
