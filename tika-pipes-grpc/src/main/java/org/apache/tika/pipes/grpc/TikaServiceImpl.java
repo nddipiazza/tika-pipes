@@ -159,18 +159,30 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         }
         Fetcher fetcher = getFetcher(fetcherConfig.getPluginId());
         HashMap<String, Object> responseMetadata = new HashMap<>();
-        FetcherConfig fetcherConfigConverted = objectMapper.convertValue(fetcherConfig, pluginManager.getExtensionClasses(FetcherConfig.class, fetcherConfig.getPluginId()).get(0));
-        InputStream inputStream = fetcher.fetch(fetcherConfigConverted, request.getFetchKey(), objectMapper.readValue(request.getMetadataJson(), MAP_STRING_OBJ_TYPE_REF), responseMetadata);
+        // The fetcherRepository returns objects in the gprc server's classloader
+        // But the fetcher.fetch will be done within the pf4j plugin.
+        // If you send DefaultFetcherConfig and try to cast to the respective config you'll get a class loading error.
+        // To get past this, get the correct class from the plugin manager, and convert to it.
+        FetcherConfig fetcherConfigFromPluginManager = objectMapper.convertValue(fetcherConfig, getFetcherConfigClassFromPluginManager(fetcherConfig));
+        InputStream inputStream = fetcher.fetch(fetcherConfigFromPluginManager, request.getFetchKey(), objectMapper.readValue(request.getMetadataJson(), MAP_STRING_OBJ_TYPE_REF), responseMetadata);
         FetchAndParseReply.Builder builder = FetchAndParseReply.newBuilder();
         builder.setStatus(PipesResult.STATUS.EMIT_SUCCESS.name());
         builder.setFetchKey(request.getFetchKey());
 
         for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
             Metadata.Builder metadataBuilder = Metadata.newBuilder();
-            metadata.forEach((k, v) -> metadataBuilder.putFields(k, String.valueOf(v)));
+            metadata.forEach((key, val) -> metadataBuilder.putFields(key, String.valueOf(val)));
             builder.addMetadata(metadataBuilder.build());
         }
         responseObserver.onNext(builder.build());
+    }
+
+    private Class<? extends FetcherConfig> getFetcherConfigClassFromPluginManager(DefaultFetcherConfig fetcherConfig) {
+        return pluginManager
+                .getExtensionClasses(FetcherConfig.class, fetcherConfig.getPluginId())
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Could not find a fetcher class for " + fetcherConfig.getFetcherId()));
     }
 
     @Override

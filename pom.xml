@@ -11,7 +11,7 @@
   <groupId>org.apache.tika</groupId>
   <artifactId>tika-pipes-parent</artifactId>
   <version>3.0.0-SNAPSHOT</version>
-  <name>tika-pipes-parent</name>
+  <name>Tika Pipes Parent</name>
   <description>Tika Pipes Parent Pom</description>
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
