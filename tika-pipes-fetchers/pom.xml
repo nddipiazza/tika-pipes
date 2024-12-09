@@ -35,6 +35,7 @@
   <modules>
     <module>tika-fetcher-file-system</module>
     <module>tika-fetcher-http</module>
+    <module>tika-fetcher-microsoft-graph</module>
   </modules>
 
   <dependencyManagement>
@@ -45,7 +46,6 @@
         <version>1.18.32</version>
         <optional>true</optional>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 
