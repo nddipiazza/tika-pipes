@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TikaPipesApplicationTests" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+    <module name="tika-pipes-grpc" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.apache.tika.pipes.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="org.apache.tika.pipes" />
+    <option name="MAIN_CLASS_NAME" value="org.apache.tika.pipes.TikaPipesApplicationTests" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <option name="VM_PARAMETERS" value="-ea @$PROJECT_DIR$/common.argfile" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

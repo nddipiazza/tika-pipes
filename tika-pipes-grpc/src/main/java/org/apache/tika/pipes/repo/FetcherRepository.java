@@ -16,5 +16,4 @@ public interface FetcherRepository extends IgniteRepository<DefaultFetcherConfig
     @NotNull
     List<DefaultFetcherConfig> findAll();
     void deleteByFetcherId(String fetcherId);
-    boolean existsByFetcherId(String fetcherId);
 }

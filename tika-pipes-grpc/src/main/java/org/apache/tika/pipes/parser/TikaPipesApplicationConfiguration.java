@@ -1,5 +1,6 @@
 package org.apache.tika.pipes.parser;
 
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +26,14 @@ public class TikaPipesApplicationConfiguration {
             \\:  |    /\\  |\\ |: | \\  \\  /   /  \\\\  \\      /|__/ \\    /\\  |\\  /|__/ \\    (:      "| /" \\   :) \s
              \\__|   (__\\_|_)(__|  \\__)(___/    \\___)    (_______)  (__\\_|_)(_______)    \\_______)(_______/  \s
         """);
+		printAllSystemProperties();
 	}
+
+	public static void printAllSystemProperties() {
+		Properties properties = System.getProperties();
+		properties.forEach((key, value) -> log.info("System property: {}", key + " = " + value));
+	}
+
 	@Bean
 	public ObjectMapper objectMapper() {
 		ObjectMapper objectMapper = new ObjectMapper();

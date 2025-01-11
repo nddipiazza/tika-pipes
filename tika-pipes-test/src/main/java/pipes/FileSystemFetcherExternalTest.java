@@ -44,8 +44,8 @@ public class FileSystemFetcherExternalTest {
     @Parameter(names = {"--grpcPort"}, description = "The grpc server port", help = true)
     private Integer port = TIKA_SERVER_GRPC_DEFAULT_PORT;
 
-    @Parameter(names = {"--fetcher-id"}, description = "What fetcher ID should we use? By default will use file-system-fetcher")
-    private String fetcherId = "file-system-fetcher";
+    @Parameter(names = {"--fetcher-id"}, description = "What fetcher ID should we use? By default will use filesystem-fetcher")
+    private String fetcherId = "filesystem-fetcher";
 
     @Parameter(names = {"-h", "-H", "--help"}, description = "Display help menu")
     private boolean help;

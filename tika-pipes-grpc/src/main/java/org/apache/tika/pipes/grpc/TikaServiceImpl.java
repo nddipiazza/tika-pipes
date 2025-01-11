@@ -131,7 +131,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Override
     public void deleteFetcher(DeleteFetcherRequest request, StreamObserver<DeleteFetcherReply> responseObserver) {
-        boolean exists = fetcherRepository.existsByFetcherId(request.getFetcherId());
+        boolean exists = fetcherRepository.findByFetcherId(request.getFetcherId()) != null;
         if (exists) {
             fetcherRepository.deleteByFetcherId(request.getFetcherId());
         }

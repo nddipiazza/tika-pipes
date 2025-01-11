@@ -5,6 +5,7 @@ grpc:
   server:
     port: 9090
 ignite:
+  workDir: 'ignite/work'
   persistence:
     enabled: true
   memory:

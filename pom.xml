@@ -41,10 +41,10 @@
     </dependencies>
   </dependencyManagement>
   <modules>
-    <module>tika-pipes-proto</module>
-    <module>tika-pipes-grpc</module>
     <module>tika-pipes-core</module>
     <module>tika-pipes-fetchers</module>
+    <module>tika-pipes-proto</module>
+    <module>tika-pipes-grpc</module>
     <module>tika-pipes-test</module>
   </modules>
 </project>
