@@ -30,7 +30,7 @@ import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
 
 @Slf4j
-public class HttpFetcherExternalTest {
+public class MicrosoftGraphFetcherExternalTest {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
     public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
     @Parameter(names = {"--fetch-urls"}, description = "List of URLs to fetch")
@@ -46,7 +46,7 @@ public class HttpFetcherExternalTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public HttpFetcherExternalTest() {
+    public MicrosoftGraphFetcherExternalTest() {
         objectMapper.registerModule(new GuavaModule());
     }
 
@@ -70,7 +70,7 @@ public class HttpFetcherExternalTest {
 
         try {
             server.start();
-            HttpFetcherExternalTest bulkParser = new HttpFetcherExternalTest();
+            MicrosoftGraphFetcherExternalTest bulkParser = new MicrosoftGraphFetcherExternalTest();
             JCommander commander = JCommander
                     .newBuilder()
                     .addObject(bulkParser)
