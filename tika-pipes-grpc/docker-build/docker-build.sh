@@ -1,29 +1,39 @@
-TAG_NAME=$1
+#!/bin/bash
+# This script is intended to be run from Maven exec plugin during the package phase of maven build
 
-if [ -z "${TAG_NAME}" ]; then
-    echo "Single command line argument is required which will be used as the -t parameter of the docker build command"
+if [ -z "${TIKA_PIPES_VERSION}" ]; then
+    echo "Environment variable TIKA_PIPES_VERSION is required, and should match the maven project version of Tika Pipes"
     exit 1
 fi
+
+# Decide what docker tag -t to use
+# First look for tag in a TAG_NAME env variable.
+if [ -z "${TAG_NAME}" ]; then
+    TAG_NAME=$1
+fi
+# If TAG_NAME not specified, use TIKA_PIPES_VERSION
+if [ -z "${TAG_NAME}" ]; then
+    TAG_NAME="${TIKA_PIPES_VERSION}"
+fi
+
+# Remove '-SNAPSHOT' from the version string
+TAG_NAME="${TAG_NAME//-SNAPSHOT/}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 cd "${SCRIPT_DIR}/../../" || exit
 
-#mvn clean install || exit
-
 OUT_DIR=target/tika-docker
-
-project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 mkdir -p "${OUT_DIR}/libs"
 mkdir -p "${OUT_DIR}/plugins"
 mkdir -p "${OUT_DIR}/config"
 mkdir -p "${OUT_DIR}/bin"
-cp -v -r "tika-pipes-grpc/target/tika-pipes-grpc-${project_version}.jar" "${OUT_DIR}/libs"
+cp -v -r "tika-pipes-grpc/target/tika-pipes-grpc-${TIKA_PIPES_VERSION}.jar" "${OUT_DIR}/libs"
 
-cp -v -r "tika-pipes-fetchers/tika-fetcher-file-system/target/tika-fetcher-file-system-${project_version}.zip" "${OUT_DIR}/plugins"
-cp -v -r "tika-pipes-fetchers/tika-fetcher-http/target/tika-fetcher-http-${project_version}.zip" "${OUT_DIR}/plugins"
-cp -v -r "tika-pipes-fetchers/tika-fetcher-microsoft-graph/target/tika-fetcher-microsoft-graph-${project_version}.zip" "${OUT_DIR}/plugins"
+cp -v -r "tika-pipes-fetchers/tika-fetcher-file-system/target/tika-fetcher-file-system-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
+cp -v -r "tika-pipes-fetchers/tika-fetcher-http/target/tika-fetcher-http-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
+cp -v -r "tika-pipes-fetchers/tika-fetcher-microsoft-graph/target/tika-fetcher-microsoft-graph-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
 
 cp -v -r "tika-pipes-test/src/main/resources/log4j2.xml" "${OUT_DIR}/config"
 cp -v -r "tika-pipes-grpc/docker-build/start-tika-grpc.sh" "${OUT_DIR}/bin"

@@ -279,6 +279,43 @@
           <mainClass>org.apache.tika.pipes.grpc.TikaGrpcServer</mainClass>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>set-chmod-on-docker-build-sh</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>chmod</executable>
+              <arguments>
+                <argument>+x</argument>
+                <argument>${project.basedir}/docker-build/docker-build.sh</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>prepare-docker-image</id>
+            <phase>package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>bash</executable>
+              <arguments>
+                <argument>${project.basedir}/docker-build/docker-build.sh</argument>
+              </arguments>
+              <environmentVariables>
+                <TIKA_PIPES_VERSION>${version}</TIKA_PIPES_VERSION>
+              </environmentVariables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
