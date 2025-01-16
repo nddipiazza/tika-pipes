@@ -5,17 +5,25 @@ then parsing of the downloaded content using Apache Tika.
 
 # Build prerequisites
 
-You will need ability to execute .sh files.
+You will need ability to execute .sh files. So if you are running from Mac or Linux you are good. I haven't tried Windows but 
+I couldn't imagine it wouldn't work without WSL, Git Bash or Cygwin.
 
-# Build steps
+# Building
 
 A docker build script will prepare and run the docker build to prepare the tika-pipes docker image.
 
 By default, the script will tag the image with the tika pipes version.
 
-To specify a custom tag, specify the ENV variable `TAG_NAME`. For example: `TAG_NAME=ndipiazza/tika-grpc:3.0.0-beta5`
+When building a Docker image that you intend to use, when building you must specify some ENV variables:
 
-To run docker in multi-arch build mode, specify ENV variable `MULTI_ARCH=true`
+* `TAG_NAME` will serve as the `-t` parameter for docker build to tag the built image. For example: `TAG_NAME=ndipiazza/tika-grpc:3.0.0-beta5`
+* `MULTI_ARCH` set this to true if you want to build for Multi-arch mode.
+
+Verify the image that is built is as expected, then push your image to the remote docker repository if necessary:
+
+```bash
+docker push ${TAG_NAME}
+```
 
 # Fetcher architecture
 
@@ -33,7 +41,7 @@ Fetchers are Maven Java Jar modules that contain the following key files:
 
 When packaged, they will be built to a `.zip` file format.
 
-# How to add a new feature
+# How to add a new fetcher
 
 Copy one of the existing folders in tika-pipes-fetchers to `tika-pipes-fetchers/tika-fetcher-YOURFETCHER` that most closely matches your new Fetcher.
 
@@ -46,7 +54,4 @@ Update the Maven project dependencies:
 * Remove the dependencies from the fetcher you copied from that you do not need. 
 * Add the dependency your project needs as you need them.
 
-All the java classes for the fetcherconfig, fetcher and plugin need to be refactored to your fetcher's name.
-
-
-
+All the java classes for the FetcherConfig, fetcher and plugin need to be refactored to your fetcher's name.
