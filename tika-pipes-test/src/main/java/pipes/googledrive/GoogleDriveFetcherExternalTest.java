@@ -3,6 +3,7 @@ package pipes.googledrive;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 
 import org.apache.tika.FetchAndParseReply;
@@ -50,8 +52,8 @@ public class GoogleDriveFetcherExternalTest {
     @Parameter(names = {"--applicationName"}, description = "Google Drive application name")
     private String applicationName = "tika-pipes";
 
-    @Parameter(names = {"--serviceAccountKeyBase64"}, description = "Service account creds file in base64", required = true)
-    private String serviceAccountKeyBase64;
+    @Parameter(names = {"--serviceAccountKeyFile"}, description = "Service account creds file stored as a text file with a base64 string", required = true)
+    private File serviceAccountKeyFile;
 
     @Parameter(names = {"--scopes"}, description = "Google Drive API scopes")
     private List<String> scopes = new ArrayList<>();
@@ -88,6 +90,7 @@ public class GoogleDriveFetcherExternalTest {
         GoogleDriveFetcherConfig googleDriveFetcherConfig = new GoogleDriveFetcherConfig();
         googleDriveFetcherConfig.setApplicationName(applicationName);
         googleDriveFetcherConfig.setScopes(scopes);
+        String serviceAccountKeyBase64 = FileUtils.readFileToString(serviceAccountKeyFile, StandardCharsets.UTF_8);
         googleDriveFetcherConfig.setServiceAccountKeyBase64(serviceAccountKeyBase64);
 
         SaveFetcherReply reply = blockingStub.saveFetcher(SaveFetcherRequest
