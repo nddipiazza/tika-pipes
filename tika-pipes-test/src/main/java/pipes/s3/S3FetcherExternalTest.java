@@ -1,4 +1,4 @@
-package pipes;
+package pipes.s3;
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +25,7 @@ import org.apache.tika.FetchAndParseRequest;
 import org.apache.tika.SaveFetcherReply;
 import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
-import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
+import org.apache.tika.pipes.fetchers.googledrive.config.S3FetcherConfig;
 
 @Slf4j
 public class S3FetcherExternalTest {

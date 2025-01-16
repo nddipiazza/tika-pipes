@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.tika.pipes.fetchers.s3;
+package org.apache.tika.pipes.fetchers.googledrive;
 
 import org.pf4j.Plugin;
 import org.slf4j.Logger;

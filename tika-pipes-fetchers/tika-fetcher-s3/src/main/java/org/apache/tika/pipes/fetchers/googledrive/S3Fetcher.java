@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.tika.pipes.fetchers.s3;
+package org.apache.tika.pipes.fetchers.googledrive;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,7 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.pipes.core.fetcher.Fetcher;
 import org.apache.tika.pipes.core.fetcher.FetcherConfig;
-import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
+import org.apache.tika.pipes.fetchers.googledrive.config.S3FetcherConfig;
 import org.apache.tika.utils.StringUtils;
 
 @Extension
@@ -53,7 +53,6 @@ public class S3Fetcher implements Fetcher {
 
     //Do not retry if there's an AmazonS3Exception with this error code
     private static final Set<String> NO_RETRY_ERROR_CODES = new HashSet<>();
-
     private static final ConcurrentMap<S3FetcherConfig, AmazonS3> clientMap = new ConcurrentHashMap<>();
 
     //Keep this private so that we can change as needed.
