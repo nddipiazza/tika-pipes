@@ -1,5 +1,10 @@
 #!/bin/sh
-
+echo "Tika Pipes Version:"
+echo "${TIKA_PIPES_VERSION}"
+echo "Tika Pipes Plugins:"
+ls "/tika/plugins"
+echo "Tika Pipes Log4j config:"
+cat /tika/config/log4j2.xml
 exec java \
   -Dgrpc.server.port=50051 \
   "-Dlog4j.configurationFile=/tika/config/log4j2.xml" \
@@ -15,5 +20,4 @@ exec java \
   --add-opens=java.base/java.lang=ALL-UNNAMED \
   -Djava.net.preferIPv4Stack=true \
   "-Dplugins.pluginDirs=/tika/plugins" \
-  -cp "/tika/libs/*" \
-  org.apache.tika.pipes.TikaPipesApplication
+  -jar "/tika/libs/tika-pipes-grpc-${TIKA_PIPES_VERSION}.jar"

@@ -1,8 +1,10 @@
 FROM ubuntu:latest
 COPY libs/ /tika/libs/
-COPY tika-config.xml /tika/config/tika-config.xml
-COPY log4j2.xml /tika/config/log4j2.xml
+COPY plugins/ /tika/plugins/
+COPY config/ /tika/config/
+COPY bin/ /tika/bin
 ARG JRE='openjdk-17-jre-headless'
+ARG VERSION='3.0.0-SNAPSHOT'
 RUN set -eux \
     && apt-get update \
     && apt-get install --yes --no-install-recommends gnupg2 software-properties-common \
@@ -26,4 +28,6 @@ RUN set -eux \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 EXPOSE 50051
-ENTRYPOINT ["/tika/start-server.sh"]
+ENV TIKA_PIPES_VERSION=$VERSION
+RUN chmod +x "/tika/bin/start-tika-grpc.sh"
+ENTRYPOINT ["/tika/bin/start-tika-grpc.sh"]
