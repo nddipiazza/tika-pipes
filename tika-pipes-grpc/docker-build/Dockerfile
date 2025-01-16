@@ -5,6 +5,7 @@ COPY config/ /tika/config/
 COPY bin/ /tika/bin
 ARG JRE='openjdk-17-jre-headless'
 ARG VERSION='3.0.0-SNAPSHOT'
+ARG SKIP_OCR='false'
 RUN set -eux \
     && apt-get update \
     && apt-get install --yes --no-install-recommends gnupg2 software-properties-common \
@@ -29,5 +30,6 @@ RUN set -eux \
 
 EXPOSE 50051
 ENV TIKA_PIPES_VERSION=$VERSION
+ENV TIKA_SKIP_OCR=$SKIP_OCR
 RUN chmod +x "/tika/bin/start-tika-grpc.sh"
 ENTRYPOINT ["/tika/bin/start-tika-grpc.sh"]
