@@ -163,7 +163,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         // But the fetcher.fetch will be done within the pf4j plugin.
         // If you send DefaultFetcherConfig and try to cast to the respective config you'll get a class loading error.
         // To get past this, get the correct class from the plugin manager, and convert to it.
-        FetcherConfig fetcherConfigFromPluginManager = objectMapper.convertValue(fetcherConfig, getFetcherConfigClassFromPluginManager(fetcherConfig));
+        FetcherConfig fetcherConfigFromPluginManager = objectMapper.convertValue(fetcherConfig.getConfig(), getFetcherConfigClassFromPluginManager(fetcherConfig));
         InputStream inputStream = fetcher.fetch(fetcherConfigFromPluginManager, request.getFetchKey(), objectMapper.readValue(request.getMetadataJson(), MAP_STRING_OBJ_TYPE_REF), responseMetadata);
         FetchAndParseReply.Builder builder = FetchAndParseReply.newBuilder();
         builder.setStatus(PipesResult.STATUS.EMIT_SUCCESS.name());

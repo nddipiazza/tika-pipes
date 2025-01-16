@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import org.apache.tika.pipes.core.exception.TikaPipesException;
 import org.apache.tika.pipes.core.fetcher.Fetcher;
+import org.apache.tika.pipes.core.fetcher.FetcherConfig;
 
 @Component
 public class GrpcPluginManager extends DefaultPluginManager {
@@ -61,6 +62,14 @@ public class GrpcPluginManager extends DefaultPluginManager {
         for (Class<?> extensionClass : getExtensionClasses(org.apache.tika.pipes.core.fetcher.Fetcher.class, plugin.getPluginId())) {
             if (!org.apache.tika.pipes.core.fetcher.Fetcher.class.isAssignableFrom(extensionClass)) {
                 throw new TikaPipesException("Something is wrong with the classpath. " + Fetcher.class.getName() +
+                        " should be assignable from " + extensionClass.getName() +
+                        ". Did tika-core accidentally get in your plugin lib?");
+            }
+            LOGGER.info("    Extension " + extensionClass + " has been registered to plugin " + plugin.getPluginId());
+        }
+        for (Class<?> extensionClass : getExtensionClasses(org.apache.tika.pipes.core.fetcher.FetcherConfig.class, plugin.getPluginId())) {
+            if (!org.apache.tika.pipes.core.fetcher.FetcherConfig.class.isAssignableFrom(extensionClass)) {
+                throw new TikaPipesException("Something is wrong with the classpath. " + FetcherConfig.class.getName() +
                         " should be assignable from " + extensionClass.getName() +
                         ". Did tika-core accidentally get in your plugin lib?");
             }

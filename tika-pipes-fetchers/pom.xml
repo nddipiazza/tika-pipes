@@ -36,6 +36,7 @@
     <module>tika-fetcher-file-system</module>
     <module>tika-fetcher-http</module>
     <module>tika-fetcher-microsoft-graph</module>
+    <module>tika-fetcher-s3</module>
   </modules>
 
   <dependencyManagement>
