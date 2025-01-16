@@ -19,9 +19,12 @@ When building a Docker image that you intend to use, when building you must spec
 * `TAG_NAME` will serve as the `-t` parameter for docker build to tag the built image. For example: `TAG_NAME=ndipiazza/tika-grpc:3.0.0-beta5`
 * `MULTI_ARCH` set this to true if you want to build for Multi-arch mode.
 
-Verify the image that is built is as expected, then push your image to the remote docker repository if necessary:
+Verify the image that is built is as expected, then push your image to the remote docker repository if necessary.
+
+Here is an example:
 
 ```bash
+MULTI_ARCH=true TAG_NAME=ndipiazza/tika-grpc:3.0.0-beta5 mvn package
 docker push ${TAG_NAME}
 ```
 
