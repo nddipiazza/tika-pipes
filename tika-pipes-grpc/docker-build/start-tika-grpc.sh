@@ -1,6 +1,8 @@
 #!/bin/sh
 echo "Tika Pipes Version:"
 echo "${TIKA_PIPES_VERSION}"
+echo "Tika Skip OCR?:"
+echo "${TIKA_SKIP_OCR}"
 echo "Tika Pipes Plugins:"
 ls "/tika/plugins"
 echo "Tika Pipes Log4j config:"
