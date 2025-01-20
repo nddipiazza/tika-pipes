@@ -1,8 +1,6 @@
 #!/bin/sh
 echo "Tika Pipes Version:"
 echo "${TIKA_PIPES_VERSION}"
-echo "Tika Skip OCR?:"
-echo "${TIKA_SKIP_OCR}"
 echo "Tika Pipes Plugins:"
 ls "/tika/plugins"
 echo "Tika Pipes Log4j config:"
@@ -22,5 +20,5 @@ exec java \
   --add-opens=java.base/java.lang=ALL-UNNAMED \
   -Djava.net.preferIPv4Stack=true \
   "-Dplugins.pluginDirs=/tika/plugins" \
-  "-Dparser.skipOcr=${TIKA_SKIP_OCR}" \
-  -jar "/tika/libs/tika-pipes-grpc-${TIKA_PIPES_VERSION}.jar"
+  -jar "/tika/libs/tika-pipes-grpc-${TIKA_PIPES_VERSION}.jar" \
+  "--spring.config.location=file:/tika/config/application.yaml"

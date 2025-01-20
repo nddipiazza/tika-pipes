@@ -36,6 +36,7 @@ cp -v -r "tika-pipes-fetchers/tika-fetcher-http/target/tika-fetcher-http-${TIKA_
 cp -v -r "tika-pipes-fetchers/tika-fetcher-microsoft-graph/target/tika-fetcher-microsoft-graph-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
 
 cp -v -r "tika-pipes-test/src/main/resources/log4j2.xml" "${OUT_DIR}/config"
+cp -v -r "tika-pipes-grpc/src/main/resources/application.yaml" "${OUT_DIR}/config"
 cp -v -r "tika-pipes-grpc/docker-build/start-tika-grpc.sh" "${OUT_DIR}/bin"
 
 cp -v "tika-pipes-grpc/docker-build/Dockerfile" "${OUT_DIR}/Dockerfile"
