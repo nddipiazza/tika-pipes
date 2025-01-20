@@ -42,7 +42,7 @@ When you refer to a fetcher in the Tika Pipes service, you refer to it with the 
     * Remove the dependencies from the fetcher you copied from that you do not need.
     * Add the dependency your project needs as you need them.
 
-All the java classes for the FetcherConfig, fetcher and plugin need to be refactored to your fetcher's name.
+* All the java classes for the FetcherConfig, fetcher and plugin need to be refactored to your fetcher's name.
 
 * Update `tika-pipes-fetchers/pom.xml` to include your new fetcher module in the `<modules>` section.
 
