@@ -46,3 +46,4 @@ All the java classes for the FetcherConfig, fetcher and plugin need to be refact
 
 * Update `tika-pipes-fetchers/pom.xml` to include your new fetcher module in the `<modules>` section.
 
+* Add a test to `tika-pipes-test/src/main/java/pipes`
