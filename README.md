@@ -28,7 +28,7 @@ In particular, this example is fairly basic and easier to see the core parts in 
 
 ## Tika Pipes Fetchers
 
-More info about fetchers can be found in the [README.md](tika-pipes-fetchers/README.md) in the `tika-pipes-fetchers` module.
+More info about fetchers can be found in the [`tika-pipes-fetchers` module](tika-pipes-fetchers).
 
 # Build Steps
 
