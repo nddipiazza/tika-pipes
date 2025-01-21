@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.tika.pipes.fetchers.googledrive;
+package com.apache.tika.pipes.fetchers.googledrive;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,6 +24,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+import com.apache.tika.pipes.fetchers.googledrive.config.GoogleDriveFetcherConfig;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -40,7 +41,6 @@ import org.apache.tika.io.TemporaryResources;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.pipes.core.fetcher.Fetcher;
 import org.apache.tika.pipes.core.fetcher.FetcherConfig;
-import org.apache.tika.pipes.fetchers.googledrive.config.GoogleDriveFetcherConfig;
 
 @Extension
 @Slf4j

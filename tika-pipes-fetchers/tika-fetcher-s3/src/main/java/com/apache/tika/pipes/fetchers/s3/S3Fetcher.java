@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.tika.pipes.fetchers.googledrive;
+package com.apache.tika.pipes.fetchers.s3;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +33,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.pf4j.Extension;
 
@@ -43,7 +44,6 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.pipes.core.fetcher.Fetcher;
 import org.apache.tika.pipes.core.fetcher.FetcherConfig;
-import org.apache.tika.pipes.fetchers.googledrive.config.S3FetcherConfig;
 import org.apache.tika.utils.StringUtils;
 
 @Extension

@@ -52,7 +52,7 @@ cd "${OUT_DIR}" || exit
 
 echo "Running docker build from directory: $(pwd)"
 
-if [ -z "${MULTI_ARCH}" ]; then
+if [ "${MULTI_ARCH}" == "true" ]; then
   # build single arch
   docker build . -t "${TAG_NAME}"
 else

@@ -17,9 +17,21 @@
     <azure-identity.version>1.11.0</azure-identity.version>
     <microsoft-graph.version>6.4.0</microsoft-graph.version>
     <microsoft-kiota-serialization-json.version>1.1.1</microsoft-kiota-serialization-json.version>
+    <microsoft-kiota-authentication.version>1.0.4</microsoft-kiota-authentication.version>
+    <microsoft-kiota-abstractions.version>1.0.4</microsoft-kiota-abstractions.version>
     <nimbus-jose-jwt.version>9.40</nimbus-jose-jwt.version>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>com.microsoft.kiota</groupId>
+      <artifactId>microsoft-kiota-authentication-azure</artifactId>
+      <version>${microsoft-kiota-authentication.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.microsoft.kiota</groupId>
+      <artifactId>microsoft-kiota-abstractions</artifactId>
+      <version>${microsoft-kiota-abstractions.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>nimbus-jose-jwt</artifactId>

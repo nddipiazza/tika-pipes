@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.fetchers.googledrive;
+package com.apache.tika.pipes.fetchers.s3;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -9,9 +9,8 @@ import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import org.apache.commons.lang3.StringUtils;
-
-import org.apache.tika.pipes.fetchers.googledrive.config.S3FetcherConfig;
 
 public class S3ClientManager {
 
