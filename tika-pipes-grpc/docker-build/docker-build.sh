@@ -76,14 +76,14 @@ if [ "${MULTI_ARCH}" == "true" ]; then
   docker run --rm --privileged tonistiigi/binfmt --install arm64
   docker buildx build \
       --builder=tikapipesbuilder . \
-      ${IMAGE_TAGS[@]} \
+      "${IMAGE_TAGS[@]}" \
       --platform linux/amd64,linux/arm64 \
       --push
   docker buildx stop tikapipesbuilder
 else
   echo "Building single arch image"
   # build single arch
-  docker build . ${IMAGE_TAGS[@]}
+  docker build . "${IMAGE_TAGS[@]}"
 fi
 
 echo "Done running docker build for tag ${RELEASE_IMAGE_TAG}"
