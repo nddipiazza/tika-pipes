@@ -31,10 +31,15 @@ mkdir -p "${OUT_DIR}/config"
 mkdir -p "${OUT_DIR}/bin"
 cp -v -r "tika-pipes-grpc/target/tika-pipes-grpc-${TIKA_PIPES_VERSION}.jar" "${OUT_DIR}/libs"
 
-# Loop through tika-pipes-fetchers directories and copy the zip files
+# Loop through tika-pipes-fetchers directories and copy the plugin zip files
 for dir in tika-pipes-fetchers/*/; do
     fetcher_name=$(basename "$dir")
-    cp -v -r "${dir}target/${fetcher_name}-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
+    zip_file="${dir}target/${fetcher_name}-${TIKA_PIPES_VERSION}.zip"
+    if [ -f "$zip_file" ]; then
+        cp -v -r "$zip_file" "${OUT_DIR}/plugins"
+    else
+        echo "File $zip_file does not exist, skipping."
+    fi
 done
 
 cp -v -r "tika-pipes-test/src/main/resources/log4j2.xml" "${OUT_DIR}/config"
