@@ -6,24 +6,25 @@ if [ -z "${TIKA_PIPES_VERSION}" ]; then
     exit 1
 fi
 
-# Decide what docker tag -t to use
-# First look for tag in a TAG_NAME env variable.
-if [ -z "${TAG_NAME}" ]; then
-    TAG_NAME=$1
-fi
-# If TAG_NAME not specified, use TIKA_PIPES_VERSION
-if [ -z "${TAG_NAME}" ]; then
-    TAG_NAME="${TIKA_PIPES_VERSION}"
-fi
-
-# Remove '-SNAPSHOT' from the version string
-TAG_NAME="${TAG_NAME//-SNAPSHOT/}"
-
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 cd "${SCRIPT_DIR}/../../" || exit
 
 OUT_DIR=target/tika-docker
+
+MULTI_ARCH=${MULTI_ARCH:-false}
+AWS_REGION=${AWS_REGION:-us-west-2}
+AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-}
+AZURE_REGISTRY_NAME=${AZURE_REGISTRY_NAME:-}
+DOCKER_ID=${DOCKER_ID:-}
+PROJECT_NAME=tika
+
+# If RELEASE_IMAGE_TAG not specified, use TIKA_PIPES_VERSION
+if [[ -z "${RELEASE_IMAGE_TAG}" ]]; then
+    RELEASE_IMAGE_TAG="${TIKA_PIPES_VERSION}"
+    ## Remove '-SNAPSHOT' from the version string
+    RELEASE_IMAGE_TAG="${RELEASE_IMAGE_TAG//-SNAPSHOT/}"
+fi
 
 mkdir -p "${OUT_DIR}/libs"
 mkdir -p "${OUT_DIR}/plugins"
@@ -52,17 +53,37 @@ cd "${OUT_DIR}" || exit
 
 echo "Running docker build from directory: $(pwd)"
 
+IMAGE_TAGS=()
+if [[ -n "${AWS_ACCOUNT_ID}" ]]; then
+    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+    IMAGE_TAGS+=("-t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME}:${RELEASE_IMAGE_TAG}")
+fi
+
+if [[ -n "${AZURE_REGISTRY_NAME}" ]]; then
+    az acr login --name ${AZURE_REGISTRY_NAME}
+    IMAGE_TAGS+=("-t ${AZURE_REGISTRY_NAME}.azurecr.io/${PROJECT_NAME}:${RELEASE_IMAGE_TAG}")
+fi
+
+if [[ -n "${DOCKER_ID}" ]]; then
+    IMAGE_TAGS+=("-t ${DOCKER_ID}/${PROJECT_NAME}:${RELEASE_IMAGE_TAG}")
+fi
+
 if [ "${MULTI_ARCH}" == "true" ]; then
-  # build single arch
-  docker build . -t "${TAG_NAME}"
-else
-  # build multi arch
+  echo "Building multi arch image"
   docker buildx create --name tikapipesbuilder
   # see https://askubuntu.com/questions/1339558/cant-build-dockerfile-for-arm64-due-to-libc-bin-segmentation-fault/1398147#1398147
   docker run --rm --privileged tonistiigi/binfmt --install amd64
   docker run --rm --privileged tonistiigi/binfmt --install arm64
-  docker buildx build --builder=tikapipesbuilder . -t "${TAG_NAME}" --platform linux/amd64,linux/arm64 --push
+  docker buildx build \
+      --builder=tikapipesbuilder . \
+      ${IMAGE_TAGS[@]} \
+      --platform linux/amd64,linux/arm64 \
+      --push
   docker buildx stop tikapipesbuilder
+else
+  echo "Building single arch image"
+  # build single arch
+  docker build . ${IMAGE_TAGS[@]}
 fi
 
-echo "Done running docker build for tag ${TAG_NAME}"
+echo "Done running docker build for tag ${RELEASE_IMAGE_TAG}"
