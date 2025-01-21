@@ -31,9 +31,11 @@ mkdir -p "${OUT_DIR}/config"
 mkdir -p "${OUT_DIR}/bin"
 cp -v -r "tika-pipes-grpc/target/tika-pipes-grpc-${TIKA_PIPES_VERSION}.jar" "${OUT_DIR}/libs"
 
-cp -v -r "tika-pipes-fetchers/tika-fetcher-file-system/target/tika-fetcher-file-system-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
-cp -v -r "tika-pipes-fetchers/tika-fetcher-http/target/tika-fetcher-http-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
-cp -v -r "tika-pipes-fetchers/tika-fetcher-microsoft-graph/target/tika-fetcher-microsoft-graph-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
+# Loop through tika-pipes-fetchers directories and copy the zip files
+for dir in tika-pipes-fetchers/*/; do
+    fetcher_name=$(basename "$dir")
+    cp -v -r "${dir}target/${fetcher_name}-${TIKA_PIPES_VERSION}.zip" "${OUT_DIR}/plugins"
+done
 
 cp -v -r "tika-pipes-test/src/main/resources/log4j2.xml" "${OUT_DIR}/config"
 cp -v -r "tika-pipes-grpc/src/main/resources/application.yaml" "${OUT_DIR}/config"
