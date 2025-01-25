@@ -18,6 +18,8 @@
     <pf4j.version>3.12.0</pf4j.version>
     <commons.io.version>2.16.1</commons.io.version>
     <commons.lang3.version>3.16.0</commons.lang3.version>
+    <!-- Never include the core artifacts in your plugin lib directory. If you do, it will cause the classloading
+         to get messed up when finding your plugins. -->
     <plugin.excluded.artifactIds>tika-core,tika-pipes-core,tika-pipe-iterators-core,tika-emitters-core,tika-fetchers-core</plugin.excluded.artifactIds>
   </properties>
   <packaging>pom</packaging>
