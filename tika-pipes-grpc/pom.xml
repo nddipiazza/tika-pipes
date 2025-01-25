@@ -65,6 +65,16 @@
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
+      <artifactId>tika-pipe-iterators-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-emitters-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
       <artifactId>tika-pipes-proto</artifactId>
       <version>${project.parent.version}</version>
     </dependency>

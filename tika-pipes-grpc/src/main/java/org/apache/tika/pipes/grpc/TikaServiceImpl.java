@@ -11,32 +11,59 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.apache.commons.lang3.NotImplementedException;
 import org.pf4j.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import org.apache.tika.DeleteEmitterReply;
+import org.apache.tika.DeleteEmitterRequest;
 import org.apache.tika.DeleteFetcherReply;
 import org.apache.tika.DeleteFetcherRequest;
+import org.apache.tika.DeletePipeIteratorReply;
+import org.apache.tika.DeletePipeIteratorRequest;
 import org.apache.tika.FetchAndParseReply;
 import org.apache.tika.FetchAndParseRequest;
+import org.apache.tika.GetEmitterConfigJsonSchemaReply;
+import org.apache.tika.GetEmitterConfigJsonSchemaRequest;
+import org.apache.tika.GetEmitterReply;
+import org.apache.tika.GetEmitterRequest;
 import org.apache.tika.GetFetcherConfigJsonSchemaReply;
 import org.apache.tika.GetFetcherConfigJsonSchemaRequest;
 import org.apache.tika.GetFetcherReply;
 import org.apache.tika.GetFetcherRequest;
+import org.apache.tika.GetPipeIteratorConfigJsonSchemaReply;
+import org.apache.tika.GetPipeIteratorConfigJsonSchemaRequest;
+import org.apache.tika.GetPipeIteratorReply;
+import org.apache.tika.GetPipeIteratorRequest;
+import org.apache.tika.ListEmittersReply;
+import org.apache.tika.ListEmittersRequest;
 import org.apache.tika.ListFetchersReply;
 import org.apache.tika.ListFetchersRequest;
+import org.apache.tika.ListPipeIteratorsReply;
+import org.apache.tika.ListPipeIteratorsRequest;
 import org.apache.tika.Metadata;
+import org.apache.tika.SaveEmitterReply;
+import org.apache.tika.SaveEmitterRequest;
 import org.apache.tika.SaveFetcherReply;
 import org.apache.tika.SaveFetcherRequest;
+import org.apache.tika.SavePipeIteratorReply;
+import org.apache.tika.SavePipeIteratorRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.PipesResult;
+import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
+import org.apache.tika.pipes.core.emitter.EmitterConfig;
 import org.apache.tika.pipes.core.exception.TikaPipesException;
 import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
 import org.apache.tika.pipes.core.fetcher.Fetcher;
 import org.apache.tika.pipes.core.fetcher.FetcherConfig;
+import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
+import org.apache.tika.pipes.core.iterators.PipeIteratorConfig;
 import org.apache.tika.pipes.core.parser.ParseService;
+import org.apache.tika.pipes.repo.EmitterRepository;
 import org.apache.tika.pipes.repo.FetcherRepository;
+import org.apache.tika.pipes.repo.PipeIteratorRepository;
 
 @GrpcService
 @Service
@@ -49,6 +76,12 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Autowired
     private FetcherRepository fetcherRepository;
+
+    @Autowired
+    private EmitterRepository emitterRepository;
+
+    @Autowired
+    private PipeIteratorRepository pipeIteratorRepository;
 
     @Autowired
     private Environment environment;
@@ -67,7 +100,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                 .orElseThrow(() -> new TikaPipesException("Could not find Fetcher extension for plugin " + pluginId));
     }
 
-    private FetcherConfig getFetcherConfig(String pluginId) {
+    private FetcherConfig newFetcherConfig(String pluginId) {
         return pluginManager
                 .getExtensions(FetcherConfig.class, pluginId)
                 .stream()
@@ -75,17 +108,34 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                 .orElseThrow(() -> new TikaPipesException("Could not find FetcherConfig extension for plugin " + pluginId));
     }
 
+    private EmitterConfig getEmitterConfig(String pluginId) {
+        EmitterConfig emitterConfig = new DefaultEmitterConfig();
+        return pluginManager
+                .getExtensions(EmitterConfig.class, pluginId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new TikaPipesException("Could not find EmitterConfig extension for plugin " + pluginId));
+    }
+
+    private PipeIteratorConfig getPipeIteratorConfig(String pluginId) {
+        return pluginManager
+                .getExtensions(PipeIteratorConfig.class, pluginId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new TikaPipesException("Could not find PipeIteratorConfig extension for plugin " + pluginId));
+    }
+
     @Override
     public void saveFetcher(SaveFetcherRequest request, StreamObserver<SaveFetcherReply> responseObserver) {
         try {
-            FetcherConfig fetcherConfig = getFetcherConfig(request.getPluginId());
+            FetcherConfig fetcherConfig = newFetcherConfig(request.getPluginId());
             fetcherConfig.setFetcherId(request.getFetcherId())
                     .setPluginId(request.getPluginId())
                     .setConfig(objectMapper.readValue(request
                             .getFetcherConfigJsonBytes()
                             .toByteArray(), new TypeReference<>() {
                     }));
-            fetcherRepository.save(fetcherConfig.getFetcherId(), getFetcherConfig(request));
+            fetcherRepository.save(fetcherConfig.getFetcherId(), newFetcherConfig(request));
             responseObserver.onNext(SaveFetcherReply
                     .newBuilder()
                     .setFetcherId(request.getFetcherId())
@@ -96,7 +146,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         responseObserver.onCompleted();
     }
 
-    private DefaultFetcherConfig getFetcherConfig(SaveFetcherRequest request) throws JsonProcessingException {
+    private DefaultFetcherConfig newFetcherConfig(SaveFetcherRequest request) throws JsonProcessingException {
         return new DefaultFetcherConfig()
                 .setFetcherId(request.getFetcherId())
                 .setPluginId(request.getPluginId())
@@ -221,6 +271,124 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Override
     public void getFetcherConfigJsonSchema(GetFetcherConfigJsonSchemaRequest request, StreamObserver<GetFetcherConfigJsonSchemaReply> responseObserver) {
-        super.getFetcherConfigJsonSchema(request, responseObserver);
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void saveEmitter(SaveEmitterRequest request, StreamObserver<SaveEmitterReply> responseObserver) {
+        try {
+            DefaultEmitterConfig emitterConfig = newEmitterConfig(request);
+            emitterConfig.setEmitterId(request.getEmitterId())
+                         .setPluginId(request.getPluginId())
+                         .setConfig(objectMapper.readValue(request.getEmitterConfigJson(), new TypeReference<>() {}));
+            emitterRepository.save(emitterConfig.getEmitterId(), emitterConfig);
+            responseObserver.onNext(SaveEmitterReply.newBuilder().setEmitterId(request.getEmitterId()).build());
+        } catch (IOException e) {
+            responseObserver.onError(e);
+        }
+        responseObserver.onCompleted();
+    }
+
+    private DefaultEmitterConfig newEmitterConfig(SaveEmitterRequest request) throws JsonProcessingException {
+        return new DefaultEmitterConfig()
+                .setEmitterId(request.getEmitterId())
+                .setPluginId(request.getPluginId())
+                .setConfig(objectMapper.readValue(request.getEmitterConfigJson(), new TypeReference<>() {
+                }));
+    }
+
+    private DefaultPipeIteratorConfig newPipeIteratorConfig(SavePipeIteratorRequest request) throws JsonProcessingException {
+        return new DefaultPipeIteratorConfig()
+                .setPipeIteratorId(request.getPipeIteratorId())
+                .setPluginId(request.getPluginId())
+                .setConfig(objectMapper.readValue(request.getPipeIteratorConfigJson(), new TypeReference<>() {
+                }));
+    }
+
+    @Override
+    public void getEmitter(GetEmitterRequest request, StreamObserver<GetEmitterReply> responseObserver) {
+        EmitterConfig emitterConfig = emitterRepository.findByEmitterId(request.getEmitterId());
+        responseObserver.onNext(GetEmitterReply.newBuilder()
+                                               .setEmitterId(request.getEmitterId())
+                                               .setPluginId(emitterConfig.getPluginId())
+                                               .build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void listEmitters(ListEmittersRequest request, StreamObserver<ListEmittersReply> responseObserver) {
+        ListEmittersReply.Builder builder = ListEmittersReply.newBuilder();
+        emitterRepository.findAll().forEach(emitterConfig -> builder.addGetEmitterReplies(GetEmitterReply.newBuilder()
+                                                                                                         .setEmitterId(emitterConfig.getEmitterId())
+                                                                                                         .setPluginId(emitterConfig.getPluginId())
+                                                                                                         .build()));
+        responseObserver.onNext(builder.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void deleteEmitter(DeleteEmitterRequest request, StreamObserver<DeleteEmitterReply> responseObserver) {
+        boolean exists = emitterRepository.findByEmitterId(request.getEmitterId()) != null;
+        if (exists) {
+            emitterRepository.deleteByEmitterId(request.getEmitterId());
+        }
+        responseObserver.onNext(DeleteEmitterReply.newBuilder().setSuccess(exists).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getEmitterConfigJsonSchema(GetEmitterConfigJsonSchemaRequest request, StreamObserver<GetEmitterConfigJsonSchemaReply> responseObserver) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void savePipeIterator(SavePipeIteratorRequest request, StreamObserver<SavePipeIteratorReply> responseObserver) {
+        try {
+            DefaultPipeIteratorConfig pipeIteratorConfig = newPipeIteratorConfig(request);
+            pipeIteratorConfig.setPipeIteratorId(request.getPipeIteratorId())
+                              .setPluginId(request.getPluginId())
+                              .setConfig(objectMapper.readValue(request.getPipeIteratorConfigJson(), new TypeReference<>() {}));
+            pipeIteratorRepository.save(pipeIteratorConfig.getPipeIteratorId(), pipeIteratorConfig);
+            responseObserver.onNext(SavePipeIteratorReply.newBuilder().setPipeIteratorId(request.getPipeIteratorId()).build());
+        } catch (IOException e) {
+            responseObserver.onError(e);
+        }
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getPipeIterator(GetPipeIteratorRequest request, StreamObserver<GetPipeIteratorReply> responseObserver) {
+        PipeIteratorConfig pipeIteratorConfig = pipeIteratorRepository.findByPipeIteratorId(request.getPipeIteratorId());
+        responseObserver.onNext(GetPipeIteratorReply.newBuilder()
+                                                    .setPipeIteratorId(request.getPipeIteratorId())
+                                                    .setPluginId(pipeIteratorConfig.getPluginId())
+                                                    .build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void listPipeIterators(ListPipeIteratorsRequest request, StreamObserver<ListPipeIteratorsReply> responseObserver) {
+        ListPipeIteratorsReply.Builder builder = ListPipeIteratorsReply.newBuilder();
+        pipeIteratorRepository.findAll().forEach(pipeIteratorConfig -> builder.addGetPipeIteratorReplies(GetPipeIteratorReply.newBuilder()
+                                                                                                                             .setPipeIteratorId(pipeIteratorConfig.getPipeIteratorId())
+                                                                                                                             .setPluginId(pipeIteratorConfig.getPluginId())
+                                                                                                                             .build()));
+        responseObserver.onNext(builder.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void deletePipeIterator(DeletePipeIteratorRequest request, StreamObserver<DeletePipeIteratorReply> responseObserver) {
+        boolean exists = pipeIteratorRepository.findByPipeIteratorId(request.getPipeIteratorId()) != null;
+        if (exists) {
+            pipeIteratorRepository.deleteByPipeIteratorId(request.getPipeIteratorId());
+        }
+        responseObserver.onNext(DeletePipeIteratorReply.newBuilder().setSuccess(exists).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getPipeIteratorConfigJsonSchema(GetPipeIteratorConfigJsonSchemaRequest request, StreamObserver<GetPipeIteratorConfigJsonSchemaReply> responseObserver) {
+        throw new NotImplementedException();
     }
 }

@@ -3,7 +3,14 @@
 Tika Pipes is a collection of Java services and libraries that handles the large scale downloading of files, 
 then parsing of the downloaded content using Apache Tika.
 
-## Starting Tika Pipes
+## What is Tika Pipes Built With
+* Java 17
+* gRPC
+* Spring Boot 3.x
+* Apache Tika
+* Apache Ignite
+
+## How to Start Tika Pipes Server
 
 The [tika-pipes-grpc](tika-pipes-grpc) module is a Spring Boot powered gRPC service that can be used to download and parse files.
 

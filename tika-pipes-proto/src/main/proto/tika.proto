@@ -56,16 +56,57 @@ service Tika {
   rpc FetchAndParseBiDirectionalStreaming(stream FetchAndParseRequest)
       returns (stream FetchAndParseReply) {}
   /*
-    Get the Fetcher Config schema for a given fetcher class.
+    Get the Fetcher Config schema for a given fetcher.
   */
   rpc GetFetcherConfigJsonSchema(GetFetcherConfigJsonSchemaRequest) returns (GetFetcherConfigJsonSchemaReply) {}
+
+  /*
+    Save an emitter to the emitter store.
+  */
+  rpc SaveEmitter(SaveEmitterRequest) returns (SaveEmitterReply) {}
+  /*
+    Get an emitter's data from the emitter store.
+  */
+  rpc GetEmitter(GetEmitterRequest) returns (GetEmitterReply) {}
+  /*
+    List emitters that are currently in the emitter store.
+  */
+  rpc ListEmitters(ListEmittersRequest) returns (ListEmittersReply) {}
+  /*
+    Delete an emitter from the emitter store.
+  */
+  rpc DeleteEmitter(DeleteEmitterRequest) returns (DeleteEmitterReply) {}
+  /*
+    Get the Emitter Config schema for a given emitter.
+  */
+  rpc GetEmitterConfigJsonSchema(GetEmitterConfigJsonSchemaRequest) returns (GetEmitterConfigJsonSchemaReply) {}
+
+  /*
+    Save a pipe iterator to the pipe iterator store.
+  */
+  rpc SavePipeIterator(SavePipeIteratorRequest) returns (SavePipeIteratorReply) {}
+  /*
+    Get a pipe iterator's data from the pipe iterator store.
+  */
+  rpc GetPipeIterator(GetPipeIteratorRequest) returns (GetPipeIteratorReply) {}
+  /*
+    List pipe iterators that are currently in the pipe iterator store.
+  */
+  rpc ListPipeIterators(ListPipeIteratorsRequest) returns (ListPipeIteratorsReply) {}
+  /*
+    Delete a pipe iterator from the pipe iterator store.
+  */
+  rpc DeletePipeIterator(DeletePipeIteratorRequest) returns (DeletePipeIteratorReply) {}
+  /*
+    Get the Pipe Iterator Config schema for a given pipe iterator.
+  */
+  rpc GetPipeIteratorConfigJsonSchema(GetPipeIteratorConfigJsonSchemaRequest) returns (GetPipeIteratorConfigJsonSchemaReply) {}
 }
 
 message SaveFetcherRequest {
   // A unique identifier for each fetcher. If this already exists, operation will overwrite existing.
   string fetcher_id = 1;
-  // The full java class name of the fetcher class. List of
-  // fetcher classes is found here: https://cwiki.apache.org/confluence/display/TIKA/tika-pipes
+  // The pf4j plugin ID of the fetcher.
   string plugin_id = 2;
   // JSON string of the FetcherConfig object.
   string fetcher_config_json = 3;
@@ -118,7 +159,7 @@ message GetFetcherRequest {
 message GetFetcherReply {
   // Echoes the ID of the fetcher being returned.
   string fetcher_id = 1;
-  // The full Java class name of the Fetcher.
+  // Plugin ID of the fetcher
   string plugin_id = 2;
   // The configuration parameters.
   map<string, string> params = 3;
@@ -137,11 +178,131 @@ message ListFetchersReply {
 }
 
 message GetFetcherConfigJsonSchemaRequest {
-  // The full java class name of the fetcher config for which to fetch json schema.
+  // The plugin name of the fetcher for which to fetch json schema.
   string plugin_id = 1;
 }
 
 message GetFetcherConfigJsonSchemaReply {
   // The json schema that describes the fetcher config in string format.
   string fetcher_config_json_schema = 1;
+}
+
+message SaveEmitterRequest {
+  // A unique identifier for each emitter. If this already exists, operation will overwrite existing.
+  string emitter_id = 1;
+  // The pf4j plugin ID of the emitter.
+  string plugin_id = 2;
+  // JSON string of the EmitterConfig object.
+  string emitter_config_json = 3;
+}
+
+message SaveEmitterReply {
+  // The emitter_id that was saved.
+  string emitter_id = 1;
+}
+
+message GetEmitterRequest {
+  // ID of the emitter for which to return config.
+  string emitter_id = 1;
+}
+
+message GetEmitterReply {
+  // Echoes the ID of the emitter being returned.
+  string emitter_id = 1;
+  // The pf4j plugin ID of the emitter.
+  string plugin_id = 2;
+  // The configuration parameters.
+  map<string, string> params = 3;
+}
+
+message ListEmittersRequest {
+  // List the emitters starting at this page number.
+  int32 page_number = 1;
+  // List this many emitters per page.
+  int32 num_emitters_per_page = 2;
+}
+
+message ListEmittersReply {
+  // List of emitter configs returned by the Lists Emitters service.
+  repeated GetEmitterReply get_emitter_replies = 1;
+}
+
+message DeleteEmitterRequest {
+  // ID of the emitter to delete.
+  string emitter_id = 1;
+}
+
+message DeleteEmitterReply {
+  // Success if the emitter was successfully removed from the emitter store.
+  bool success = 1;
+}
+
+message GetEmitterConfigJsonSchemaRequest {
+  // The PF4J plugin ID emitter config for which to fetch json schema.
+  string plugin_id = 1;
+}
+
+message GetEmitterConfigJsonSchemaReply {
+  // The json schema that describes the emitter config in string format.
+  string emitter_config_json_schema = 1;
+}
+
+message SavePipeIteratorRequest {
+  // A unique identifier for each pipe iterator. If this already exists, operation will overwrite existing.
+  string pipe_iterator_id = 1;
+  // The PF4j plugin ID of the pipe iterator.
+  string plugin_id = 2;
+  // JSON string of the PipeIteratorConfig object.
+  string pipe_iterator_config_json = 3;
+}
+
+message SavePipeIteratorReply {
+  // The pipe_iterator_id that was saved.
+  string pipe_iterator_id = 1;
+}
+
+message GetPipeIteratorRequest {
+  // ID of the pipe iterator for which to return config.
+  string pipe_iterator_id = 1;
+}
+
+message GetPipeIteratorReply {
+  // Echoes the ID of the pipe iterator being returned.
+  string pipe_iterator_id = 1;
+  // The PF4j plugin ID of the pipe iterator.
+  string plugin_id = 2;
+  // The configuration parameters.
+  map<string, string> params = 3;
+}
+
+message ListPipeIteratorsRequest {
+  // List the pipe iterators starting at this page number
+  int32 page_number = 1;
+  // List this many pipe iterators per page.
+  int32 num_pipe_iterators_per_page = 2;
+}
+
+message ListPipeIteratorsReply {
+  // List of pipe iterator configs returned by the Lists Pipe Iterators service.
+  repeated GetPipeIteratorReply get_pipe_iterator_replies = 1;
+}
+
+message DeletePipeIteratorRequest {
+  // ID of the pipe iterator to delete.
+  string pipe_iterator_id = 1;
+}
+
+message DeletePipeIteratorReply {
+  // Success if the pipe iterator was successfully removed from the pipe iterator store.
+  bool success = 1;
+}
+
+message GetPipeIteratorConfigJsonSchemaRequest {
+  // The PF4j plugin ID of the pipe iterator for which to obtain the config json.
+  string plugin_id = 1;
+}
+
+message GetPipeIteratorConfigJsonSchemaReply {
+  // The json schema that describes the pipe iterator config in string format.
+  string pipe_iterator_config_json_schema = 1;
 }

@@ -27,7 +27,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>tika-pipes-iterators</artifactId>
+  <artifactId>tika-pipes-pipe-iterators</artifactId>
   <name>Tika Pipes Pipe Iterators</name>
   <url>https://tika.apache.org/</url>
   <packaging>pom</packaging>

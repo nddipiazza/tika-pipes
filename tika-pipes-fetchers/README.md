@@ -1,5 +1,9 @@
 # Tika Pipes Fetchers
 
+Tika Pipes has the ability to pull binary data from a variety of different sources.
+
+Tika Pipes reads from these input sources using the Pipe Iterators library.
+
 Each Tika Pipes fetcher is implemented as a pf4j plugin.
 
 There are two Pf4j extensions for Fetchers: One for the Fetcher code, and one for the FetcherConfig.

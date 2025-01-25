@@ -98,7 +98,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>tika-core,tika-pipes-core</excludeArtifactIds>
+              <excludeArtifactIds>tika-core,tika-pipes-core,tika-pipe-iterators-core</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>

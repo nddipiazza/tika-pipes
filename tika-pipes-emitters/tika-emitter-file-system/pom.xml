@@ -22,6 +22,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
+      <artifactId>tika-emitters-core</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
       <artifactId>tika-pipes-core</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
@@ -48,7 +54,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>tika-core,tika-pipes-core</excludeArtifactIds>
+              <excludeArtifactIds>tika-core,tika-pipes-core,tika-pipe-iterators-core</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>

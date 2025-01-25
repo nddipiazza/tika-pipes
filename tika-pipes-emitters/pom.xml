@@ -34,6 +34,7 @@
 
   <modules>
     <module>tika-emitter-file-system</module>
+    <module>tika-emitters-core</module>
   </modules>
 
   <dependencyManagement>

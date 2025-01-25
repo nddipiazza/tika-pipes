@@ -41,7 +41,6 @@ import org.apache.tika.pipes.core.emitter.TikaEmitterException;
 
 @Extension
 public class FileSystemEmitter implements Emitter {
-
     @Override
     public void emit(EmitterConfig emitterConfig, String emitKey, Map<String, Object> metadata, InputStream is) throws IOException {
         FileSystemEmitterConfig config = (FileSystemEmitterConfig) emitterConfig;

@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
 import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
+import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
 
 @Configuration
 @EnableIgniteRepositories
@@ -37,9 +39,17 @@ public class IgniteRepositoryConfiguration {
                 cfg.setWorkDirectory(igniteWorkDirFile.getCanonicalPath());
                 log.info("Initializing ignite instance with ignite work dir: {}", cfg.getWorkDirectory());
             }
-            CacheConfiguration<String, DefaultFetcherConfig> cacheConf = new CacheConfiguration<>("FetcherCache");
-            cacheConf.setIndexedTypes(String.class, DefaultFetcherConfig.class);
-            cfg.setCacheConfiguration(cacheConf);
+
+            CacheConfiguration<String, DefaultFetcherConfig> fetcherCacheConf = new CacheConfiguration<>("FetcherCache");
+            fetcherCacheConf.setIndexedTypes(String.class, DefaultFetcherConfig.class);
+
+            CacheConfiguration<String, DefaultEmitterConfig> emitterCacheConf = new CacheConfiguration<>("EmitterCache");
+            emitterCacheConf.setIndexedTypes(String.class, DefaultEmitterConfig.class);
+
+            CacheConfiguration<String, DefaultPipeIteratorConfig> pipeIteratorCacheConf = new CacheConfiguration<>("PipeIteratorCache");
+            pipeIteratorCacheConf.setIndexedTypes(String.class, DefaultPipeIteratorConfig.class);
+
+            cfg.setCacheConfiguration(fetcherCacheConf, emitterCacheConf, pipeIteratorCacheConf);
 
             Ignite ignite = Ignition.start(cfg);
             assert ignite.configuration() != null;
