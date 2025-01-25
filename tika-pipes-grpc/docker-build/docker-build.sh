@@ -43,7 +43,7 @@ for dir in tika-pipes-fetchers/*/; do
     fi
 done
 
-cp -v -r "tika-pipes-test/src/main/resources/log4j2.xml" "${OUT_DIR}/config"
+cp -v -r "tika-pipes-cli/src/main/resources/log4j2.xml" "${OUT_DIR}/config"
 cp -v -r "tika-pipes-grpc/src/main/resources/application.yaml" "${OUT_DIR}/config"
 cp -v -r "tika-pipes-grpc/docker-build/start-tika-grpc.sh" "${OUT_DIR}/bin"
 

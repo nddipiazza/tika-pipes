@@ -22,9 +22,9 @@ Tika pipes services are described in the following protobuf file: [tika.proto](t
 
 We have external facing tests to demonstrate the use of Tika Pipes and each Fetcher.
 
-See the following package for the different Java client examples: [Tika Pipes Tests](tika-pipes-test%2Fsrc%2Fmain%2Fjava%2Fpipes)
+See the following package for the different Java client examples: [cli](tika-pipes-cli%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcli)
 
-In particular, this example is fairly basic and easier to see the core parts in action: [FileSystemFetcherExternalTest.java](tika-pipes-test%2Fsrc%2Fmain%2Fjava%2Fpipes%2Ffilesystem%2FFileSystemFetcherExternalTest.java)
+In particular, this example is fairly basic and easier to see the core parts in action: [FileSystemFetcherCli.java](tika-pipes-cli%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcli%2Ffilesystem%2FFileSystemFetcherCli.java)
 
 ## Tika Pipes Fetchers
 

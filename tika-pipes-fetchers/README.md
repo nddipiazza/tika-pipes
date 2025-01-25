@@ -46,4 +46,4 @@ When you refer to a fetcher in the Tika Pipes service, you refer to it with the 
 
 * Update `tika-pipes-fetchers/pom.xml` to include your new fetcher module in the `<modules>` section.
 
-* Add a test to `tika-pipes-test/src/main/java/pipes`
+* Add a CLI to `tika-pipes-cli/src/main/java/pipes`
