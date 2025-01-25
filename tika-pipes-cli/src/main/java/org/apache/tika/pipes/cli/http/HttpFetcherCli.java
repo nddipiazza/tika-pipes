@@ -1,4 +1,6 @@
-package pipes.microsoftgraph;
+package org.apache.tika.pipes.cli.http;
+
+import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -30,10 +30,10 @@ import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
 
 @Slf4j
-public class MicrosoftGraphFetcherExternalTest {
+public class HttpFetcherCli {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
     public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
-    @Parameter(names = {"--fetch-urls"}, description = "List of URLs to fetch")
+    @Parameter(names = {"--fetch-urls"}, description = "File of URLs to fetch", help = true)
     private File urlsToFetchFile;
     @Parameter(names = {"--grpcHost"}, description = "The grpc host", help = true)
     private String host = TIKA_SERVER_GRPC_DEFAULT_HOST;
@@ -43,12 +43,6 @@ public class MicrosoftGraphFetcherExternalTest {
     private String fetcherId = "http-fetcher";
     @Parameter(names = {"-h", "-H", "--help"}, description = "Display help menu")
     private boolean help;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public MicrosoftGraphFetcherExternalTest() {
-        objectMapper.registerModule(new GuavaModule());
-    }
 
     public static int getRandomAvailablePort() {
         try (ServerSocket socket = new ServerSocket(0)) {
@@ -70,7 +64,7 @@ public class MicrosoftGraphFetcherExternalTest {
 
         try {
             server.start();
-            MicrosoftGraphFetcherExternalTest bulkParser = new MicrosoftGraphFetcherExternalTest();
+            HttpFetcherCli bulkParser = new HttpFetcherCli();
             JCommander commander = JCommander
                     .newBuilder()
                     .addObject(bulkParser)
@@ -101,7 +95,7 @@ public class MicrosoftGraphFetcherExternalTest {
                 .newBuilder()
                 .setFetcherId(fetcherId)
                 .setPluginId("http-fetcher")
-                .setFetcherConfigJson(objectMapper.writeValueAsString(httpFetcherConfig))
+                .setFetcherConfigJson(OBJECT_MAPPER.writeValueAsString(httpFetcherConfig))
                 .build());
         log.info("Saved fetcher with ID {}", reply.getFetcherId());
 
@@ -138,7 +132,7 @@ public class MicrosoftGraphFetcherExternalTest {
                     .newBuilder()
                     .setFetcherId(fetcherId)
                     .setFetchKey("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + httpServerPort)
-                    .setMetadataJson(objectMapper.writeValueAsString(Map.of()))
+                    .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
                     .build());
 
         log.info("Done submitting URLs to {}", fetcherId);

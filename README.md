@@ -57,3 +57,14 @@ Here is an example:
 ```bash
 MULTI_ARCH=true RELEASE_IMAGE_TAG=3.0.0-beta5 DOCKER_ID=ndipiazza mvn package
 ```
+
+# Docker Usage
+You can pull down the version you would like using:
+
+`docker pull ndipiazza/tika-pipes:<version>`
+
+Then to run the container, execute the following command:
+
+`docker run -d -p 127.0.0.1::50051 ndipiazza/tika-pipes:<version>`
+
+Where <version> is the Apache Tika Server version - e.g. 3.0.0

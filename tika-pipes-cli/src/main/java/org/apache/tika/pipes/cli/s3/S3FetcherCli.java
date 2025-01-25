@@ -1,4 +1,6 @@
-package pipes.s3;
+package org.apache.tika.pipes.cli.s3;
+
+import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
 
 import java.io.File;
 import java.io.FileReader;
@@ -13,8 +15,6 @@ import java.util.concurrent.TimeUnit;
 import com.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -28,10 +28,10 @@ import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
 
 @Slf4j
-public class S3FetcherExternalTest {
+public class S3FetcherCli {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
     public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
-    @Parameter(names = {"--fetch-urls"}, description = "List of URLs to fetch")
+    @Parameter(names = {"--fetch-urls"}, description = "File of URLs to fetch", help = true)
     private File urlsToFetchFile;
     @Parameter(names = {"--grpcHost"}, description = "The grpc host", help = true)
     private String host = TIKA_SERVER_GRPC_DEFAULT_HOST;
@@ -130,13 +130,8 @@ public class S3FetcherExternalTest {
     @Parameter(names = {"--credentialsProvider"}, description = "Credentials provider - must be key_secret, profile or instance")
     private String credentialsProvider = "key_secret";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public S3FetcherExternalTest() {
-        objectMapper.registerModule(new GuavaModule());
-    }
     public static void main(String[] args) throws Exception {
-        S3FetcherExternalTest bulkParser = new S3FetcherExternalTest();
+        S3FetcherCli bulkParser = new S3FetcherCli();
         JCommander commander = JCommander
                 .newBuilder()
                 .addObject(bulkParser)
@@ -176,7 +171,7 @@ public class S3FetcherExternalTest {
                 .newBuilder()
                 .setFetcherId(fetcherId)
                 .setPluginId("s3-fetcher")
-                .setFetcherConfigJson(objectMapper.writeValueAsString(s3FetcherConfig))
+                .setFetcherConfigJson(OBJECT_MAPPER.writeValueAsString(s3FetcherConfig))
                 .build());
         log.info("Saved fetcher with ID {}", reply.getFetcherId());
 
@@ -216,7 +211,7 @@ public class S3FetcherExternalTest {
                         .newBuilder()
                         .setFetcherId(fetcherId)
                         .setFetchKey(nextS3Key)
-                        .setMetadataJson(objectMapper.writeValueAsString(Map.of()))
+                        .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
                         .build());
             }
         }

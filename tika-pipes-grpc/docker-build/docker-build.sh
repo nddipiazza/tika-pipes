@@ -23,7 +23,7 @@ PROJECT_NAME=tika
 if [[ -z "${RELEASE_IMAGE_TAG}" ]]; then
     RELEASE_IMAGE_TAG="${TIKA_PIPES_VERSION}"
     ## Remove '-SNAPSHOT' from the version string
-    RELEASE_IMAGE_TAG="${RELEASE_IMAGE_TAG//-SNAPSHOT/}"
+    RELEASE_IMAGE_TAG="${DOCKER_ID}:${RELEASE_IMAGE_TAG//-SNAPSHOT/}"
 fi
 
 mkdir -p "${OUT_DIR}/libs"
@@ -68,6 +68,12 @@ if [[ -n "${DOCKER_ID}" ]]; then
     IMAGE_TAGS+=("-t ${DOCKER_ID}/${PROJECT_NAME}:${RELEASE_IMAGE_TAG}")
 fi
 
+if [ ${#IMAGE_TAGS[@]} -eq 0 ]; then
+    echo "No image tags specified, skipping Docker build step. To enable build, set AWS_ACCOUNT_ID, AZURE_REGISTRY_NAME, and/or DOCKER_ID environment variables."
+    exit 0
+fi
+
+tag="${IMAGE_TAGS[*]}"
 if [ "${MULTI_ARCH}" == "true" ]; then
   echo "Building multi arch image"
   docker buildx create --name tikapipesbuilder
@@ -76,14 +82,16 @@ if [ "${MULTI_ARCH}" == "true" ]; then
   docker run --rm --privileged tonistiigi/binfmt --install arm64
   docker buildx build \
       --builder=tikapipesbuilder . \
-      "${IMAGE_TAGS[@]}" \
+      "${tag}" \
       --platform linux/amd64,linux/arm64 \
       --push
   docker buildx stop tikapipesbuilder
 else
   echo "Building single arch image"
   # build single arch
-  docker build . "${IMAGE_TAGS[@]}"
+  docker build . "${tag}"
 fi
 
-echo "Done running docker build for tag ${RELEASE_IMAGE_TAG}"
+echo " ==================================================================================================="
+echo " Done running docker build for tag ${tag}"
+echo " ==================================================================================================="

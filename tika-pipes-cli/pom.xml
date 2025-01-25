@@ -8,9 +8,9 @@
     <version>3.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <artifactId>tika-pipes-test</artifactId>
-  <name>Tika Pipes Integration Test Suite</name>
-  <description>Grpc client that simulates Tika parses.</description>
+  <artifactId>tika-pipes-cli</artifactId>
+  <name>Tika Pipes CLI</name>
+  <description>Tika pipes clients for each fetcher.</description>
   <properties>
     <guava.version>33.2.1-jre</guava.version>
     <jcommander.version>1.82</jcommander.version>

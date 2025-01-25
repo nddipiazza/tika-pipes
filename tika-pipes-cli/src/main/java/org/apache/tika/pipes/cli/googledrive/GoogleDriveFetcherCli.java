@@ -1,4 +1,6 @@
-package pipes.googledrive;
+package org.apache.tika.pipes.cli.googledrive;
+
+import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,8 +16,6 @@ import java.util.concurrent.TimeUnit;
 import com.apache.tika.pipes.fetchers.googledrive.config.GoogleDriveFetcherConfig;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -30,42 +30,29 @@ import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
 
 @Slf4j
-public class GoogleDriveFetcherExternalTest {
+public class GoogleDriveFetcherCli {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
     public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
 
-    @Parameter(names = {"--fetch-urls"}, description = "List of URLs to fetch")
+    @Parameter(names = {"--fetch-urls"}, description = "File of URLs to fetch", help = true)
     private File urlsToFetchFile;
-
     @Parameter(names = {"--grpcHost"}, description = "The grpc host", help = true)
     private String host = TIKA_SERVER_GRPC_DEFAULT_HOST;
-
     @Parameter(names = {"--grpcPort"}, description = "The grpc server port", help = true)
     private Integer port = TIKA_SERVER_GRPC_DEFAULT_PORT;
-
     @Parameter(names = {"--fetcher-id"}, description = "What fetcher ID should we use? By default will use http-fetcher")
     private String fetcherId = "google-drive-fetcher";
-
     @Parameter(names = {"--help", "-h"}, help = true)
     private boolean help = false;
-
     @Parameter(names = {"--applicationName"}, description = "Google Drive application name")
     private String applicationName = "tika-pipes";
-
     @Parameter(names = {"--serviceAccountKeyFile"}, description = "Service account creds file stored as a text file with a base64 string", required = true)
     private File serviceAccountKeyFile;
-
     @Parameter(names = {"--scopes"}, description = "Google Drive API scopes")
     private List<String> scopes = new ArrayList<>();
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public GoogleDriveFetcherExternalTest() {
-        objectMapper.registerModule(new GuavaModule());
-    }
-
     public static void main(String[] args) throws Exception {
-        GoogleDriveFetcherExternalTest bulkParser = new GoogleDriveFetcherExternalTest();
+        GoogleDriveFetcherCli bulkParser = new GoogleDriveFetcherCli();
         JCommander commander = JCommander
                 .newBuilder()
                 .addObject(bulkParser)
@@ -97,7 +84,7 @@ public class GoogleDriveFetcherExternalTest {
                 .newBuilder()
                 .setFetcherId(fetcherId)
                 .setPluginId("google-drive-fetcher")
-                .setFetcherConfigJson(objectMapper.writeValueAsString(googleDriveFetcherConfig))
+                .setFetcherConfigJson(OBJECT_MAPPER.writeValueAsString(googleDriveFetcherConfig))
                 .build());
         log.info("Saved fetcher with ID {}", reply.getFetcherId());
 
@@ -136,7 +123,7 @@ public class GoogleDriveFetcherExternalTest {
                         .newBuilder()
                         .setFetcherId(fetcherId)
                         .setFetchKey(nextS3Key)
-                        .setMetadataJson(objectMapper.writeValueAsString(Map.of()))
+                        .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
                         .build());
             }
         }

@@ -1,9 +1,14 @@
-package pipes.http;
+package org.apache.tika.pipes.cli.filesystem;
+
+import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,13 +18,10 @@ import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import io.undertow.Undertow;
-import io.undertow.util.Headers;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.tika.FetchAndParseReply;
@@ -27,63 +29,38 @@ import org.apache.tika.FetchAndParseRequest;
 import org.apache.tika.SaveFetcherReply;
 import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
-import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
+import org.apache.tika.pipes.fetchers.filesystem.FileSystemFetcherConfig;
 
 @Slf4j
-public class HttpFetcherExternalTest {
+public class FileSystemFetcherCli {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
     public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
-    @Parameter(names = {"--fetch-urls"}, description = "List of URLs to fetch")
-    private File urlsToFetchFile;
+    @Parameter(names = {"--base-directory"}, description = "Base directory", required = true)
+    private File baseDirectory;
     @Parameter(names = {"--grpcHost"}, description = "The grpc host", help = true)
     private String host = TIKA_SERVER_GRPC_DEFAULT_HOST;
     @Parameter(names = {"--grpcPort"}, description = "The grpc server port", help = true)
     private Integer port = TIKA_SERVER_GRPC_DEFAULT_PORT;
-    @Parameter(names = {"--fetcher-id"}, description = "What fetcher ID should we use? By default will use http-fetcher")
-    private String fetcherId = "http-fetcher";
+    @Parameter(names = {"--fetcher-id"}, description = "What fetcher ID should we use? By default will use filesystem-fetcher")
+    private String fetcherId = "filesystem-fetcher";
     @Parameter(names = {"-h", "-H", "--help"}, description = "Display help menu")
     private boolean help;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    public static void main(String[] args) throws IOException {
+        FileSystemFetcherCli bulkParser = new FileSystemFetcherCli();
+        JCommander commander = JCommander
+                .newBuilder()
+                .addObject(bulkParser)
+                .build();
 
-    public HttpFetcherExternalTest() {
-        objectMapper.registerModule(new GuavaModule());
-    }
+        commander.parse(args);
 
-    public static int getRandomAvailablePort() {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not find an available port", e);
+        if (bulkParser.help) {
+            commander.usage();
+            return;
         }
-    }
-    static int httpServerPort;
-    public static void main(String[] args) throws Exception {
-        httpServerPort = getRandomAvailablePort();
-        Undertow server = Undertow
-                .builder()
-                .addHttpListener(httpServerPort, InetAddress.getLocalHost().getHostAddress())
-                .setHandler(exchange -> {
-                                      exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
-                                      exchange.getResponseSender().send("<html><body>test</body></html>");
-                                  }).build();
 
-        try {
-            server.start();
-            HttpFetcherExternalTest bulkParser = new HttpFetcherExternalTest();
-            JCommander commander = JCommander
-                    .newBuilder()
-                    .addObject(bulkParser)
-                    .build();
-            commander.parse(args);
-            if (bulkParser.help) {
-                commander.usage();
-                return;
-            }
-            bulkParser.runFetch();
-        } finally {
-            server.stop();
-        }
+        bulkParser.runFetch();
     }
 
     private void runFetch() throws IOException {
@@ -95,13 +72,15 @@ public class HttpFetcherExternalTest {
         TikaGrpc.TikaBlockingStub blockingStub = TikaGrpc.newBlockingStub(channel);
         TikaGrpc.TikaStub tikaStub = TikaGrpc.newStub(channel);
 
-        HttpFetcherConfig httpFetcherConfig = new HttpFetcherConfig();
+        FileSystemFetcherConfig fileSystemFetcherConfig = new FileSystemFetcherConfig();
+        fileSystemFetcherConfig.setExtractFileSystemMetadata(true);
+        fileSystemFetcherConfig.setBasePath(baseDirectory.getAbsolutePath());
 
         SaveFetcherReply reply = blockingStub.saveFetcher(SaveFetcherRequest
                 .newBuilder()
                 .setFetcherId(fetcherId)
-                .setPluginId("http-fetcher")
-                .setFetcherConfigJson(objectMapper.writeValueAsString(httpFetcherConfig))
+                .setPluginId("filesystem-fetcher")
+                .setFetcherConfigJson(OBJECT_MAPPER.writeValueAsString(fileSystemFetcherConfig))
                 .build());
         log.info("Saved fetcher with ID {}", reply.getFetcherId());
 
@@ -134,14 +113,38 @@ public class HttpFetcherExternalTest {
             }
         });
 
-        requestStreamObserver.onNext(FetchAndParseRequest
-                    .newBuilder()
-                    .setFetcherId(fetcherId)
-                    .setFetchKey("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + httpServerPort)
-                    .setMetadataJson(objectMapper.writeValueAsString(Map.of()))
-                    .build());
+        Files.walkFileTree(baseDirectory.toPath(), new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                try {
+                    requestStreamObserver.onNext(FetchAndParseRequest
+                            .newBuilder()
+                            .setFetcherId(fetcherId)
+                            .setFetchKey(file
+                                    .toAbsolutePath()
+                                    .toString())
+                            .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
+                            .build());
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                return FileVisitResult.CONTINUE;
+            }
 
-        log.info("Done submitting URLs to {}", fetcherId);
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                System.out.println("Directory: " + dir.toString());
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                System.err.println("Failed to access file: " + file.toString() + " due to " + exc.getMessage());
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        log.info("Done submitting fetch keys to {}", fetcherId);
         requestStreamObserver.onCompleted();
 
         try {
@@ -153,6 +156,8 @@ public class HttpFetcherExternalTest {
                     .currentThread()
                     .interrupt();
         }
+
         log.info("Fetched: success={}", successes);
     }
+
 }
