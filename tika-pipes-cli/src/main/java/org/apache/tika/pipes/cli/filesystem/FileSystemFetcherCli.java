@@ -133,13 +133,13 @@ public class FileSystemFetcherCli {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                System.out.println("Directory: " + dir.toString());
+                log.info("Directory: {}", dir.toString());
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc) {
-                System.err.println("Failed to access file: " + file.toString() + " due to " + exc.getMessage());
+                log.error("Failed to access file: {}", file.toString(), exc);
                 return FileVisitResult.CONTINUE;
             }
         });
