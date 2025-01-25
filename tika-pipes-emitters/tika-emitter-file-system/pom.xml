@@ -54,7 +54,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>tika-core,tika-pipes-core,tika-pipe-iterators-core</excludeArtifactIds>
+              <excludeArtifactIds>${plugin.excluded.artifactIds}</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>

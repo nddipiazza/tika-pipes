@@ -42,8 +42,8 @@ import org.apache.tika.io.FilenameUtils;
 import org.apache.tika.io.TemporaryResources;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.pipes.core.fetcher.Fetcher;
-import org.apache.tika.pipes.core.fetcher.FetcherConfig;
+import org.apache.tika.pipes.fetchers.core.Fetcher;
+import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 import org.apache.tika.utils.StringUtils;
 
 @Extension

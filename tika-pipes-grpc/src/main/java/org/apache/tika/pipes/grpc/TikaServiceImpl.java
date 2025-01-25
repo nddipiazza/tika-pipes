@@ -53,14 +53,16 @@ import org.apache.tika.SavePipeIteratorRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.PipesResult;
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
+import org.apache.tika.pipes.core.emitter.Emitter;
 import org.apache.tika.pipes.core.emitter.EmitterConfig;
 import org.apache.tika.pipes.core.exception.TikaPipesException;
-import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
-import org.apache.tika.pipes.core.fetcher.Fetcher;
-import org.apache.tika.pipes.core.fetcher.FetcherConfig;
 import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
+import org.apache.tika.pipes.core.iterators.PipeIterator;
 import org.apache.tika.pipes.core.iterators.PipeIteratorConfig;
 import org.apache.tika.pipes.core.parser.ParseService;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
+import org.apache.tika.pipes.fetchers.core.Fetcher;
+import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 import org.apache.tika.pipes.repo.EmitterRepository;
 import org.apache.tika.pipes.repo.FetcherRepository;
 import org.apache.tika.pipes.repo.PipeIteratorRepository;
@@ -92,6 +94,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     @Autowired
     private PluginManager pluginManager;
 
+
     private Fetcher getFetcher(String pluginId) {
         return pluginManager
                 .getExtensions(Fetcher.class, pluginId)
@@ -100,7 +103,15 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                 .orElseThrow(() -> new TikaPipesException("Could not find Fetcher extension for plugin " + pluginId));
     }
 
-    private FetcherConfig newFetcherConfig(String pluginId) {
+    private DefaultFetcherConfig newFetcherConfig(String pluginId, String fetcherId) {
+        DefaultFetcherConfig fetcherConfig = new DefaultFetcherConfig();
+        fetcherConfig.setPluginId(pluginId);
+        fetcherConfig.setFetcherId(fetcherId);
+        fetcherConfig.setConfig(objectMapper.convertValue(getFetcherConfig(pluginId), new TypeReference<>() {}));
+        return fetcherConfig;
+    }
+
+    private FetcherConfig getFetcherConfig(String pluginId) {
         return pluginManager
                 .getExtensions(FetcherConfig.class, pluginId)
                 .stream()
@@ -108,13 +119,36 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                 .orElseThrow(() -> new TikaPipesException("Could not find FetcherConfig extension for plugin " + pluginId));
     }
 
+    private Emitter getEmitter(String pluginId) {
+        return pluginManager
+                .getExtensions(Emitter.class, pluginId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new TikaPipesException("Could not find Emitter extension for plugin " + pluginId));
+    }
+
     private EmitterConfig getEmitterConfig(String pluginId) {
-        EmitterConfig emitterConfig = new DefaultEmitterConfig();
         return pluginManager
                 .getExtensions(EmitterConfig.class, pluginId)
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new TikaPipesException("Could not find EmitterConfig extension for plugin " + pluginId));
+    }
+
+    private DefaultEmitterConfig newEmitterConfig(String pluginId, String emitterId) {
+        DefaultEmitterConfig emitterConfig = new DefaultEmitterConfig();
+        emitterConfig.setPluginId(pluginId);
+        emitterConfig.setEmitterId(emitterId);
+        emitterConfig.setConfig(objectMapper.convertValue(getEmitterConfig(pluginId), new TypeReference<>() {}));
+        return emitterConfig;
+    }
+
+    private PipeIterator getPipeIterator(String pluginId) {
+        return pluginManager
+                .getExtensions(PipeIterator.class, pluginId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new TikaPipesException("Could not find PipeIterator extension for plugin " + pluginId));
     }
 
     private PipeIteratorConfig getPipeIteratorConfig(String pluginId) {
@@ -125,10 +159,18 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                 .orElseThrow(() -> new TikaPipesException("Could not find PipeIteratorConfig extension for plugin " + pluginId));
     }
 
+    private DefaultPipeIteratorConfig newPipeIteratorConfig(String pluginId, String pipeIteratorId) {
+        DefaultPipeIteratorConfig pipeIteratorConfig = new DefaultPipeIteratorConfig();
+        pipeIteratorConfig.setPluginId(pluginId);
+        pipeIteratorConfig.setPipeIteratorId(pipeIteratorId);
+        pipeIteratorConfig.setConfig(objectMapper.convertValue(getPipeIteratorConfig(pluginId), new TypeReference<>() {}));
+        return pipeIteratorConfig;
+    }
+
     @Override
     public void saveFetcher(SaveFetcherRequest request, StreamObserver<SaveFetcherReply> responseObserver) {
         try {
-            FetcherConfig fetcherConfig = newFetcherConfig(request.getPluginId());
+            FetcherConfig fetcherConfig = newFetcherConfig(request.getPluginId(), request.getFetcherId());
             fetcherConfig.setFetcherId(request.getFetcherId())
                     .setPluginId(request.getPluginId())
                     .setConfig(objectMapper.readValue(request
@@ -277,7 +319,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     @Override
     public void saveEmitter(SaveEmitterRequest request, StreamObserver<SaveEmitterReply> responseObserver) {
         try {
-            DefaultEmitterConfig emitterConfig = newEmitterConfig(request);
+            DefaultEmitterConfig emitterConfig = newEmitterConfig(request.getPluginId(), request.getEmitterId());
             emitterConfig.setEmitterId(request.getEmitterId())
                          .setPluginId(request.getPluginId())
                          .setConfig(objectMapper.readValue(request.getEmitterConfigJson(), new TypeReference<>() {}));
@@ -287,22 +329,6 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             responseObserver.onError(e);
         }
         responseObserver.onCompleted();
-    }
-
-    private DefaultEmitterConfig newEmitterConfig(SaveEmitterRequest request) throws JsonProcessingException {
-        return new DefaultEmitterConfig()
-                .setEmitterId(request.getEmitterId())
-                .setPluginId(request.getPluginId())
-                .setConfig(objectMapper.readValue(request.getEmitterConfigJson(), new TypeReference<>() {
-                }));
-    }
-
-    private DefaultPipeIteratorConfig newPipeIteratorConfig(SavePipeIteratorRequest request) throws JsonProcessingException {
-        return new DefaultPipeIteratorConfig()
-                .setPipeIteratorId(request.getPipeIteratorId())
-                .setPluginId(request.getPluginId())
-                .setConfig(objectMapper.readValue(request.getPipeIteratorConfigJson(), new TypeReference<>() {
-                }));
     }
 
     @Override
@@ -344,7 +370,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     @Override
     public void savePipeIterator(SavePipeIteratorRequest request, StreamObserver<SavePipeIteratorReply> responseObserver) {
         try {
-            DefaultPipeIteratorConfig pipeIteratorConfig = newPipeIteratorConfig(request);
+            DefaultPipeIteratorConfig pipeIteratorConfig = newPipeIteratorConfig(request.getPluginId(), request.getPipeIteratorId());
             pipeIteratorConfig.setPipeIteratorId(request.getPipeIteratorId())
                               .setPluginId(request.getPluginId())
                               .setConfig(objectMapper.readValue(request.getPipeIteratorConfigJson(), new TypeReference<>() {}));

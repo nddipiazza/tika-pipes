@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
-import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
 import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 
 @Configuration
 @EnableIgniteRepositories

@@ -19,10 +19,9 @@ package org.apache.tika.pipes.fetchers.http.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.pf4j.Extension;
 
-import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 
 @Extension
 public class HttpFetcherConfig extends DefaultFetcherConfig {

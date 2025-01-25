@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -11,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,8 +79,12 @@ class TikaPipesApplicationTests {
                     .of("ignite.workDir=" + new File("target/" + UUID.randomUUID()).getAbsolutePath())
                     .applyTo(applicationContext.getEnvironment());
             File tikaPipesParentFolder = getTikaPipesParentFolder();
+            List<String> pluginDirs = new ArrayList<>();
+            pluginDirs.add(new File(tikaPipesParentFolder, "tika-pipes-fetchers").getAbsolutePath());
+            pluginDirs.add(new File(tikaPipesParentFolder, "tika-pipes-emitters").getAbsolutePath());
+            pluginDirs.add(new File(tikaPipesParentFolder, "tika-pipes-pipe-iterators").getAbsolutePath());
             TestPropertyValues
-                    .of("plugins.pluginDirs=" + new File(tikaPipesParentFolder, "tika-pipes-fetchers").getAbsolutePath())
+                    .of("plugins.pluginDirs=" + StringUtils.join(pluginDirs, ","))
                     .applyTo(applicationContext.getEnvironment());
         }
 
@@ -165,7 +172,7 @@ class TikaPipesApplicationTests {
     void emittersCrud() throws Exception {
         String emitterId1 = "emitter-example1";
         String emitterId2 = "emitter-example2";
-        String pluginId = "emitter-plugin";
+        String pluginId = "filesystem-emitter";
         ManagedChannel channel = ManagedChannelBuilder.forAddress(InetAddress
                                                               .getLocalHost()
                                                               .getHostAddress(), port)
@@ -229,7 +236,7 @@ class TikaPipesApplicationTests {
     void pipeIteratorsCrud() throws Exception {
         String pipeIteratorId1 = "pipe-iterator-example1";
         String pipeIteratorId2 = "pipe-iterator-example2";
-        String pluginId = "pipe-iterator-plugin";
+        String pluginId = "csv-pipe-iterator";
         ManagedChannel channel = ManagedChannelBuilder.forAddress(InetAddress
                                                               .getLocalHost()
                                                               .getHostAddress(), port)

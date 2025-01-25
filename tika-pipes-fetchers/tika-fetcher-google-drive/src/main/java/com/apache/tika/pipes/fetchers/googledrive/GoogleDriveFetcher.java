@@ -39,8 +39,8 @@ import org.pf4j.Extension;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TemporaryResources;
 import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.pipes.core.fetcher.Fetcher;
-import org.apache.tika.pipes.core.fetcher.FetcherConfig;
+import org.apache.tika.pipes.fetchers.core.Fetcher;
+import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 
 @Extension
 @Slf4j

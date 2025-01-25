@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.core.fetcher;
+package org.apache.tika.pipes.fetchers.core;
 
 import java.io.Serializable;
 import java.util.Map;

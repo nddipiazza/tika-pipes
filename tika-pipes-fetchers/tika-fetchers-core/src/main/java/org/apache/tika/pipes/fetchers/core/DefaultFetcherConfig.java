@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.core.fetcher;
+package org.apache.tika.pipes.fetchers.core;
 
 import java.util.Map;
 

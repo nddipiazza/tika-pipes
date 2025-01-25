@@ -33,6 +33,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>tika-fetchers-core</module>
     <module>tika-fetcher-file-system</module>
     <module>tika-fetcher-http</module>
     <module>tika-fetcher-microsoft-graph</module>

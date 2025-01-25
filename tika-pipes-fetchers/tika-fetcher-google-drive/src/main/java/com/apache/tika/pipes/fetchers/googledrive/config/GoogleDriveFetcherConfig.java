@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.pf4j.Extension;
 
-import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 
 @Extension
 @Getter

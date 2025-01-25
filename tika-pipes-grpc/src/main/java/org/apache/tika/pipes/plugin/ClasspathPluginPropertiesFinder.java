@@ -1,4 +1,4 @@
-package org.apache.tika.pipes.core.plugin;
+package org.apache.tika.pipes.plugin;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

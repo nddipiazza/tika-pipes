@@ -7,7 +7,7 @@ import org.apache.ignite.springdata.repository.config.RepositoryConfig;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 
-import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 
 @Repository
 @RepositoryConfig(cacheName = "FetcherCache")

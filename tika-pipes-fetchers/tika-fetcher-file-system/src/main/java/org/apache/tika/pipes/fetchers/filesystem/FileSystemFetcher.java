@@ -36,8 +36,8 @@ import org.apache.tika.metadata.FileSystem;
 import org.apache.tika.metadata.Property;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.pipes.core.exception.TikaPipesException;
-import org.apache.tika.pipes.core.fetcher.Fetcher;
-import org.apache.tika.pipes.core.fetcher.FetcherConfig;
+import org.apache.tika.pipes.fetchers.core.Fetcher;
+import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 
 @Extension
 public class FileSystemFetcher implements Fetcher {

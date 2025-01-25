@@ -2,7 +2,7 @@ package org.apache.tika.pipes.fetchers.filesystem;
 
 import org.pf4j.Extension;
 
-import org.apache.tika.pipes.core.fetcher.DefaultFetcherConfig;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 
 @Extension
 public class FileSystemFetcherConfig extends DefaultFetcherConfig {

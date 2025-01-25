@@ -38,6 +38,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-fetchers-core</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
@@ -82,7 +88,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>tika-core,tika-pipes-core,tika-pipe-iterators-core</excludeArtifactIds>
+              <excludeArtifactIds>${plugin.excluded.artifactIds}</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>
