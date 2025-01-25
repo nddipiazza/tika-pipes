@@ -109,9 +109,7 @@ public class ParseService {
      */
     private void parse(Parser parser, InputStream inputStream, ContentHandler handler, Metadata metadata, ParseContext parseContext) throws IOException {
         String fileName = metadata.get(TikaCoreProperties.RESOURCE_NAME_KEY);
-
-        //long taskId = SERVER_STATUS.start(ServerStatus.TASK.PARSE, fileName, timeoutMillis);
-        try {
+        try (inputStream) {
             parser.parse(inputStream, handler, metadata, parseContext);
         } catch (SAXException e) {
             throw new TikaServerParseException(e);
@@ -125,11 +123,7 @@ public class ParseService {
             throw new TikaServerParseException(e);
         } catch (OutOfMemoryError e) {
             log.warn("OOM ({})", fileName, e);
-//            SERVER_STATUS.setStatus(ServerStatus.STATUS.ERROR);
             throw e;
-        } finally {
-//            SERVER_STATUS.complete(taskId);
-            inputStream.close();
         }
     }
 }

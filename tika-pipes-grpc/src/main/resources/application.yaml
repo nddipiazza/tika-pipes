@@ -13,3 +13,8 @@ ignite:
       size: 1G
   sql:
     log: debug
+forkparser:
+  pool:
+    core-size: 5
+    max-size: 10
+    queue-capacity: 100

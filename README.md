@@ -22,9 +22,9 @@ Tika pipes services are described in the following protobuf file: [tika.proto](t
 
 We have external facing tests to demonstrate the use of Tika Pipes and each Fetcher.
 
-See the following package for the different Java client examples: [Tika Pipes Tests](tika-pipes-test%2Fsrc%2Fmain%2Fjava%2Fpipes)
+See the following package for the different Java client examples: [cli](tika-pipes-cli%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcli)
 
-In particular, this example is fairly basic and easier to see the core parts in action: [FileSystemFetcherExternalTest.java](tika-pipes-test%2Fsrc%2Fmain%2Fjava%2Fpipes%2Ffilesystem%2FFileSystemFetcherExternalTest.java)
+In particular, this example is fairly basic and easier to see the core parts in action: [FileSystemFetcherCli.java](tika-pipes-cli%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcli%2Ffilesystem%2FFileSystemFetcherCli.java)
 
 ## Tika Pipes Fetchers
 
@@ -45,14 +45,26 @@ By default, the script will tag the image with the tika pipes version.
 
 When building a Docker image that you intend to use, when building you must specify some ENV variables:
 
-* `TAG_NAME` will serve as the `-t` parameter for docker build to tag the built image. For example: `TAG_NAME=ndipiazza/tika-grpc:3.0.0-beta5`
+* `RELEASE_IMAGE_TAG` will serve as the image tag across all deployed repositories. For example: `RELEASE_IMAGE_TAG=3.0.0-beta5`. Defaults to TIKA_PIPES_VERSION when unspecified.
+* `AWS_ACCOUNT_ID` pushes the docker image to the specified AWS Account. `AWS_ACCOUNT_ID=<aws-account-id>`
+* `AZURE_REGISTRY_NAME` pushes the docker image to the specified Azure registry. `AZURE_REGISTRY_NAME=<registry-name>`
+* `DOCKER_ID` pushes the docker image to the specified account within Docker Hub. `DOCKER_ID=nddipiazza`
+* `PROJECT_NAME` allows changing the name of the project, as part of the push to repositories. Defaults to `tika`
 * `MULTI_ARCH` set this to true if you want to build for Multi-arch mode.
-
-Verify the image that is built is as expected, then push your image to the remote docker repository if necessary.
 
 Here is an example:
 
 ```bash
-MULTI_ARCH=true TAG_NAME=ndipiazza/tika-grpc:3.0.0-beta5 mvn package
-docker push ${TAG_NAME}
+MULTI_ARCH=true RELEASE_IMAGE_TAG=3.0.0-beta5 DOCKER_ID=ndipiazza mvn package
 ```
+
+# Docker Usage
+You can pull down the version you would like using:
+
+`docker pull ndipiazza/tika-pipes:<version>`
+
+Then to run the container, execute the following command:
+
+`docker run -d -p 127.0.0.1::50051 ndipiazza/tika-pipes:<version>`
+
+Where <version> is the Apache Tika Server version - e.g. 3.0.0
