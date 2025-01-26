@@ -2,12 +2,8 @@
 
 The Tika Pipes Grpc service hosts the Tika Pipes service as a gRPC service.
 
-# How do fetchers get stored across nodes in the cluster?
+# How do objects such as Fetchers and Emitters get stored across nodes in the cluster?
 
 Apache ignite is used to store the fetchers across the cluster. 
 
-The fetchers are stored in the `fetchers` cache. 
-
-The key is the fetcher's ID and the value is the fetcher's configuration.
-
-The fetchers are loaded into the service by the `FetcherManager`.
+The fetchers are stored in the `FetcherCache` cache, the emitters are stored in the `EmitterCache` cache, etc. 

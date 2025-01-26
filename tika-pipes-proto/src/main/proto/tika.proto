@@ -320,23 +320,32 @@ message GetPipeIteratorConfigJsonSchemaReply {
 }
 
 message RunPipeJobRequest {
+  // The ID of the pipe iterator in the pipe iterator store (previously saved by SavePipeIterator) to use for the pipe job.
   string pipe_iterator_id = 1;
+  // The ID of the fetcher in the fetcher store (previously saved by SaveFetcher) to use for the pipe job.
   string fetcher_id = 2;
+  // The ID of the emitter in the emitter store (previously saved by SaveEmitter) to use for the pipe job.
   string emitter_id = 3;
 }
 
 message RunPipeJobReply {
+  // The ID of the pipe job that was started.
   string pipe_job_id = 1;
 }
 
 message GetPipeJobRequest {
+  // The ID of the pipe job for which to return state.
   string pipe_job_id = 1;
 }
 
 message GetPipeJobReply {
+  // The ID of the pipe job being returned.
   string pipe_job_id = 1;
+  // The ID of the pipe iterator used in the pipe job.
   string pipe_iterator_id = 2;
+  // The ID of the fetcher used in the pipe job.
   string fetcher_id = 3;
+  // The ID of the emitter used in the pipe job.
   string emitter_id = 4;
   bool is_running = 5;
   bool is_completed = 6;
