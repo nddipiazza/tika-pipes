@@ -32,14 +32,36 @@ mkdir -p "${OUT_DIR}/config"
 mkdir -p "${OUT_DIR}/bin"
 cp -v -r "tika-pipes-grpc/target/tika-pipes-grpc-${TIKA_PIPES_VERSION}.jar" "${OUT_DIR}/libs"
 
-# Loop through tika-pipes-fetchers directories and copy the plugin zip files
+# Loop through tika-pipes-fetchers child directories and copy the plugin zip files
 for dir in tika-pipes-fetchers/*/; do
     fetcher_name=$(basename "$dir")
     zip_file="${dir}target/${fetcher_name}-${TIKA_PIPES_VERSION}.zip"
     if [ -f "$zip_file" ]; then
         cp -v -r "$zip_file" "${OUT_DIR}/plugins"
     else
-        echo "File $zip_file does not exist, skipping."
+        echo "Fetcher file $zip_file does not exist, skipping."
+    fi
+done
+
+# Loop through tika-pipes-fetchers child directories and copy the plugin zip files
+for dir in tika-pipes-emitters/*/; do
+    emitter_name=$(basename "$dir")
+    zip_file="${dir}target/${emitter_name}-${TIKA_PIPES_VERSION}.zip"
+    if [ -f "$zip_file" ]; then
+        cp -v -r "$zip_file" "${OUT_DIR}/plugins"
+    else
+        echo "Emitter file $zip_file does not exist, skipping."
+    fi
+done
+
+# Loop through tika-pipes-pipe-iterators child directories and copy the plugin zip files
+for dir in tika-pipes-pipe-iterators/*/; do
+    pipe_iterator_name=$(basename "$dir")
+    zip_file="${dir}target/${pipe_iterator_name}-${TIKA_PIPES_VERSION}.zip"
+    if [ -f "$zip_file" ]; then
+        cp -v -r "$zip_file" "${OUT_DIR}/plugins"
+    else
+        echo "Pipe iterator file $zip_file does not exist, skipping."
     fi
 done
 

@@ -34,6 +34,11 @@ import org.apache.tika.pipes.core.iterators.TikaPipeIteratorException;
 
 @Extension
 public class CsvPipeIterator implements PipeIterator {
+    @Override
+    public String getPipeIteratorId() {
+        return "csv-pipe-iterator";
+    }
+
     private final String fetchKeyColumn;
     private final Reader reader;
     private final Iterator<CSVRecord> records;

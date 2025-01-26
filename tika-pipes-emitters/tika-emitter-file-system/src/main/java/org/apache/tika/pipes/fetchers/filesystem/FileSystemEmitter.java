@@ -17,87 +17,61 @@
 package org.apache.tika.pipes.fetchers.filesystem;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Map;
+import java.util.List;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.StreamReadConstraints;
-import org.apache.commons.io.output.CloseShieldWriter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.pf4j.Extension;
 
-import org.apache.tika.config.TikaConfig;
+import org.apache.tika.FetchAndParseReply;
 import org.apache.tika.pipes.core.emitter.Emitter;
 import org.apache.tika.pipes.core.emitter.EmitterConfig;
 import org.apache.tika.pipes.core.emitter.OnExistBehavior;
-import org.apache.tika.pipes.core.emitter.TikaEmitterException;
 
 @Extension
 public class FileSystemEmitter implements Emitter {
     @Override
-    public void emit(EmitterConfig emitterConfig, String emitKey, Map<String, Object> metadata, InputStream is) throws IOException {
+    public String getPluginId() {
+        return "filesystem-emitter";
+    }
+
+    @Override
+    public void emit(EmitterConfig emitterConfig, List<FetchAndParseReply> fetchAndParseReplies)
+            throws IOException {
         FileSystemEmitterConfig config = (FileSystemEmitterConfig) emitterConfig;
         Path basePath = Paths.get(config.getBasePath());
         String fileExtension = config.getFileExtension();
         OnExistBehavior onExists = OnExistBehavior.valueOf(config
                 .getOnExists()
                 .toUpperCase());
-        boolean prettyPrint = config.isPrettyPrint();
-        Path output;
-        if (metadata == null || metadata.isEmpty()) {
-            throw new TikaEmitterException("metadata must not be null or empty");
-        }
-        if (fileExtension != null && !fileExtension.isEmpty()) {
-            emitKey += "." + fileExtension;
-        }
-        output = basePath.resolve(emitKey);
-        if (!Files.isDirectory(output.getParent())) {
-            Files.createDirectories(output.getParent());
-        }
-        if (onExists == OnExistBehavior.REPLACE) {
-            Files.copy(is, output, StandardCopyOption.REPLACE_EXISTING);
-        } else if (onExists == OnExistBehavior.EXCEPTION) {
-            Files.copy(is, output);
-        } else if (onExists == OnExistBehavior.SKIP) {
-            if (!Files.isRegularFile(output)) {
-                try {
-                    Files.copy(is, output);
-                } catch (FileAlreadyExistsException e) {
-                    //swallow
-                }
+        for (FetchAndParseReply fetchAndParseReply : fetchAndParseReplies) {
+            Path output;
+            String emitKey = fetchAndParseReply.getFetchKey();
+            if (fileExtension != null && !fileExtension.isEmpty()) {
+                emitKey += "." + fileExtension;
             }
-        }
-        try (Writer writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
-            toJson(metadata, writer, prettyPrint);
-        }
-    }
-
-    private void toJson(Map<String, Object> metadata, Writer writer, boolean prettyPrint) throws IOException {
-        if (metadata == null) {
-            writer.write("null");
-            return;
-        }
-        try (JsonGenerator jsonGenerator = new JsonFactory()
-                .setStreamReadConstraints(StreamReadConstraints
-                        .builder()
-                        .maxStringLength(TikaConfig.getMaxJsonStringFieldLength())
-                        .build())
-                .createGenerator(new CloseShieldWriter(writer))) {
-            if (prettyPrint) {
-                jsonGenerator.useDefaultPrettyPrinter();
+            if (basePath != null) {
+                output = basePath.resolve(emitKey);
+            } else {
+                output = Paths.get(emitKey);
             }
-            jsonGenerator.writeStartObject();
-            for (Map.Entry<String, Object> entry : metadata.entrySet()) {
-                jsonGenerator.writeObjectField(entry.getKey(), entry.getValue());
+            if (!Files.isDirectory(output.getParent())) {
+                Files.createDirectories(output.getParent());
             }
-            jsonGenerator.writeEndObject();
+            if (onExists == OnExistBehavior.SKIP && Files.isRegularFile(output)) {
+                continue;
+            } else if (onExists == OnExistBehavior.EXCEPTION && Files.isRegularFile(output)) {
+                throw new FileAlreadyExistsException(output.toString());
+            }
+            try (Writer writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.writeValue(writer, fetchAndParseReply.getMetadataList());
+            }
         }
     }
 }

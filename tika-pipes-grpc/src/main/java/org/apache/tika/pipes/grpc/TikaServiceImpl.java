@@ -3,7 +3,14 @@ package org.apache.tika.pipes.grpc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -37,6 +44,8 @@ import org.apache.tika.GetPipeIteratorConfigJsonSchemaReply;
 import org.apache.tika.GetPipeIteratorConfigJsonSchemaRequest;
 import org.apache.tika.GetPipeIteratorReply;
 import org.apache.tika.GetPipeIteratorRequest;
+import org.apache.tika.GetPipeJobReply;
+import org.apache.tika.GetPipeJobRequest;
 import org.apache.tika.ListEmittersReply;
 import org.apache.tika.ListEmittersRequest;
 import org.apache.tika.ListFetchersReply;
@@ -44,6 +53,8 @@ import org.apache.tika.ListFetchersRequest;
 import org.apache.tika.ListPipeIteratorsReply;
 import org.apache.tika.ListPipeIteratorsRequest;
 import org.apache.tika.Metadata;
+import org.apache.tika.RunPipeJobReply;
+import org.apache.tika.RunPipeJobRequest;
 import org.apache.tika.SaveEmitterReply;
 import org.apache.tika.SaveEmitterRequest;
 import org.apache.tika.SaveFetcherReply;
@@ -63,6 +74,7 @@ import org.apache.tika.pipes.core.parser.ParseService;
 import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 import org.apache.tika.pipes.fetchers.core.Fetcher;
 import org.apache.tika.pipes.fetchers.core.FetcherConfig;
+import org.apache.tika.pipes.job.JobStatus;
 import org.apache.tika.pipes.repo.EmitterRepository;
 import org.apache.tika.pipes.repo.FetcherRepository;
 import org.apache.tika.pipes.repo.PipeIteratorRepository;
@@ -71,6 +83,8 @@ import org.apache.tika.pipes.repo.PipeIteratorRepository;
 @Service
 @Slf4j
 public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
+    private final ConcurrentHashMap<String, JobStatus> jobStatusMap = new ConcurrentHashMap<>();
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
     public static final TypeReference<Map<String, Object>> MAP_STRING_OBJ_TYPE_REF = new TypeReference<>() {
     };
     @Autowired
@@ -416,5 +430,100 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     @Override
     public void getPipeIteratorConfigJsonSchema(GetPipeIteratorConfigJsonSchemaRequest request, StreamObserver<GetPipeIteratorConfigJsonSchemaReply> responseObserver) {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public void runPipeJob(RunPipeJobRequest request,
+                           StreamObserver<RunPipeJobReply> responseObserver) {
+        String jobId = UUID.randomUUID().toString();
+        JobStatus jobStatus = new JobStatus(jobId);
+        jobStatusMap.put(jobId, jobStatus);
+
+        executorService.submit(() -> {
+            try {
+                DefaultPipeIteratorConfig pipeIteratorConfig =
+                        pipeIteratorRepository.findByPipeIteratorId(request.getPipeIteratorId());
+                PipeIterator pipeIterator = getPipeIterator(pipeIteratorConfig.getPluginId());
+                EmitterConfig emitterConfig =
+                        emitterRepository.findByEmitterId(request.getEmitterId());
+                Emitter emitter = getEmitter(emitterConfig.getPluginId());
+
+                while (pipeIterator.hasNext()) {
+                    CountDownLatch countDownLatch = new CountDownLatch(1);
+                    List<FetchAndParseRequest> fetchAndParseRequests = pipeIterator.next();
+                    StreamObserver<FetchAndParseRequest> requestStreamObserver =
+                            fetchAndParseBiDirectionalStreaming(new StreamObserver<>() {
+                                @Override
+                                public void onNext(FetchAndParseReply fetchAndParseReply) {
+                                    try {
+                                        emitter.emit(emitterConfig, List.of(fetchAndParseReply));
+                                    } catch (IOException e) {
+                                        log.error("Error emitting fetch key {}",
+                                                fetchAndParseReply.getFetchKey(), e);
+                                        jobStatus.setError(true);
+                                        responseObserver.onError(e);
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable throwable) {
+                                    log.error("Error streaming fetch and parse replies", throwable);
+                                    jobStatus.setError(true);
+                                    countDownLatch.countDown();
+                                }
+
+                                @Override
+                                public void onCompleted() {
+                                    log.info("Finished streaming fetch and parse replies");
+                                    countDownLatch.countDown();
+                                }
+                            });
+
+                    for (FetchAndParseRequest fetchAndParseRequest : fetchAndParseRequests) {
+                        requestStreamObserver.onNext(fetchAndParseRequest);
+                    }
+                    requestStreamObserver.onCompleted();
+
+                    try {
+                        if (!countDownLatch.await(3, TimeUnit.MINUTES)) {
+                            log.error("Timed out waiting for parse to complete");
+                            jobStatus.setError(true);
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        jobStatus.setError(true);
+                    }
+                }
+
+                jobStatus.setCompleted(true);
+            } catch (Exception e) {
+                log.error("Exception running pipe job", e);
+                jobStatus.setError(true);
+            } finally {
+                jobStatus.setRunning(false);
+            }
+        });
+
+        responseObserver.onNext(RunPipeJobReply.newBuilder().setPipeJobId(jobId).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getPipeJob(GetPipeJobRequest request,
+                           StreamObserver<GetPipeJobReply> responseObserver) {
+        JobStatus jobStatus = jobStatusMap.get(request.getPipeJobId());
+        if (jobStatus == null) {
+            responseObserver.onError(
+                    new IllegalArgumentException("Job ID not found: " + request.getPipeJobId()));
+            return;
+        }
+
+        GetPipeJobReply.Builder replyBuilder =
+                GetPipeJobReply.newBuilder().setPipeJobId(jobStatus.getJobId())
+                        .setIsRunning(jobStatus.isRunning()).setIsCompleted(jobStatus.isCompleted())
+                        .setHasError(jobStatus.hasError());
+
+        responseObserver.onNext(replyBuilder.build());
+        responseObserver.onCompleted();
     }
 }

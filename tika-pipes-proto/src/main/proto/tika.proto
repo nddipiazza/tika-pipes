@@ -101,6 +101,16 @@ service Tika {
     Get the Pipe Iterator Config schema for a given pipe iterator.
   */
   rpc GetPipeIteratorConfigJsonSchema(GetPipeIteratorConfigJsonSchemaRequest) returns (GetPipeIteratorConfigJsonSchemaReply) {}
+
+  /*
+    Run a pipe job.
+  */
+  rpc RunPipeJob(RunPipeJobRequest) returns (RunPipeJobReply) {}
+
+  /*
+    Get a pipe job's state.
+  */
+  rpc GetPipeJob(GetPipeJobRequest) returns (GetPipeJobReply) {}
 }
 
 message SaveFetcherRequest {
@@ -139,6 +149,8 @@ message FetchAndParseReply {
   string status = 3;
   // If there was an error, this will contain the error message.
   string error_message = 4;
+  // Estimated size in bytes of this.
+  int64 estimatedSizeBytes = 5;
 }
 
 message DeleteFetcherRequest {
@@ -305,4 +317,28 @@ message GetPipeIteratorConfigJsonSchemaRequest {
 message GetPipeIteratorConfigJsonSchemaReply {
   // The json schema that describes the pipe iterator config in string format.
   string pipe_iterator_config_json_schema = 1;
+}
+
+message RunPipeJobRequest {
+  string pipe_iterator_id = 1;
+  string fetcher_id = 2;
+  string emitter_id = 3;
+}
+
+message RunPipeJobReply {
+  string pipe_job_id = 1;
+}
+
+message GetPipeJobRequest {
+  string pipe_job_id = 1;
+}
+
+message GetPipeJobReply {
+  string pipe_job_id = 1;
+  string pipe_iterator_id = 2;
+  string fetcher_id = 3;
+  string emitter_id = 4;
+  bool is_running = 5;
+  bool is_completed = 6;
+  bool has_error = 7;
 }

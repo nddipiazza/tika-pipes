@@ -1,11 +1,15 @@
 package org.apache.tika.pipes.core.emitter;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
+import java.util.List;
 
 import org.pf4j.ExtensionPoint;
 
+import org.apache.tika.FetchAndParseReply;
+
 public interface Emitter extends ExtensionPoint {
-    void emit(EmitterConfig emitterConfig, String emitKey, Map<String, Object> metadata, InputStream is) throws IOException;
+    String getPluginId();
+
+    void emit(EmitterConfig emitterConfig, List<FetchAndParseReply> fetchAndParseReplies)
+            throws IOException;
 }

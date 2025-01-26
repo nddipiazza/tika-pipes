@@ -86,8 +86,8 @@ public class GoogleDriveFetcher implements Fetcher {
                     throw new RuntimeException(e);
                 }
 
-                InputStream is = driveService.files()
-                                             .get(fileId)
+                Drive.Files.Get get = driveService.files().get(fileId);
+                InputStream is = get
                                              .executeMediaAsInputStream();
 
                 if (is == null) {

@@ -30,7 +30,7 @@ import org.apache.tika.TikaGrpc;
 @Slf4j
 public class S3FetcherCli {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
-    public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
+    public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 50051;
     @Parameter(names = {"--fetch-urls"}, description = "File of URLs to fetch", help = true)
     private File urlsToFetchFile;
     @Parameter(names = {"--grpcHost"}, description = "The grpc host", help = true)
