@@ -25,6 +25,7 @@ import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 import org.apache.tika.pipes.job.JobStatus;
 import org.apache.tika.pipes.repo.EmitterRepository;
 import org.apache.tika.pipes.repo.FetcherRepository;
+import org.apache.tika.pipes.repo.JobStatusRepository;
 import org.apache.tika.pipes.repo.PipeIteratorRepository;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.PluginManager;
@@ -42,7 +43,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 @Slf4j
 public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
-    private final ConcurrentHashMap<String, JobStatus> jobStatusMap = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool(new TikaRunnerThreadFactory());
     public static final TypeReference<Map<String, Object>> MAP_STRING_OBJ_TYPE_REF = new TypeReference<>() {
     };
@@ -57,6 +57,9 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Autowired
     private PipeIteratorRepository pipeIteratorRepository;
+
+    @Autowired
+    private JobStatusRepository jobStatusRepository;
 
     @Autowired
     private Environment environment;
@@ -410,16 +413,24 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     public void runPipeJob(RunPipeJobRequest request,
                            StreamObserver<RunPipeJobReply> responseObserver) {
         String jobId = UUID.randomUUID().toString();
-        JobStatus jobStatus = new JobStatus(jobId);
-        jobStatusMap.put(jobId, jobStatus);
+        updateJobStatus(jobId, true, false, false);
 
-        executorService.submit(() -> runPipeJob(request, responseObserver, jobStatus));
+        executorService.submit(() -> runPipeJobImpl(request, responseObserver, jobId));
 
         responseObserver.onNext(RunPipeJobReply.newBuilder().setPipeJobId(jobId).build());
         responseObserver.onCompleted();
     }
 
-    private void runPipeJob(RunPipeJobRequest request, StreamObserver<RunPipeJobReply> responseObserver, JobStatus jobStatus) {
+    private void updateJobStatus(String jobId, boolean isRunning, boolean hasError, boolean isCompleted) {
+        jobStatusRepository.save(jobId, JobStatus.builder()
+                .jobId(jobId)
+                .running(isRunning)
+                .hasError(hasError)
+                .completed(isCompleted)
+                .build());
+    }
+
+    private void runPipeJobImpl(RunPipeJobRequest request, StreamObserver<RunPipeJobReply> responseObserver, String jobId) {
         try {
             DefaultPipeIteratorConfig pipeIteratorConfig = pipeIteratorRepository.findByPipeIteratorId(request.getPipeIteratorId());
             PipeIteratorConfig pipeIteratorConfigFromPluginManager = objectMapper.convertValue(pipeIteratorConfig.getConfig(), getPipeIteratorConfigClassFromPluginManager(pipeIteratorConfig));
@@ -442,7 +453,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                             } catch (IOException e) {
                                 log.error("Error emitting fetch key {}",
                                         fetchAndParseReply.getFetchKey(), e);
-                                jobStatus.setError(true);
+                                updateJobStatus(jobId, true, false, false);
                                 responseObserver.onError(e);
                             }
                         }
@@ -450,7 +461,6 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                         @Override
                         public void onError(Throwable throwable) {
                             log.error("Error streaming fetch and parse replies", throwable);
-                            jobStatus.setError(true);
                             countDownLatch.countDown();
                         }
 
@@ -475,19 +485,15 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             requestStreamObserver.onCompleted();
             try {
                 if (!countDownLatch.await(request.getJobCompletionTimeoutSeconds(), TimeUnit.SECONDS)) {
-                    log.error("Timed out waiting for to complete after job completion timeout of {} seconds", request.getJobCompletionTimeoutSeconds());
-                    jobStatus.setError(true);
+                    throw new TikaPipesException("Timed out waiting for job to complete");
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                jobStatus.setError(true);
             }
-            jobStatus.setCompleted(true);
+            updateJobStatus(jobId, false, false, true);
         } catch (Throwable e) {
             log.error("Exception running pipe job", e);
-            jobStatus.setError(true);
-        } finally {
-            jobStatus.setRunning(false);
+            updateJobStatus(jobId, false, true, true);
         }
     }
 
@@ -507,7 +513,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     @Override
     public void getPipeJob(GetPipeJobRequest request,
                            StreamObserver<GetPipeJobReply> responseObserver) {
-        JobStatus jobStatus = jobStatusMap.get(request.getPipeJobId());
+        JobStatus jobStatus = jobStatusRepository.findByJobId(request.getPipeJobId());
         if (jobStatus == null) {
             responseObserver.onError(
                     new IllegalArgumentException("Job ID not found: " + request.getPipeJobId()));
@@ -516,8 +522,9 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
         GetPipeJobReply.Builder replyBuilder =
                 GetPipeJobReply.newBuilder().setPipeJobId(jobStatus.getJobId())
-                        .setIsRunning(jobStatus.isRunning()).setIsCompleted(jobStatus.isCompleted())
-                        .setHasError(jobStatus.hasError());
+                        .setIsRunning(jobStatus.getRunning())
+                        .setIsCompleted(jobStatus.getCompleted())
+                        .setHasError(jobStatus.getHasError());
 
         responseObserver.onNext(replyBuilder.build());
         responseObserver.onCompleted();

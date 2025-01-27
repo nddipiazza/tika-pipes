@@ -1,8 +1,5 @@
 package org.apache.tika.pipes.repo;
 
-import java.io.File;
-import java.io.IOException;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ignite.Ignite;
@@ -10,13 +7,16 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.springdata.repository.config.EnableIgniteRepositories;
+import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
+import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
+import org.apache.tika.pipes.job.JobStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
-import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
-import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
+import java.io.File;
+import java.io.IOException;
 
 @Configuration
 @EnableIgniteRepositories
@@ -49,7 +49,10 @@ public class IgniteRepositoryConfiguration {
             CacheConfiguration<String, DefaultPipeIteratorConfig> pipeIteratorCacheConf = new CacheConfiguration<>("PipeIteratorCache");
             pipeIteratorCacheConf.setIndexedTypes(String.class, DefaultPipeIteratorConfig.class);
 
-            cfg.setCacheConfiguration(fetcherCacheConf, emitterCacheConf, pipeIteratorCacheConf);
+            CacheConfiguration<String, JobStatus> jobStatusCacheConf = new CacheConfiguration<>("JobStatusCache");
+            jobStatusCacheConf.setIndexedTypes(String.class, JobStatus.class);
+
+            cfg.setCacheConfiguration(fetcherCacheConf, emitterCacheConf, pipeIteratorCacheConf, jobStatusCacheConf);
 
             Ignite ignite = Ignition.start(cfg);
             assert ignite.configuration() != null;

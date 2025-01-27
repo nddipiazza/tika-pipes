@@ -1,45 +1,19 @@
 package org.apache.tika.pipes.job;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.ignite.cache.query.annotations.QuerySqlField;
 
-public class JobStatus {
-    private final String jobId;
-    private final AtomicBoolean isRunning;
-    private final AtomicBoolean isCompleted;
-    private final AtomicBoolean hasError;
+import java.io.Serializable;
 
-    public JobStatus(String jobId) {
-        this.jobId = jobId;
-        this.isRunning = new AtomicBoolean(true);
-        this.isCompleted = new AtomicBoolean(false);
-        this.hasError = new AtomicBoolean(false);
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public boolean isRunning() {
-        return isRunning.get();
-    }
-
-    public void setRunning(boolean running) {
-        isRunning.set(running);
-    }
-
-    public boolean isCompleted() {
-        return isCompleted.get();
-    }
-
-    public void setCompleted(boolean completed) {
-        isCompleted.set(completed);
-    }
-
-    public boolean hasError() {
-        return hasError.get();
-    }
-
-    public void setError(boolean error) {
-        hasError.set(error);
-    }
+@Builder
+@Getter
+@Setter
+public class JobStatus implements Serializable {
+    @QuerySqlField(index = true)
+    private String jobId;
+    private Boolean running;
+    private Boolean completed;
+    private Boolean hasError;
 }
