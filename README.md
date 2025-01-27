@@ -1,7 +1,9 @@
 # Tika Pipes
 
-Tika Pipes is a collection of Java services and libraries that handles the large scale downloading of files, 
+Tika Pipes is a Java Grpc web service that handles the large scale downloading of files, 
 then parsing of the downloaded content using Apache Tika.
+
+Tika Pipes plugins can be used to create customizable fetchers, pipe iterators, and emitters.
 
 ## What is Tika Pipes Built With
 * Java 17
@@ -22,11 +24,11 @@ Tika pipes services are described in the following protobuf file: [tika.proto](t
 
 Tika Pipes Grpc Service is made up of the following components:
 
-* **Tika Parser Service**: The Tika Pipes service contains a Apache Tika service to convert the Documents into parsed Tika text metadata.
-* **Tika Fetchers** - Tika Pipes Plugin type that fetches the binary document from a source, authenticating if necessary. 
-* **Tika Pipe Iterators** - Tika Pipes Plugin type can identify files to fetch over a content source. For example, you might use 
+* [Tika Parse Service](tika-pipes-core%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcore%2Fparser%2FParseService.java) - The Tika Pipes service contains a Apache Tika service to convert the Documents into parsed Tika text metadata.
+* [Tika Fetchers](tika-pipes-fetchers%2Ftika-fetchers-core%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Ffetchers%2Fcore%2FFetcher.java) - Tika Pipes Plugin type that fetches the binary document from a source, authenticating if necessary. 
+* [Tika Pipe Iterators](tika-pipes-pipe-iterators%2Ftika-pipe-iterators-core%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcore%2Fiterators%2FPipeIterator.java) - Tika Pipes Plugin type can identify files to fetch over a content source. For example, you might use 
 a CSV pipe iterator if you have a CSV file that contains URLs to fetch.
-* **Tika Emitters** - Tika Pipes Plugin type that emits the parsed Tika metadata to a destination. For example, you 
+* [Tika Emitters](tika-pipes-emitters%2Ftika-emitters-core%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcore%2Femitter%2FEmitter.java) - Tika Pipes Plugin type that emits the parsed Tika metadata to a destination. For example, you 
 might use an Apache Solr emitter if you would like to emit your parsed documents to an Apache search index.
 
 ### Tika Pipes Jobs

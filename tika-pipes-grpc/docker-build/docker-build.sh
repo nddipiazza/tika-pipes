@@ -17,13 +17,13 @@ AWS_REGION=${AWS_REGION:-us-west-2}
 AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-}
 AZURE_REGISTRY_NAME=${AZURE_REGISTRY_NAME:-}
 DOCKER_ID=${DOCKER_ID:-}
-PROJECT_NAME=tika
+PROJECT_NAME=${PROJECT_NAME:-tika-pipes}
 
 # If RELEASE_IMAGE_TAG not specified, use TIKA_PIPES_VERSION
 if [[ -z "${RELEASE_IMAGE_TAG}" ]]; then
     RELEASE_IMAGE_TAG="${TIKA_PIPES_VERSION}"
     ## Remove '-SNAPSHOT' from the version string
-    RELEASE_IMAGE_TAG="${DOCKER_ID}:${RELEASE_IMAGE_TAG//-SNAPSHOT/}"
+    RELEASE_IMAGE_TAG="${RELEASE_IMAGE_TAG//-SNAPSHOT/}"
 fi
 
 mkdir -p "${OUT_DIR}/libs"
@@ -104,14 +104,14 @@ if [ "${MULTI_ARCH}" == "true" ]; then
   docker run --rm --privileged tonistiigi/binfmt --install arm64
   docker buildx build \
       --builder=tikapipesbuilder . \
-      "${tag}" \
+      ${tag} \
       --platform linux/amd64,linux/arm64 \
       --push
   docker buildx stop tikapipesbuilder
 else
   echo "Building single arch image"
   # build single arch
-  docker build . "${tag}"
+  docker build . ${tag}
 fi
 
 echo " ==================================================================================================="
