@@ -3,6 +3,8 @@
 Tika Pipes is a Java Grpc web service that handles the large scale downloading of files, 
 then parsing of the downloaded content using Apache Tika.
 
+It also has the ability to acquire files to fetch from external sources, and to publish Tika parsed documents to an outgoing destination.
+
 Tika Pipes plugins can be used to create customizable fetchers, pipe iterators, and emitters.
 
 ## What is Tika Pipes Built With
