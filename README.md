@@ -42,14 +42,16 @@ The Tika Grpc service has a `runPipeJob` service that takes 3 arguments:
 
 The Pipe Job will open a bidirectional stream the Grpc `fetchAndParse` service. 
 
-The Pipe Iterator then streams in the documents to fetch.
+The Pipe Iterator then streams in the `FetchInput`s to fetch. 
+
+`FetchInput` are a tuple containing the data needed to fetch the Item from the Fetcher, such as the `{"url": "http://some.web/resource"}`, or maybe perhaps some IDs used to fetch from a repository `{"spaceId": "ad7765346qa", "driveId": "ndd"}` are examples.
 
 As the fetchAndParse method handles the fetch input requests, it will use the Fetcher to obtain the binary contents, 
 then Tika Parse Service to parse the document to Tika Text Metadata. 
 
-The method responds with stream of `FetchAndParseReply` objects from each record parsed from the input.
+Once the Fetcher retrieves the file indicated by the `FetchInput`, extracts the Tika parsed metadata, and responds with stream of `FetchAndParseReply` containing that data.
 
-Finally, the Emitter takes these parsed Tika metadata objects and emits them to a destination.
+Finally, the Emitter takes these parsed Tika metadata `FetchAndParseReply` objects and emits them to a destination.
 
 ![tika-pipes-jobs.drawio.png](readme-files%2Ftika-pipes-jobs.drawio.png)
 ![tika-pipes-jobs-inner.drawio.png](readme-files%2Ftika-pipes-jobs-inner.drawio.png)
