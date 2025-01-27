@@ -1,6 +1,16 @@
 package org.apache.tika.pipes.grpc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.*;
+import org.apache.tika.pipes.TikaPipesIntegrationTestBase;
+import org.apache.tika.pipes.fetchers.filesystem.FileSystemFetcherConfig;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,24 +27,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.stub.StreamObserver;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import org.apache.tika.FetchAndParseReply;
-import org.apache.tika.FetchAndParseRequest;
-import org.apache.tika.GetFetcherReply;
-import org.apache.tika.GetFetcherRequest;
-import org.apache.tika.SaveFetcherReply;
-import org.apache.tika.SaveFetcherRequest;
-import org.apache.tika.TikaGrpc;
-import org.apache.tika.pipes.TikaPipesIntegrationTestBase;
-import org.apache.tika.pipes.fetcher.fs.config.FileSystemFetcherConfig;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
@@ -58,7 +51,7 @@ class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
         TikaGrpc.TikaBlockingStub tikaBlockingStub = TikaGrpc.newBlockingStub(channel);
         TikaGrpc.TikaStub tikaStub = TikaGrpc.newStub(channel);
 
-        saveFileSystemFetcher(tikaBlockingStub, fetcherId, pluginId);
+        saveFetcher(tikaBlockingStub, fetcherId, pluginId);
 
         List<FetchAndParseReply> successes = Collections.synchronizedList(new ArrayList<>());
         List<FetchAndParseReply> errors = Collections.synchronizedList(new ArrayList<>());
@@ -137,7 +130,7 @@ class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
         log.info("Fetched: success={}", successes);
     }
 
-    private void saveFileSystemFetcher(TikaGrpc.TikaBlockingStub tikaBlockingStub, String fetcherId,
+    private void saveFetcher(TikaGrpc.TikaBlockingStub tikaBlockingStub, String fetcherId,
                                        String pluginId) throws JsonProcessingException {
         FileSystemFetcherConfig fileSystemFetcherConfig = new FileSystemFetcherConfig();
         fileSystemFetcherConfig.setExtractFileSystemMetadata(true);

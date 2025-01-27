@@ -326,6 +326,8 @@ message RunPipeJobRequest {
   string fetcher_id = 2;
   // The ID of the emitter in the emitter store (previously saved by SaveEmitter) to use for the pipe job.
   string emitter_id = 3;
+  // Hard timeout of job in seconds
+  int32 job_completion_timeout_seconds = 4;
 }
 
 message RunPipeJobReply {

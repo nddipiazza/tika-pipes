@@ -29,6 +29,7 @@
     <ignite-spring-data-ext.version>3.0.0</ignite-spring-data-ext.version>
     <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
     <tika-version>3.0.0</tika-version>
+    <commons-io.version>2.18.0</commons-io.version>
   </properties>
   <dependencies>
     <dependency>
@@ -53,6 +54,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
       <version>5.10.3</version> <!-- You can update to the latest version -->
@@ -62,6 +68,24 @@
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-pipes-core</artifactId>
       <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-fetcher-file-system</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-emitter-file-system</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-pipe-iterator-csv</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>

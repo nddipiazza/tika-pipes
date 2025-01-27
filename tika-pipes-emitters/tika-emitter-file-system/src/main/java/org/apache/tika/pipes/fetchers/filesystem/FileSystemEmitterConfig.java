@@ -1,30 +1,29 @@
 package org.apache.tika.pipes.fetchers.filesystem;
 
-import org.pf4j.Extension;
-
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
+import org.pf4j.Extension;
 
 @Extension
 public class FileSystemEmitterConfig extends DefaultEmitterConfig {
-    private String basePath;
-    private String fileExtension = "json";
+    private String outputDir;
+    private String addFileExtension = "json";
     private String onExists = "exception";
     private boolean prettyPrint = false;
 
-    public String getBasePath() {
-        return basePath;
+    public String getOutputDir() {
+        return outputDir;
     }
 
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
     }
 
-    public String getFileExtension() {
-        return fileExtension;
+    public String getAddFileExtension() {
+        return addFileExtension;
     }
 
-    public void setFileExtension(String fileExtension) {
-        this.fileExtension = fileExtension;
+    public void setAddFileExtension(String addFileExtension) {
+        this.addFileExtension = addFileExtension;
     }
 
     public String getOnExists() {

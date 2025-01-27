@@ -1,20 +1,20 @@
 package org.apache.tika.pipes.fetchers.filesystem;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
 import org.pf4j.Extension;
 
-import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
+import java.nio.charset.StandardCharsets;
 
 @Extension
 @Getter
 @Setter
 public class CsvPipeIteratorConfig extends DefaultPipeIteratorConfig {
     private String charset = StandardCharsets.UTF_8.name();
-    private Path csvPath;
+    private String csvPath;
     private String fetchKeyColumn;
-    private String csvFormat;
+    private Integer fetchKeyColumnIndex;
+    private String csvFormat = CSVFormat.Predefined.Excel.name();
 }

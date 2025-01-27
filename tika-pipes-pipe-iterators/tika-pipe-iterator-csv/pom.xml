@@ -13,12 +13,19 @@
   <description>A Tika Pipes Pipe Iterator that iterates through keys from a CSV on the file system.</description>
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
+    <commons-io.version>2.18.0</commons-io.version>
+    <commons-csv.version>1.13.0</commons-csv.version>
   </properties>
   <dependencies>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
-      <version>1.13.0</version>
+      <version>${commons-csv.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pf4j</groupId>

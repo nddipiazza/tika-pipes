@@ -16,6 +16,14 @@
  */
 package org.apache.tika.pipes.fetchers.filesystem;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.pipes.core.emitter.Emitter;
+import org.apache.tika.pipes.core.emitter.EmitterConfig;
+import org.apache.tika.pipes.core.emitter.EmitterOutput;
+import org.apache.tika.pipes.core.emitter.OnExistBehavior;
+import org.pf4j.Extension;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -25,38 +33,37 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.pf4j.Extension;
-
-import org.apache.tika.FetchAndParseReply;
-import org.apache.tika.pipes.core.emitter.Emitter;
-import org.apache.tika.pipes.core.emitter.EmitterConfig;
-import org.apache.tika.pipes.core.emitter.OnExistBehavior;
-
 @Extension
 public class FileSystemEmitter implements Emitter {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private FileSystemEmitterConfig fileSystemEmitterConfig;
+
+    @Override
+    public void init(EmitterConfig emitterConfig) {
+        this.fileSystemEmitterConfig = (FileSystemEmitterConfig) emitterConfig;
+    }
+
     @Override
     public String getPluginId() {
         return "filesystem-emitter";
     }
 
     @Override
-    public void emit(EmitterConfig emitterConfig, List<FetchAndParseReply> fetchAndParseReplies)
+    public void emit(List<EmitterOutput> emitterOutputs)
             throws IOException {
-        FileSystemEmitterConfig config = (FileSystemEmitterConfig) emitterConfig;
-        Path basePath = Paths.get(config.getBasePath());
-        String fileExtension = config.getFileExtension();
-        OnExistBehavior onExists = OnExistBehavior.valueOf(config
+        String addFileExtension = fileSystemEmitterConfig.getAddFileExtension();
+        OnExistBehavior onExists = OnExistBehavior.valueOf(fileSystemEmitterConfig
                 .getOnExists()
                 .toUpperCase());
-        for (FetchAndParseReply fetchAndParseReply : fetchAndParseReplies) {
+        for (EmitterOutput emitterOutput : emitterOutputs) {
             Path output;
-            String emitKey = fetchAndParseReply.getFetchKey();
-            if (fileExtension != null && !fileExtension.isEmpty()) {
-                emitKey += "." + fileExtension;
+            String emitKey = FilenameUtils.getName(emitterOutput.getFetchKey());
+            if (addFileExtension != null && !addFileExtension.isEmpty()) {
+                emitKey += "." + addFileExtension;
             }
-            if (basePath != null) {
-                output = basePath.resolve(emitKey);
+            if (fileSystemEmitterConfig.getOutputDir() != null) {
+                output = Paths.get(fileSystemEmitterConfig.getOutputDir()).resolve(emitKey);
             } else {
                 output = Paths.get(emitKey);
             }
@@ -69,8 +76,7 @@ public class FileSystemEmitter implements Emitter {
                 throw new FileAlreadyExistsException(output.toString());
             }
             try (Writer writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.writeValue(writer, fetchAndParseReply.getMetadataList());
+                OBJECT_MAPPER.writeValue(writer, emitterOutput.getMetadata());
             }
         }
     }

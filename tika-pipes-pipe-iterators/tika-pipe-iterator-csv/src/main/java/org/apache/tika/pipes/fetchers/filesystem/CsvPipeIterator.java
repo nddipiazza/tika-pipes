@@ -16,6 +16,15 @@
  */
 package org.apache.tika.pipes.fetchers.filesystem;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.pipes.core.iterators.PipeInput;
+import org.apache.tika.pipes.core.iterators.PipeIterator;
+import org.apache.tika.pipes.core.iterators.PipeIteratorConfig;
+import org.apache.tika.pipes.core.iterators.TikaPipeIteratorException;
+import org.pf4j.Extension;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
@@ -23,34 +32,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-import org.pf4j.Extension;
-
-import org.apache.tika.FetchAndParseRequest;
-import org.apache.tika.pipes.core.iterators.PipeIterator;
-import org.apache.tika.pipes.core.iterators.TikaPipeIteratorException;
+import java.util.Map;
 
 @Extension
 public class CsvPipeIterator implements PipeIterator {
+    private CsvPipeIteratorConfig csvPipeIteratorConfig;
+
     @Override
-    public String getPipeIteratorId() {
-        return "csv-pipe-iterator";
-    }
-
-    private final String fetchKeyColumn;
-    private final Reader reader;
-    private final Iterator<CSVRecord> records;
-
-    public CsvPipeIterator(CsvPipeIteratorConfig config) {
+    public <T extends PipeIteratorConfig> void init(T config) {
+        this.csvPipeIteratorConfig = (CsvPipeIteratorConfig) config;
         try {
-            Path csvPath = config.getCsvPath();
-            fetchKeyColumn = config.getFetchKeyColumn();
-            CSVFormat csvFormat = CSVFormat.valueOf(config
-                    .getCsvFormat()
-                    .toUpperCase());
-            reader = Files.newBufferedReader(csvPath, Charset.forName(config.getCharset()));
+            Path csvPath = Path.of(csvPipeIteratorConfig.getCsvPath());
+            CSVFormat csvFormat = CSVFormat.valueOf(csvPipeIteratorConfig
+                    .getCsvFormat());
+            reader = Files.newBufferedReader(csvPath, Charset.forName(csvPipeIteratorConfig.getCharset()));
             records = csvFormat.parse(reader).getRecords().iterator();
         } catch (IOException e) {
             throw new TikaPipeIteratorException("Could not initialize reader", e);
@@ -58,17 +53,32 @@ public class CsvPipeIterator implements PipeIterator {
     }
 
     @Override
+    public String getPipeIteratorId() {
+        return "csv-pipe-iterator";
+    }
+    private Reader reader;
+    private Iterator<CSVRecord> records;
+
+    @Override
     public boolean hasNext() {
         return records.hasNext();
     }
 
     @Override
-    public List<FetchAndParseRequest> next() {
+    public List<PipeInput> next() {
         CSVRecord record = records.next();
-        return List.of(FetchAndParseRequest
-                .newBuilder()
-                .setFetchKey(record.get(fetchKeyColumn))
-                .setMetadataJson("{}")
+        String value;
+        if (csvPipeIteratorConfig.getFetchKeyColumnIndex() != null) {
+            value = record.get(csvPipeIteratorConfig.getFetchKeyColumnIndex());
+        } else if (StringUtils.isNotBlank(csvPipeIteratorConfig.getFetchKeyColumn())) {
+            value = record.get(csvPipeIteratorConfig.getFetchKeyColumn());
+        } else {
+            value = record.get(0); // Default just use first record.
+        }
+        // Note we do not populate the fetcherId. That's up to the user of the fetchAndParseRequest.
+        return List.of(PipeInput.builder()
+                .fetchKey(value)
+                .metadata(Map.of())
                 .build());
     }
 
