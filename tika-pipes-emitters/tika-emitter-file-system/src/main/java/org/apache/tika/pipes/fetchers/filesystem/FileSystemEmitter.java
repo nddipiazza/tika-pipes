@@ -18,9 +18,9 @@ package org.apache.tika.pipes.fetchers.filesystem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.pipes.core.emitter.EmitOutput;
 import org.apache.tika.pipes.core.emitter.Emitter;
 import org.apache.tika.pipes.core.emitter.EmitterConfig;
-import org.apache.tika.pipes.core.emitter.EmitterOutput;
 import org.apache.tika.pipes.core.emitter.OnExistBehavior;
 import org.pf4j.Extension;
 
@@ -50,15 +50,15 @@ public class FileSystemEmitter implements Emitter {
     }
 
     @Override
-    public void emit(List<EmitterOutput> emitterOutputs)
+    public void emit(List<EmitOutput> emitOutputs)
             throws IOException {
         String addFileExtension = fileSystemEmitterConfig.getAddFileExtension();
         OnExistBehavior onExists = OnExistBehavior.valueOf(fileSystemEmitterConfig
                 .getOnExists()
                 .toUpperCase());
-        for (EmitterOutput emitterOutput : emitterOutputs) {
+        for (EmitOutput emitOutput : emitOutputs) {
             Path output;
-            String emitKey = FilenameUtils.getName(emitterOutput.getFetchKey());
+            String emitKey = FilenameUtils.getName(emitOutput.getFetchKey());
             if (addFileExtension != null && !addFileExtension.isEmpty()) {
                 emitKey += "." + addFileExtension;
             }
@@ -76,7 +76,7 @@ public class FileSystemEmitter implements Emitter {
                 throw new FileAlreadyExistsException(output.toString());
             }
             try (Writer writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
-                OBJECT_MAPPER.writeValue(writer, emitterOutput.getMetadata());
+                OBJECT_MAPPER.writeValue(writer, emitOutput.getMetadata());
             }
         }
     }

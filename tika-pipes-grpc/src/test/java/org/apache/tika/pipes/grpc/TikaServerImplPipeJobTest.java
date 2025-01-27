@@ -63,7 +63,6 @@ class TikaServerImplPipeJobTest extends TikaPipesIntegrationTestBase {
                 .usePlaintext().build();
         TikaGrpc.TikaBlockingStub tikaBlockingStub = TikaGrpc.newBlockingStub(channel);
 
-
         saveFetcher(tikaBlockingStub, fetcherId, fetcherPluginId);
         newCsvPipeIterator(tikaBlockingStub, pipeIteratorId, pipeIteratorPluginId, pipeIteratorCsvFile);
         newFileSystemEmitter(tikaBlockingStub, emitterId, emitterPluginId, fileEmitterOutputDir);

@@ -10,9 +10,9 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.tika.*;
 import org.apache.tika.pipes.PipesResult;
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
+import org.apache.tika.pipes.core.emitter.EmitOutput;
 import org.apache.tika.pipes.core.emitter.Emitter;
 import org.apache.tika.pipes.core.emitter.EmitterConfig;
-import org.apache.tika.pipes.core.emitter.EmitterOutput;
 import org.apache.tika.pipes.core.exception.TikaPipesException;
 import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
 import org.apache.tika.pipes.core.iterators.PipeInput;
@@ -446,7 +446,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                         public void onNext(FetchAndParseReply fetchAndParseReply) {
                             try {
                                 List<Map<String, Object>> listOfMetadata = listOfMetadataToListOfMap(fetchAndParseReply);
-                                emitter.emit(List.of(EmitterOutput.builder()
+                                emitter.emit(List.of(EmitOutput.builder()
                                         .fetchKey(fetchAndParseReply.getFetchKey())
                                         .metadata(listOfMetadata)
                                         .build()));

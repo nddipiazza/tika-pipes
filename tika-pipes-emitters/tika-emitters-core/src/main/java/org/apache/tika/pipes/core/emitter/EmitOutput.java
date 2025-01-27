@@ -11,7 +11,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Builder
-public class EmitterOutput {
+public class EmitOutput {
     private String fetchKey;
     private List<Map<String, Object>> metadata;
 }

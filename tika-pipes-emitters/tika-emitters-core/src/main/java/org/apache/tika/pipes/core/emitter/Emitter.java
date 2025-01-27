@@ -8,5 +8,5 @@ import java.util.List;
 public interface Emitter extends ExtensionPoint {
     <T extends EmitterConfig> void init(T emitterConfig);
     String getPluginId();
-    void emit(List<EmitterOutput> emitterOutputs) throws IOException;
+    void emit(List<EmitOutput> emitOutputs) throws IOException;
 }
