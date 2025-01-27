@@ -51,4 +51,4 @@ jobs:
         context: .
         file: ./target/tika-docker/Dockerfile
         push: true
-        tags: ndipiazza/tika-pipes:${{ github.ref_name }}
+        tags: ndipiazza/tika-pipes:${{ github.event.release.tag_name }}
