@@ -20,11 +20,11 @@ To start Tika grpc, see the following start script: [start-tika-grpc.sh](tika-pi
 
 ## Tika Pipes Architecture
 
-Tika pipes services are described in the following protobuf file: [tika.proto](tika-pipes-proto%2Fsrc%2Fmain%2Fproto%2Ftika.proto)
+Tika Pipes Grpc Server's services are described in the following protobuf file: [tika.proto](tika-pipes-proto%2Fsrc%2Fmain%2Fproto%2Ftika.proto)
 
-Tika Pipes Grpc Service is made up of the following components:
+Tika Pipes Grpc Server is made up of the following components:
 
-* [Tika Parse Service](tika-pipes-core%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcore%2Fparser%2FParseService.java) - The Tika Pipes service contains a Apache Tika service to convert the Documents into parsed Tika text metadata.
+* [Tika Parse Service](tika-pipes-core%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcore%2Fparser%2FParseService.java) - The Tika Pipes server contains a Apache Tika service to convert the Documents into parsed Tika text metadata.
 * [Tika Fetchers](tika-pipes-fetchers%2Ftika-fetchers-core%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Ffetchers%2Fcore%2FFetcher.java) - Tika Pipes Plugin type that fetches the binary document from a source, authenticating if necessary. 
 * [Tika Pipe Iterators](tika-pipes-pipe-iterators%2Ftika-pipe-iterators-core%2Fsrc%2Fmain%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fcore%2Fiterators%2FPipeIterator.java) - Tika Pipes Plugin type can identify files to fetch over a content source. For example, you might use 
 a CSV pipe iterator if you have a CSV file that contains URLs to fetch.
