@@ -100,12 +100,19 @@ When building a Docker image that you intend to use, when building you must spec
 * `PROJECT_NAME` allows changing the name of the project, as part of the push to repositories. Defaults to `tika`
 * `MULTI_ARCH` set this to true if you want to build for Multi-arch mode.
 
-Here is an example:
+For example:
 
 ```bash
-MULTI_ARCH=true RELEASE_IMAGE_TAG=3.0.0-beta5 DOCKER_ID=ndipiazza mvn package
+MULTI_ARCH=false DOCKER_ID=ndipiazza PROJECT_NAME=tika-pipes RELEASE_IMAGE_TAG=3.0.0-beta20 mvn clean package
 ```
 
+Would result in:
+
+```
+ ===================================================================================================
+ Done running docker build with tag -t ndipiazza/tika-pipes:3.0.0-beta20
+ ===================================================================================================
+```
 # Docker Usage
 You can pull down the version you would like using:
 
