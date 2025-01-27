@@ -32,6 +32,10 @@
   <url>https://tika.apache.org/</url>
   <packaging>pom</packaging>
 
+  <properties>
+    <tika.version>3.0.0</tika.version>
+  </properties>
+
   <modules>
     <module>tika-pipe-iterators-core</module>
     <module>tika-pipe-iterator-csv</module>
@@ -75,20 +79,20 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tika-core</artifactId>
-      <version>${project.version}</version>
+      <version>${tika.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tika-core</artifactId>
-      <version>${project.version}</version>
+      <version>${tika.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tika-serialization</artifactId>
-      <version>${project.version}</version>
+      <version>${tika.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
