@@ -4,9 +4,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.tika</groupId>
-    <artifactId>tika-pipes-parent</artifactId>
+    <artifactId>tika-pipes-emitters</artifactId>
     <version>3.0.0-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>tika-emitter-file-system</artifactId>
   <name>Tika File System Emitter</name>

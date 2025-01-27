@@ -16,6 +16,23 @@
  */
 package com.apache.tika.pipes.fetchers.s3;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.exception.FileTooLongException;
+import org.apache.tika.io.FilenameUtils;
+import org.apache.tika.io.TemporaryResources;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.pipes.fetchers.core.Fetcher;
+import org.apache.tika.pipes.fetchers.core.FetcherConfig;
+import org.apache.tika.utils.StringUtils;
+import org.pf4j.Extension;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -27,24 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
-import lombok.extern.slf4j.Slf4j;
-import org.pf4j.Extension;
-
-import org.apache.tika.exception.FileTooLongException;
-import org.apache.tika.io.FilenameUtils;
-import org.apache.tika.io.TemporaryResources;
-import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.pipes.fetchers.core.Fetcher;
-import org.apache.tika.pipes.fetchers.core.FetcherConfig;
-import org.apache.tika.utils.StringUtils;
 
 @Extension
 @Slf4j
@@ -100,16 +99,22 @@ public class S3Fetcher implements Fetcher {
                 log.warn("client exception fetching on retry=" + tries, e);
                 ex = e;
             }
-            log.warn("sleeping for {} seconds before retry", throttleSeconds.get(tries));
-            try {
-                Thread.sleep(throttleSeconds.get(tries));
-            } catch (InterruptedException e) {
-                throw new RuntimeException("interrupted");
-            }
-
+            handlePostFetch(throttleSeconds, tries);
         } while (++tries < throttleSeconds.size());
 
         throw new RuntimeException(ex);
+    }
+
+    private static void handlePostFetch(List<Long> throttleSeconds, int tries) {
+        if (throttleSeconds == null) {
+            return;
+        }
+        log.warn("sleeping for {} seconds before retry", throttleSeconds.get(tries));
+        try {
+            Thread.sleep(throttleSeconds.get(tries));
+        } catch (InterruptedException e) {
+            throw new RuntimeException("interrupted");
+        }
     }
 
     private InputStream _fetch(AmazonS3 s3Client, S3FetcherConfig s3FetcherConfig, String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) throws IOException {
