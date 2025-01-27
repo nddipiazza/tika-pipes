@@ -34,12 +34,11 @@ might use an Apache Solr emitter if you would like to emit your parsed documents
 The Tika Grpc service has create/read/update/delete services for Tika Pipes fetchers, pipe iterators, and emitters.
 
 The Tika Grpc service has a `runPipeJob` service that takes 3 arguments:
-
 * Pipe iterator ID
 * Fetcher ID
 * Emitter ID
 
-The Pipe Job will open a bi-directional stream the Grpc `fetchAndParse` service. 
+The Pipe Job will open a bidirectional stream the Grpc `fetchAndParse` service. 
 
 The Pipe Iterator then streams in the documents to fetch.
 
@@ -50,7 +49,10 @@ The method responds with stream of `FetchAndParseReply` objects from each record
 
 Finally, the Emitter takes these parsed Tika metadata objects and emits them to a destination.
 
-See [TikaServerImplPipeJobTest.java](tika-pipes-grpc%2Fsrc%2Ftest%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fgrpc%2FTikaServerImplPipeJobTest.java) for an example.
+![tika-pipes-jobs.drawio.png](readme-files%2Ftika-pipes-jobs.drawio.png)
+![tika-pipes-jobs-inner.drawio.png](readme-files%2Ftika-pipes-jobs-inner.drawio.png)
+
+For an example client, see [TikaServerImplPipeJobTest.java](tika-pipes-grpc%2Fsrc%2Ftest%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fgrpc%2FTikaServerImplPipeJobTest.java) for an example.
 
 Basically you can see it starts the managed channel, creates the pipe iterator, emitter and fetcher, then runs the pipe job.
 

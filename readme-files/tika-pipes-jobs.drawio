@@ -1,0 +1,127 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36" version="26.0.8">
+  <diagram name="Page-1" id="w1MDRqByPi5wzoxv-XNG">
+    <mxGraphModel dx="1432" dy="695" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-37" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="305" y="50" width="335" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-1" target="S6Zy-vytAgCnVYOWJSjj-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-22" value="1. saveFetcher" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="S6Zy-vytAgCnVYOWJSjj-15">
+          <mxGeometry x="0.45" y="-5" relative="1" as="geometry">
+            <mxPoint x="-26" y="-5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-1" target="S6Zy-vytAgCnVYOWJSjj-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="210" y="90" />
+              <mxPoint x="210" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-21" value="2. savePipeIterator" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="S6Zy-vytAgCnVYOWJSjj-16">
+          <mxGeometry x="0.5917" y="-2" relative="1" as="geometry">
+            <mxPoint x="-21" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-1" target="S6Zy-vytAgCnVYOWJSjj-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="210" y="90" />
+              <mxPoint x="210" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-20" value="3. saveEmitter" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="S6Zy-vytAgCnVYOWJSjj-17">
+          <mxGeometry x="0.6813" y="-3" relative="1" as="geometry">
+            <mxPoint x="-19" y="-3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-1" value="Tika Pipes User" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="100" y="50" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-2" value="Fetchers" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="60" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-3" target="S6Zy-vytAgCnVYOWJSjj-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-3" value="Pipe Iterators" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-5" target="S6Zy-vytAgCnVYOWJSjj-28">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="480" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-5" value="Emitters" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="220" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-18" value="Tika Grpc Sever" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="390" y="20" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-19" value="Jobs" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="310" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-34" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-28" target="S6Zy-vytAgCnVYOWJSjj-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-28" target="S6Zy-vytAgCnVYOWJSjj-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-28" target="S6Zy-vytAgCnVYOWJSjj-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-28" value="Apache Ignite" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="540" y="70" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-2" target="S6Zy-vytAgCnVYOWJSjj-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-48" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-1" target="S6Zy-vytAgCnVYOWJSjj-47">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="180" y="90" as="sourcePoint" />
+            <mxPoint x="440" y="330" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="200" y="90" />
+              <mxPoint x="200" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-60" value="4. runPipeJob" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="S6Zy-vytAgCnVYOWJSjj-48">
+          <mxGeometry x="0.6098" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-49" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-47" target="S6Zy-vytAgCnVYOWJSjj-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-47" value="&lt;font face=&quot;Courier New&quot;&gt;{PipeIteratorID,&lt;br&gt;FetcherID, EmitterID}&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="340" y="310" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-50" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.558;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;fillColor=#fff2cc;strokeColor=#d6b656;" edge="1" parent="1" source="S6Zy-vytAgCnVYOWJSjj-2" target="S6Zy-vytAgCnVYOWJSjj-19">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="160" as="sourcePoint" />
+            <mxPoint x="450" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-51" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.558;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;fillColor=#fff2cc;strokeColor=#d6b656;" edge="1" parent="1" target="S6Zy-vytAgCnVYOWJSjj-19">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="401" y="200" as="sourcePoint" />
+            <mxPoint x="544" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S6Zy-vytAgCnVYOWJSjj-52" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.558;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;fillColor=#fff2cc;strokeColor=#d6b656;" edge="1" parent="1" target="S6Zy-vytAgCnVYOWJSjj-19">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="411" y="280" as="sourcePoint" />
+            <mxPoint x="560" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
