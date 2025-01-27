@@ -85,19 +85,21 @@ The following are steps on how to build Tika Pipes.
 You will need ability to execute .sh files. So if you are running from Mac or Linux you are good. I haven't tried Windows but
 it should work WSL or Git Bash.
 
-# Building
+# Building Docker Image
 
-A docker build script will prepare and run the docker build to prepare the tika-pipes docker image.
+There is a docker prepare script linked with the Maven package phase.
 
-By default, the script will tag the image with the tika pipes version.
+By default, Docker image will not be built.
 
-When building a Docker image that you intend to use, when building you must specify some ENV variables:
+When Maven is executing, you have the choice to specify several environment variables to control Docker builds. If the 
+Environment variables are present, the [docker-build.sh](tika-pipes-grpc%2Fdocker-build%2Fdocker-build.sh) script will build the Docker image..
+
 
 * `RELEASE_IMAGE_TAG` will serve as the image tag across all deployed repositories. For example: `RELEASE_IMAGE_TAG=3.0.0-beta5`. Defaults to TIKA_PIPES_VERSION when unspecified.
 * `AWS_ACCOUNT_ID` pushes the docker image to the specified AWS Account. `AWS_ACCOUNT_ID=<aws-account-id>`
 * `AZURE_REGISTRY_NAME` pushes the docker image to the specified Azure registry. `AZURE_REGISTRY_NAME=<registry-name>`
 * `DOCKER_ID` pushes the docker image to the specified account within Docker Hub. `DOCKER_ID=nddipiazza`
-* `PROJECT_NAME` allows changing the name of the project, as part of the push to repositories. Defaults to `tika`
+* `PROJECT_NAME` allows changing the name of the project, as part of the push to repositories. Defaults to `tika-pipes`
 * `MULTI_ARCH` set this to true if you want to build for Multi-arch mode.
 
 For example:
