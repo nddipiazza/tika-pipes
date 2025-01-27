@@ -1,10 +1,19 @@
 package org.apache.tika.pipes.cli.microsoftgraph;
 
-import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.LineIterator;
+import org.apache.tika.*;
+import org.apache.tika.pipes.fetchers.microsoftgraph.config.MicrosoftGraphFetcherConfig;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,21 +22,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.stub.StreamObserver;
-import io.undertow.Undertow;
-import io.undertow.util.Headers;
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.tika.FetchAndParseReply;
-import org.apache.tika.FetchAndParseRequest;
-import org.apache.tika.SaveFetcherReply;
-import org.apache.tika.SaveFetcherRequest;
-import org.apache.tika.TikaGrpc;
-import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
+import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
 
 @Slf4j
 public class MicrosoftGraphFetcherCli {
@@ -39,10 +34,25 @@ public class MicrosoftGraphFetcherCli {
     private String host = TIKA_SERVER_GRPC_DEFAULT_HOST;
     @Parameter(names = {"--grpcPort"}, description = "The grpc server port", help = true)
     private Integer port = TIKA_SERVER_GRPC_DEFAULT_PORT;
-    @Parameter(names = {"--fetcher-id"}, description = "What fetcher ID should we use? By default will use http-fetcher")
-    private String fetcherId = "http-fetcher";
-    @Parameter(names = {"-h", "-H", "--help"}, description = "Display help menu")
+    @Parameter(names = {"--fetcher-id"}, description = "What fetcher ID should we use? By default will use http-fetcher", help = true)
+    private String fetcherId = "microsoft-graph-fetcher";
+    @Parameter(names = {"-h", "-H", "--help"}, description = "Display help menu", help = true)
     private boolean help;
+
+    @Parameter(names = {"--tenant-id"}, description = "The tenant ID for Microsoft Graph", help = true)
+    protected String tenantId;
+
+    @Parameter(names = {"--client-id"}, description = "The client ID for Microsoft Graph", help = true)
+    protected String clientId;
+
+    @Parameter(names = {"--client-secret"}, description = "The client secret for Microsoft Graph", password = true, help = true)
+    private String clientSecret;
+
+    @Parameter(names = {"--client-certificate-base64"}, description = "The client certificate bytes in Base64 for Microsoft Graph API access", password = true, help = true)
+    private String certificateCertificateBase64;
+
+    @Parameter(names = {"--certificate-password"}, description = "The client certificate password for the certificate specified in --client-certificate-base64", password = true, help = true)
+    private String certificatePassword;
 
     public static int getRandomAvailablePort() {
         try (ServerSocket socket = new ServerSocket(0)) {
@@ -54,30 +64,17 @@ public class MicrosoftGraphFetcherCli {
     static int httpServerPort;
     public static void main(String[] args) throws Exception {
         httpServerPort = getRandomAvailablePort();
-        Undertow server = Undertow
-                .builder()
-                .addHttpListener(httpServerPort, InetAddress.getLocalHost().getHostAddress())
-                .setHandler(exchange -> {
-                                      exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
-                                      exchange.getResponseSender().send("<html><body>test</body></html>");
-                                  }).build();
-
-        try {
-            server.start();
-            MicrosoftGraphFetcherCli bulkParser = new MicrosoftGraphFetcherCli();
-            JCommander commander = JCommander
-                    .newBuilder()
-                    .addObject(bulkParser)
-                    .build();
-            commander.parse(args);
-            if (bulkParser.help) {
-                commander.usage();
-                return;
-            }
-            bulkParser.runFetch();
-        } finally {
-            server.stop();
+        MicrosoftGraphFetcherCli bulkParser = new MicrosoftGraphFetcherCli();
+        JCommander commander = JCommander
+                .newBuilder()
+                .addObject(bulkParser)
+                .build();
+        commander.parse(args);
+        if (bulkParser.help) {
+            commander.usage();
+            return;
         }
+        bulkParser.runFetch();
     }
 
     private void runFetch() throws IOException {
@@ -89,13 +86,13 @@ public class MicrosoftGraphFetcherCli {
         TikaGrpc.TikaBlockingStub blockingStub = TikaGrpc.newBlockingStub(channel);
         TikaGrpc.TikaStub tikaStub = TikaGrpc.newStub(channel);
 
-        HttpFetcherConfig httpFetcherConfig = new HttpFetcherConfig();
+        MicrosoftGraphFetcherConfig microsoftGraphFetcherConfig = newMicrosoftGraphFetcherConfig();
 
         SaveFetcherReply reply = blockingStub.saveFetcher(SaveFetcherRequest
                 .newBuilder()
                 .setFetcherId(fetcherId)
-                .setPluginId("http-fetcher")
-                .setFetcherConfigJson(OBJECT_MAPPER.writeValueAsString(httpFetcherConfig))
+                .setPluginId("microsoft-graph-fetcher")
+                .setFetcherConfigJson(OBJECT_MAPPER.writeValueAsString(microsoftGraphFetcherConfig))
                 .build());
         log.info("Saved fetcher with ID {}", reply.getFetcherId());
 
@@ -128,12 +125,17 @@ public class MicrosoftGraphFetcherCli {
             }
         });
 
-        requestStreamObserver.onNext(FetchAndParseRequest
-                    .newBuilder()
-                    .setFetcherId(fetcherId)
-                    .setFetchKey("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + httpServerPort)
-                    .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
-                    .build());
+        try (LineIterator lineIterator = new LineIterator(new FileReader(urlsToFetchFile))) {
+            while (lineIterator.hasNext()) {
+                String fetchKey = lineIterator.nextLine();
+                requestStreamObserver.onNext(FetchAndParseRequest
+                        .newBuilder()
+                        .setFetcherId(fetcherId)
+                        .setFetchKey(fetchKey)
+                        .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
+                        .build());
+            }
+        }
 
         log.info("Done submitting URLs to {}", fetcherId);
         requestStreamObserver.onCompleted();
@@ -148,5 +150,17 @@ public class MicrosoftGraphFetcherCli {
                     .interrupt();
         }
         log.info("Fetched: success={}", successes);
+    }
+
+    @NotNull
+    private MicrosoftGraphFetcherConfig newMicrosoftGraphFetcherConfig() {
+        MicrosoftGraphFetcherConfig microsoftGraphFetcherConfig = new MicrosoftGraphFetcherConfig();
+        microsoftGraphFetcherConfig.setFetcherId(fetcherId);
+        microsoftGraphFetcherConfig.setTenantId(tenantId);
+        microsoftGraphFetcherConfig.setClientId(clientId);
+        microsoftGraphFetcherConfig.setClientSecret(clientSecret);
+        microsoftGraphFetcherConfig.setCertificateBytesBase64(certificateCertificateBase64);
+        microsoftGraphFetcherConfig.setCertificatePassword(certificatePassword);
+        return microsoftGraphFetcherConfig;
     }
 }

@@ -16,16 +16,15 @@
  */
 package org.apache.tika.pipes.fetchers.microsoftgraph.config;
 
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
+import org.pf4j.Extension;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pf4j.Extension;
-
-import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
-
 @Extension
 public class MicrosoftGraphFetcherConfig extends DefaultFetcherConfig {
-    private long[] throttleSeconds;
+    private List<Long> throttleSeconds;
     private boolean spoolToTemp;
     protected String tenantId;
     protected String clientId;
@@ -43,11 +42,11 @@ public class MicrosoftGraphFetcherConfig extends DefaultFetcherConfig {
         return this;
     }
 
-    public long[] getThrottleSeconds() {
+    public List<Long> getThrottleSeconds() {
         return throttleSeconds;
     }
 
-    public MicrosoftGraphFetcherConfig setThrottleSeconds(long[] throttleSeconds) {
+    public MicrosoftGraphFetcherConfig setThrottleSeconds(List<Long> throttleSeconds) {
         this.throttleSeconds = throttleSeconds;
         return this;
     }

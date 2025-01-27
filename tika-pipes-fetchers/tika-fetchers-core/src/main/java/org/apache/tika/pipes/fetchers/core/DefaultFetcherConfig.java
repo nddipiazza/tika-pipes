@@ -1,14 +1,15 @@
 package org.apache.tika.pipes.fetchers.core;
 
-import java.util.Map;
-
 import org.apache.ignite.cache.query.annotations.QuerySqlField;
+
+import java.util.Map;
 
 public class DefaultFetcherConfig implements FetcherConfig {
     @QuerySqlField(index = true)
     private String pluginId;
     @QuerySqlField(index = true)
     private String fetcherId;
+
     private Map<String, Object> config;
 
     public String getPluginId() {

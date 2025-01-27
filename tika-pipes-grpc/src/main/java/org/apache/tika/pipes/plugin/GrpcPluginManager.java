@@ -1,20 +1,15 @@
 package org.apache.tika.pipes.plugin;
 
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.pf4j.DefaultPluginManager;
-import org.pf4j.PluginDescriptor;
-import org.pf4j.PluginDescriptorFinder;
-import org.pf4j.PluginLoader;
-import org.pf4j.PluginRepository;
-import org.pf4j.PluginWrapper;
+import org.pf4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -54,7 +49,7 @@ public class GrpcPluginManager extends DefaultPluginManager {
             @Override
             public ClassLoader loadPlugin(Path pluginPath, PluginDescriptor pluginDescriptor) {
                 ClassLoader classLoader = pluginLoader.loadPlugin(pluginPath, pluginDescriptor);
-                log.info("Loaded plugin: classLoaderName={}, pluginDescriptor={}, pluginPath={}", classLoader.getName(), pluginDescriptor, pluginPath);
+                log.info("Loaded plugin: pluginDescriptor={}, pluginPath={}", pluginDescriptor, pluginPath);
                 return classLoader;
             }
         };

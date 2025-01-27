@@ -69,7 +69,7 @@ public class S3Fetcher implements Fetcher {
     @Override
     public InputStream fetch(FetcherConfig fetcherConfig, String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) {
         S3FetcherConfig s3FetcherConfig = (S3FetcherConfig) fetcherConfig;
-        List<Long> throttleSeconds = s3FetcherConfig.getThrottleSeconds();
+        List<Long> throttleSeconds = s3FetcherConfig.getThrottleSeconds() == null ? List.of(0L) : s3FetcherConfig.getThrottleSeconds();
         int tries = 0;
         IOException ex;
         do {
@@ -106,7 +106,7 @@ public class S3Fetcher implements Fetcher {
     }
 
     private static void handlePostFetch(List<Long> throttleSeconds, int tries) {
-        if (throttleSeconds == null) {
+        if (throttleSeconds.isEmpty()) {
             return;
         }
         log.warn("sleeping for {} seconds before retry", throttleSeconds.get(tries));
