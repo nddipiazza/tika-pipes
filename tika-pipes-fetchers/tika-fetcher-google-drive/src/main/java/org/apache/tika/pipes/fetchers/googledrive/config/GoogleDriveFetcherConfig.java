@@ -14,17 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apache.tika.pipes.fetchers.googledrive.config;
+package org.apache.tika.pipes.fetchers.googledrive.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
+import org.pf4j.Extension;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.pf4j.Extension;
-
-import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 
 @Extension
 @Getter

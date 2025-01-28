@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apache.tika.pipes.fetchers.s3;
+package org.apache.tika.pipes.fetchers.s3;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.exception.FileTooLongException;
 import org.apache.tika.io.FilenameUtils;
@@ -30,6 +29,7 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.pipes.fetchers.core.Fetcher;
 import org.apache.tika.pipes.fetchers.core.FetcherConfig;
+import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import org.apache.tika.utils.StringUtils;
 import org.pf4j.Extension;
 

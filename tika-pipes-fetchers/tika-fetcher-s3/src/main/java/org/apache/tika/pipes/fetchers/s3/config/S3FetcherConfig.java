@@ -14,16 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apache.tika.pipes.fetchers.s3.config;
-
-import java.util.List;
-import java.util.Objects;
+package org.apache.tika.pipes.fetchers.s3.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 import org.pf4j.Extension;
 
-import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
+import java.util.List;
+import java.util.Objects;
 
 @Extension
 @Getter

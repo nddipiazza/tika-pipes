@@ -14,17 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apache.tika.pipes.fetchers.googledrive;
+package org.apache.tika.pipes.fetchers.googledrive;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-
-import com.apache.tika.pipes.fetchers.googledrive.config.GoogleDriveFetcherConfig;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -34,13 +25,21 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.pf4j.Extension;
-
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TemporaryResources;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.pipes.fetchers.core.Fetcher;
 import org.apache.tika.pipes.fetchers.core.FetcherConfig;
+import org.apache.tika.pipes.fetchers.googledrive.config.GoogleDriveFetcherConfig;
+import org.pf4j.Extension;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 @Extension
 @Slf4j

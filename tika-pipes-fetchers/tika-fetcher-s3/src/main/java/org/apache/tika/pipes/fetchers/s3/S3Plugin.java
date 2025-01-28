@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.apache.tika.pipes.fetchers.googledrive;
+package org.apache.tika.pipes.fetchers.s3;
 
 import org.pf4j.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GoogleDrivePlugin extends Plugin {
-    private static final Logger LOG = LoggerFactory.getLogger(GoogleDrivePlugin.class);
+public class S3Plugin extends Plugin {
+    private static final Logger LOG = LoggerFactory.getLogger(S3Plugin.class);
     @Override
     public void start() {
         LOG.info("Starting");
