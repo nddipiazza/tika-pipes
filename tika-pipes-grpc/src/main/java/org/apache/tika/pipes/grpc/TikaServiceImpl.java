@@ -231,16 +231,22 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         // If you send DefaultFetcherConfig and try to cast to the respective config you'll get a class loading error.
         // To get past this, get the correct class from the plugin manager, and convert to it.
         FetcherConfig fetcherConfigFromPluginManager = objectMapper.convertValue(fetcherConfig.getConfig(), getFetcherConfigClassFromPluginManager(fetcherConfig));
-        InputStream inputStream = fetcher.fetch(fetcherConfigFromPluginManager, request.getFetchKey(), objectMapper.readValue(request.getMetadataJson(), MAP_STRING_OBJ_TYPE_REF), responseMetadata);
+        Map<String, Object> fetchMetadata = objectMapper.readValue(request.getFetchMetadataJson(), MAP_STRING_OBJ_TYPE_REF);
+        InputStream inputStream = fetcher.fetch(fetcherConfigFromPluginManager, request.getFetchKey(), fetchMetadata, responseMetadata);
         FetchAndParseReply.Builder builder = FetchAndParseReply.newBuilder();
         builder.setStatus(PipesResult.STATUS.EMIT_SUCCESS.name());
         builder.setFetchKey(request.getFetchKey());
 
+        Map<String, Object> addedMetadata = objectMapper.readValue(request.getAddedMetadataJson(), MAP_STRING_OBJ_TYPE_REF);
+
         for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
             Metadata.Builder metadataBuilder = Metadata.newBuilder();
             metadata.forEach((key, val) -> metadataBuilder.putFields(key, String.valueOf(val)));
+            addedMetadata.forEach((key, val) -> metadataBuilder.putFields(key, String.valueOf(val)));
+
             builder.addMetadata(metadataBuilder.build());
         }
+
         responseObserver.onNext(builder.build());
     }
 
@@ -478,7 +484,8 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                     requestStreamObserver.onNext(FetchAndParseRequest.newBuilder()
                             .setFetcherId(request.getFetcherId())
                             .setFetchKey(pipeInput.getFetchKey())
-                            .setMetadataJson(objectMapper.writeValueAsString(pipeInput.getMetadata()))
+                            .setFetchMetadataJson(objectMapper.writeValueAsString(pipeInput.getMetadata()))
+                            .setAddedMetadataJson("{}")
                             .build());
                 }
             }

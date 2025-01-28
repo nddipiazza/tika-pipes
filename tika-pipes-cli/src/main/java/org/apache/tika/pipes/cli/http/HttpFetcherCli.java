@@ -1,6 +1,15 @@
 package org.apache.tika.pipes.cli.http;
 
-import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
+import io.undertow.Undertow;
+import io.undertow.util.Headers;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.*;
+import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,21 +22,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.stub.StreamObserver;
-import io.undertow.Undertow;
-import io.undertow.util.Headers;
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.tika.FetchAndParseReply;
-import org.apache.tika.FetchAndParseRequest;
-import org.apache.tika.SaveFetcherReply;
-import org.apache.tika.SaveFetcherRequest;
-import org.apache.tika.TikaGrpc;
-import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
+import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
 
 @Slf4j
 public class HttpFetcherCli {
@@ -132,7 +127,7 @@ public class HttpFetcherCli {
                     .newBuilder()
                     .setFetcherId(fetcherId)
                     .setFetchKey("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + httpServerPort)
-                    .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
+                    .setFetchMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
                     .build());
 
         log.info("Done submitting URLs to {}", fetcherId);

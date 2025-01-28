@@ -1,6 +1,14 @@
 package org.apache.tika.pipes.cli.filesystem;
 
-import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.*;
+import org.apache.tika.pipes.fetchers.filesystem.FileSystemFetcherConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,20 +24,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.stub.StreamObserver;
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.tika.FetchAndParseReply;
-import org.apache.tika.FetchAndParseRequest;
-import org.apache.tika.SaveFetcherReply;
-import org.apache.tika.SaveFetcherRequest;
-import org.apache.tika.TikaGrpc;
-import org.apache.tika.pipes.fetchers.filesystem.FileSystemFetcherConfig;
+import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
 
 @Slf4j
 public class FileSystemFetcherCli {
@@ -123,7 +118,7 @@ public class FileSystemFetcherCli {
                             .setFetchKey(file
                                     .toAbsolutePath()
                                     .toString())
-                            .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
+                            .setFetchMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
                             .build());
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);

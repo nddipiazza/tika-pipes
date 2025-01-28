@@ -118,7 +118,7 @@ public class GoogleDriveFetcherCli {
                         .newBuilder()
                         .setFetcherId(fetcherId)
                         .setFetchKey(nextS3Key)
-                        .setMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
+                        .setFetchMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
                         .build());
             }
         }

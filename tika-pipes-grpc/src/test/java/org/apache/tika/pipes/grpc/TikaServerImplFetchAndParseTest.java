@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.*;
 import org.apache.tika.pipes.TikaPipesIntegrationTestBase;
 import org.apache.tika.pipes.fetchers.filesystem.FileSystemFetcherConfig;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
+    Map<String, String> additionalMetadata = Map.of("additional", "metadata");
     ObjectMapper objectMapper = new ObjectMapper();
     String pluginId = "filesystem-fetcher";
     String fetcherId = "filesystem-fetcher-example1";
@@ -43,7 +45,7 @@ class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
     }
 
     @Test
-    void fetchersCrud() throws Exception {
+    void fetchAndParse() throws Exception {
         ManagedChannel channel =
                 ManagedChannelBuilder.forAddress(InetAddress.getLocalHost().getHostAddress(),
                                 port) // Ensure the port is correct
@@ -62,6 +64,7 @@ class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
                 log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
+                Assertions.assertEquals(additionalMetadata.get("additional"), fetchAndParseReply.getMetadataList().get(0).getFieldsOrThrow("additional"));
                 if ("FetchException"
                         .equals(fetchAndParseReply.getStatus())) {
                     errors.add(fetchAndParseReply);
@@ -93,7 +96,8 @@ class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
                             .setFetchKey(file
                                     .toAbsolutePath()
                                     .toString())
-                            .setMetadataJson(objectMapper.writeValueAsString(Map.of()))
+                            .setFetchMetadataJson(objectMapper.writeValueAsString(Map.of()))
+                            .setAddedMetadataJson(objectMapper.writeValueAsString(additionalMetadata))
                             .build());
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
