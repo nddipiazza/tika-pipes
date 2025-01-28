@@ -4,7 +4,7 @@ COPY plugins/ /tika/plugins/
 COPY config/ /tika/config/
 COPY bin/ /tika/bin
 ARG JRE='openjdk-17-jre-headless'
-ARG VERSION='3.0.0-SNAPSHOT'
+ARG VERSION='3.0.0-beta1'
 RUN set -eux \
     && apt-get update \
     && apt-get install --yes --no-install-recommends gnupg2 software-properties-common \
