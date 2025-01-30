@@ -138,8 +138,21 @@ message FetchAndParseRequest {
   string added_metadata_json = 4;
 }
 
+message Value {
+  oneof value {
+    string string_value = 1;
+    int64 int_value = 2;
+    bool bool_value = 3;
+    double double_value = 4;
+  }
+}
+
+message ValueList {
+  repeated Value values = 1;
+}
+
 message Metadata {
-  map<string, string> fields = 1;
+  map<string, ValueList> fields = 1;
 }
 
 message FetchAndParseReply {

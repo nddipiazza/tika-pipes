@@ -64,7 +64,10 @@ class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
                 log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
-                Assertions.assertEquals(additionalMetadata.get("additional"), fetchAndParseReply.getMetadataList().get(0).getFieldsOrThrow("additional"));
+                Metadata metadata = fetchAndParseReply.getMetadataList().get(0);
+                ValueList additional = metadata.getFieldsOrThrow("additional");
+                List<Value> valuesList = additional.getValuesList();
+                Assertions.assertEquals(additionalMetadata.get("additional"), valuesList.iterator().next().getStringValue());
                 if ("FetchException"
                         .equals(fetchAndParseReply.getStatus())) {
                     errors.add(fetchAndParseReply);

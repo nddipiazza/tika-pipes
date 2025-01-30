@@ -242,10 +242,14 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
             Metadata.Builder metadataBuilder = Metadata.newBuilder();
             for (Map.Entry<String, Object> entry : metadata.entrySet()) {
-                metadataBuilder.putFields(entry.getKey(), convertToString(entry.getValue()));
+                ValueList.Builder valueListBuilder = ValueList.newBuilder();
+                buildValueList(entry.getValue(), valueListBuilder);
+                metadataBuilder.putFields(entry.getKey(), valueListBuilder.build());
             }
             for (Map.Entry<String, Object> entry : addedMetadata.entrySet()) {
-                metadataBuilder.putFields(entry.getKey(), convertToString(entry.getValue()));
+                ValueList.Builder valueListBuilder = ValueList.newBuilder();
+                buildValueList(entry.getValue(), valueListBuilder);
+                metadataBuilder.putFields(entry.getKey(), valueListBuilder.build());
             }
             builder.addMetadata(metadataBuilder.build());
         }
@@ -253,11 +257,30 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         responseObserver.onNext(builder.build());
     }
 
-    private String convertToString(Object val) throws JsonProcessingException {
-        if (val instanceof Object[]) {
-            return objectMapper.writeValueAsString(val);
-        } else {
-            return String.valueOf(val);
+    private void buildValueList(Object entryValue, ValueList.Builder valueListBuilder) throws JsonProcessingException {
+        Value.Builder valueBuilder = Value.newBuilder();
+        if (entryValue instanceof String) {
+            valueBuilder.setStringValue((String) entryValue);
+        } else if (entryValue instanceof Integer) {
+            valueBuilder.setIntValue((Integer) entryValue);
+        } else if (entryValue instanceof Long) {
+            valueBuilder.setIntValue((Long) entryValue);
+        } else if (entryValue instanceof Short) {
+            valueBuilder.setIntValue((Short) entryValue);
+        } else if (entryValue instanceof Double) {
+            valueBuilder.setDoubleValue((Double) entryValue);
+        } else if (entryValue instanceof Float) {
+            valueBuilder.setDoubleValue((Float) entryValue);
+        } else if (entryValue instanceof Boolean) {
+            valueBuilder.setBoolValue((Boolean) entryValue);
+        } else if (!(entryValue instanceof Object[])) {
+            valueBuilder.setStringValue((String.valueOf(entryValue)));
+        }
+        valueListBuilder.addValues(valueBuilder.build());
+        if (entryValue instanceof Object[] arrayOfObj) {
+            for (Object o : arrayOfObj) {
+                buildValueList(o, valueListBuilder);
+            }
         }
     }
 
