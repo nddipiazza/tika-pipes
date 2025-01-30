@@ -239,6 +239,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
         Map<String, Object> addedMetadata = objectMapper.readValue(request.getAddedMetadataJson(), MAP_STRING_OBJ_TYPE_REF);
 
+        Metadata finalMetadata = null;
         for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
             Metadata.Builder metadataBuilder = Metadata.newBuilder();
             for (Map.Entry<String, Object> entry : metadata.entrySet()) {
@@ -253,7 +254,6 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             }
             builder.addMetadata(metadataBuilder.build());
         }
-
         responseObserver.onNext(builder.build());
     }
 
