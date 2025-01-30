@@ -8,6 +8,7 @@ import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.*;
 import org.apache.tika.pipes.PipesResult;
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
@@ -232,13 +233,13 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         // If you send DefaultFetcherConfig and try to cast to the respective config you'll get a class loading error.
         // To get past this, get the correct class from the plugin manager, and convert to it.
         FetcherConfig fetcherConfigFromPluginManager = objectMapper.convertValue(fetcherConfig.getConfig(), getFetcherConfigClassFromPluginManager(fetcherConfig));
-        Map<String, Object> fetchMetadata = objectMapper.readValue(request.getFetchMetadataJson(), MAP_STRING_OBJ_TYPE_REF);
+        Map<String, Object> fetchMetadata = objectMapper.readValue(StringUtils.defaultIfBlank(request.getFetchMetadataJson(), "{}"), MAP_STRING_OBJ_TYPE_REF);
         InputStream inputStream = fetcher.fetch(fetcherConfigFromPluginManager, request.getFetchKey(), fetchMetadata, responseMetadata);
         FetchAndParseReply.Builder builder = FetchAndParseReply.newBuilder();
         builder.setStatus(PipesResult.STATUS.EMIT_SUCCESS.name());
         builder.setFetchKey(request.getFetchKey());
 
-        Map<String, Object> addedMetadata = objectMapper.readValue(request.getAddedMetadataJson(), MAP_STRING_OBJ_TYPE_REF);
+        Map<String, Object> addedMetadata = objectMapper.readValue(StringUtils.defaultIfBlank(request.getAddedMetadataJson(), "{}"), MAP_STRING_OBJ_TYPE_REF);
 
         for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
             Metadata.Builder metadataBuilder = Metadata.newBuilder();
