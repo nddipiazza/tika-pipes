@@ -132,7 +132,7 @@ public class MicrosoftGraphFetcherCli {
                         .newBuilder()
                         .setFetcherId(fetcherId)
                         .setFetchKey(fetchKey)
-                        .setFetchMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of("X-LUMEN-DOCID", "atd_13Nxtj6o5UY3hmM9PnZnWBPNsHrGz32SeYE", "X-LUMEN-XID", "atolio:microsoft:default:onedrive:file/01MQP73ULBYILLGFFLV5BIMVF2CFR55CO3")))
+                        .setAddedMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of("X-LUMEN-DOCID", "atd_13Nxtj6o5UY3hmM9PnZnWBPNsHrGz32SeYE", "X-LUMEN-XID", "atolio:microsoft:default:onedrive:file/01MQP73ULBYILLGFFLV5BIMVF2CFR55CO3")))
                         .setFetchMetadataJson("{}")
                         .build());
             }
