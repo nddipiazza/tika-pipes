@@ -16,11 +16,6 @@
  */
 package org.apache.tika.pipes.fetchers.s3;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.exception.FileTooLongException;
 import org.apache.tika.io.FilenameUtils;
@@ -32,6 +27,12 @@ import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import org.apache.tika.utils.StringUtils;
 import org.pf4j.Extension;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +53,7 @@ public class S3Fetcher implements Fetcher {
 
     //Do not retry if there's an AmazonS3Exception with this error code
     private static final Set<String> NO_RETRY_ERROR_CODES = new HashSet<>();
-    private static final ConcurrentMap<S3FetcherConfig, AmazonS3> clientMap = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<S3FetcherConfig, S3Client> clientMap = new ConcurrentHashMap<>();
 
     //Keep this private so that we can change as needed.
     //Not sure if it is better to have an accept list (only throttle on too many requests)
@@ -73,7 +74,7 @@ public class S3Fetcher implements Fetcher {
         int tries = 0;
         IOException ex;
         do {
-            AmazonS3 s3Client = clientMap.computeIfAbsent(s3FetcherConfig, k -> new S3ClientManager(s3FetcherConfig).getS3Client());
+            S3Client s3Client = clientMap.computeIfAbsent(s3FetcherConfig, k -> new S3ClientManager(s3FetcherConfig).getS3Client());
             String prefix = s3FetcherConfig.getPrefix();
             if (org.apache.commons.lang3.StringUtils.isNotBlank(prefix) && !prefix.endsWith("/")) {
                 prefix += "/";
@@ -85,14 +86,14 @@ public class S3Fetcher implements Fetcher {
                 long elapsed = System.currentTimeMillis() - start;
                 log.debug("total to fetch {}", elapsed);
                 return is;
-            } catch (AmazonS3Exception e) {
-                if (e.getErrorCode() != null && NO_RETRY_ERROR_CODES.contains(e.getErrorCode())) {
+            } catch (S3Exception e) {
+                if (e.awsErrorDetails().errorCode() != null && NO_RETRY_ERROR_CODES.contains(e.awsErrorDetails().errorCode())) {
                     log.warn("Hit a no retry error code for key {}. Not retrying." + tries, theFetchKey, e);
                     throw new RuntimeException(e);
                 }
                 log.warn("client exception fetching on retry=" + tries, e);
                 ex = new IOException(e);
-            } catch (AmazonClientException e) {
+            } catch (SdkException e) {
                 log.warn("client exception fetching on retry=" + tries, e);
                 ex = new IOException(e);
             } catch (IOException e) {
@@ -117,21 +118,22 @@ public class S3Fetcher implements Fetcher {
         }
     }
 
-    private InputStream _fetch(AmazonS3 s3Client, S3FetcherConfig s3FetcherConfig, String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) throws IOException {
+    private InputStream _fetch(S3Client s3Client, S3FetcherConfig s3FetcherConfig, String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) throws IOException {
         Long startRange = (Long) fetchMetadata.get("startRange");
         Long endRange = (Long) fetchMetadata.get("endRange");
         TemporaryResources tmp = null;
         String bucket = s3FetcherConfig.getBucket();
         try {
             long start = System.currentTimeMillis();
-            GetObjectRequest objectRequest = new GetObjectRequest(bucket, fetchKey);
+            GetObjectRequest.Builder builder = GetObjectRequest.builder().bucket(bucket).key(fetchKey);
             if (startRange != null && endRange != null && startRange > -1 && endRange > -1) {
-                objectRequest.withRange(startRange, endRange);
+                builder.range("bytes=" + startRange + "-" + endRange);
             }
-            S3Object s3Object = s3Client.getObject(objectRequest);
-            long length = s3Object
-                    .getObjectMetadata()
-                    .getContentLength();
+            GetObjectRequest objectRequest = builder
+                    .build();
+            ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(objectRequest);
+            long length = s3Object.response()
+                    .contentLength();
             responseMetadata.put(Metadata.CONTENT_LENGTH, Long.toString(length));
             long maxLength = s3FetcherConfig.getMaxLength();
             if (maxLength > -1) {
@@ -142,20 +144,19 @@ public class S3Fetcher implements Fetcher {
             log.debug("took {} ms to fetch file's metadata", System.currentTimeMillis() - start);
 
             if (s3FetcherConfig.isExtractUserMetadata()) {
-                for (Map.Entry<String, String> e : s3Object
-                        .getObjectMetadata()
-                        .getUserMetadata()
+                for (Map.Entry<String, String> e : s3Object.response()
+                        .metadata()
                         .entrySet()) {
                     fetchMetadata.put(PREFIX + ":" + e.getKey(), e.getValue());
                 }
             }
             if (!s3FetcherConfig.isSpoolToTemp()) {
-                return TikaInputStream.get(s3Object.getObjectContent());
+                return TikaInputStream.get(s3Object);
             } else {
                 start = System.currentTimeMillis();
                 tmp = new TemporaryResources();
                 Path tmpPath = tmp.createTempFile(FilenameUtils.getSuffixFromPath(fetchKey));
-                Files.copy(s3Object.getObjectContent(), tmpPath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(s3Object, tmpPath, StandardCopyOption.REPLACE_EXISTING);
                 Metadata metadata = new Metadata();
                 TikaInputStream tis = TikaInputStream.get(tmpPath, metadata, tmp);
                 log.debug("took {} ms to fetch metadata and copy to local tmp file", System.currentTimeMillis() - start);

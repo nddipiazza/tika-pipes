@@ -14,13 +14,13 @@
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
     <guava.version>33.2.1-jre</guava.version>
-    <aws.version>1.12.780</aws.version>
+    <s3.version>2.30.4</s3.version>
   </properties>
   <dependencies>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-s3</artifactId>
-      <version>${aws.version}</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>${s3.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pf4j</groupId>
@@ -61,6 +61,16 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>apache-client</artifactId>
+      <version>${s3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>netty-nio-client</artifactId>
+      <version>${s3.version}</version>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
