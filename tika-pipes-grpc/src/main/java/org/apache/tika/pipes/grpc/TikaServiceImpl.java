@@ -217,7 +217,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             fetchAndParseImpl(request, responseObserver);
             responseObserver.onCompleted();
         } catch (Exception e) {
-            responseObserver.onError(Status.INTERNAL.withDescription("Could not fetch and parse - " + e.getMessage()).withCause(e).asException());
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Could not fetch and parse - " + e.getMessage()).withCause(e).asException());
         }
     }
 
@@ -328,7 +328,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                 try {
                     fetchAndParseImpl(fetchAndParseRequest, responseObserver);
                 } catch (Exception e) {
-                    responseObserver.onError(Status.INTERNAL.withDescription("Could not handle next fetch and parse request " + fetchAndParseRequest + " - " + e.getMessage()).withCause(e).asRuntimeException());
+                    responseObserver.onError(Status.NOT_FOUND.withDescription("Could not handle next fetch and parse request " + fetchAndParseRequest + " - " + e.getMessage()).withCause(e).asRuntimeException());
                 }
             }
 
