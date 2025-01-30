@@ -241,13 +241,24 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
         for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
             Metadata.Builder metadataBuilder = Metadata.newBuilder();
-            metadata.forEach((key, val) -> metadataBuilder.putFields(key, String.valueOf(val)));
-            addedMetadata.forEach((key, val) -> metadataBuilder.putFields(key, String.valueOf(val)));
-
+            for (Map.Entry<String, Object> entry : metadata.entrySet()) {
+                metadataBuilder.putFields(entry.getKey(), convertToString(entry.getValue()));
+            }
+            for (Map.Entry<String, Object> entry : addedMetadata.entrySet()) {
+                metadataBuilder.putFields(entry.getKey(), convertToString(entry.getValue()));
+            }
             builder.addMetadata(metadataBuilder.build());
         }
 
         responseObserver.onNext(builder.build());
+    }
+
+    private String convertToString(Object val) throws JsonProcessingException {
+        if (val instanceof Object[]) {
+            return objectMapper.writeValueAsString(val);
+        } else {
+            return String.valueOf(val);
+        }
     }
 
     private Class<? extends FetcherConfig> getFetcherConfigClassFromPluginManager(DefaultFetcherConfig fetcherConfig) {
