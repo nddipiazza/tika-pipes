@@ -100,13 +100,13 @@ public class S3Fetcher implements Fetcher {
                 log.warn("client exception fetching on retry=" + tries, e);
                 ex = e;
             }
-            handlePostFetch(throttleSeconds, tries);
+            handlePostFail(throttleSeconds, tries);
         } while (++tries < throttleSeconds.size());
 
         throw new RuntimeException(ex);
     }
 
-    private static void handlePostFetch(List<Long> throttleSeconds, int tries) {
+    private static void handlePostFail(List<Long> throttleSeconds, int tries) {
         if (throttleSeconds.isEmpty()) {
             return;
         }

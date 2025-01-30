@@ -3,6 +3,7 @@ package org.apache.tika.pipes.grpc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -158,7 +159,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                     .setFetcherId(request.getFetcherId())
                     .build());
         } catch (IOException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not save - " + e.getMessage()).withCause(e).asException());
         }
         responseObserver.onCompleted();
     }
@@ -215,7 +216,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             fetchAndParseImpl(request, responseObserver);
             responseObserver.onCompleted();
         } catch (Exception e) {
-            responseObserver.onError(e);
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not fetch and parse - " + e.getMessage()).withCause(e).asException());
         }
     }
 
@@ -314,7 +315,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             fetchAndParseImpl(request, responseObserver);
             responseObserver.onCompleted();
         } catch (IOException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not fetch and parse - " + e.getMessage()).withCause(e).asException());
         }
     }
 
@@ -325,8 +326,8 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             public void onNext(FetchAndParseRequest fetchAndParseRequest) {
                 try {
                     fetchAndParseImpl(fetchAndParseRequest, responseObserver);
-                } catch (IOException e) {
-                    responseObserver.onError(e);
+                } catch (Exception e) {
+                    responseObserver.onError(Status.INTERNAL.withDescription("Could not handle next fetch and parse request " + fetchAndParseRequest + " - " + e.getMessage()).withCause(e).asRuntimeException());
                 }
             }
 
@@ -357,7 +358,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             emitterRepository.save(emitterConfig.getEmitterId(), emitterConfig);
             responseObserver.onNext(SaveEmitterReply.newBuilder().setEmitterId(request.getEmitterId()).build());
         } catch (IOException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not save emitter - " + e.getMessage()).withCause(e).asException());
         }
         responseObserver.onCompleted();
     }
@@ -408,7 +409,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             pipeIteratorRepository.save(pipeIteratorConfig.getPipeIteratorId(), pipeIteratorConfig);
             responseObserver.onNext(SavePipeIteratorReply.newBuilder().setPipeIteratorId(request.getPipeIteratorId()).build());
         } catch (IOException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not save pipe iterator").withCause(e).asException());
         }
         responseObserver.onCompleted();
     }
@@ -494,7 +495,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                                 log.error("Error emitting fetch key {}",
                                         fetchAndParseReply.getFetchKey(), e);
                                 updateJobStatus(jobId, true, false, false);
-                                responseObserver.onError(e);
+                                responseObserver.onError(Status.INTERNAL.withDescription("Could not handle next fetchAndParseReply " + fetchAndParseReply + " - " + e.getMessage()).withCause(e).asException());
                             }
                         }
 
@@ -569,8 +570,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                            StreamObserver<GetPipeJobReply> responseObserver) {
         JobStatus jobStatus = jobStatusRepository.findByJobId(request.getPipeJobId());
         if (jobStatus == null) {
-            responseObserver.onError(
-                    new IllegalArgumentException("Job ID not found: " + request.getPipeJobId()));
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Could not find pipe job id " + request.getPipeJobId()).asException());
             return;
         }
 
