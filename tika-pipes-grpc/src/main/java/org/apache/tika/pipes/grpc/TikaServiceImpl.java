@@ -485,7 +485,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                         @Override
                         public void onNext(FetchAndParseReply fetchAndParseReply) {
                             try {
-                                List<Map<String, Object>> listOfMetadata = listOfMetadataToListOfMap(fetchAndParseReply);
+                                List<Map<String, List<Object>>> listOfMetadata = listOfMetadataToListOfMap(fetchAndParseReply);
                                 emitter.emit(List.of(EmitOutput.builder()
                                         .fetchKey(fetchAndParseReply.getFetchKey())
                                         .metadata(listOfMetadata)
@@ -539,12 +539,25 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @NotNull
-    private static List<Map<String, Object>> listOfMetadataToListOfMap(FetchAndParseReply fetchAndParseReply) {
-        List<Map<String, Object>> listOfMetadata = new ArrayList<>();
+    private static List<Map<String, List<Object>>> listOfMetadataToListOfMap(FetchAndParseReply fetchAndParseReply) {
+        List<Map<String, List<Object>>> listOfMetadata = new ArrayList<>();
         for (Metadata metadata : fetchAndParseReply.getMetadataList()) {
-            Map<String, Object> metadataMap = new HashMap<>();
+            Map<String, List<Object>> metadataMap = new HashMap<>();
             for (String key : metadata.getFieldsMap().keySet()) {
-                metadataMap.put(key, metadata.getFieldsMap().get(key));
+                ValueList value = metadata.getFieldsMap().get(key);
+                List<Value> valuesList = value.getValuesList();
+                metadataMap.put(key, new ArrayList<>());
+                for (Value val : valuesList) {
+                    if (val.hasStringValue()) {
+                        metadataMap.get(key).add(val.getStringValue());
+                    } else if (val.hasIntValue()) {
+                        metadataMap.get(key).add(val.getIntValue());
+                    } else if (val.hasDoubleValue()) {
+                        metadataMap.get(key).add(val.getDoubleValue());
+                    } else if (val.hasBoolValue()) {
+                        metadataMap.get(key).add(val.getBoolValue());
+                    }
+                }
             }
             listOfMetadata.add(metadataMap);
         }

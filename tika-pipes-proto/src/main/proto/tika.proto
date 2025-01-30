@@ -132,9 +132,9 @@ message FetchAndParseRequest {
   string fetcher_id = 1;
   // The "Fetch Key" of the item that will be fetched.
   string fetch_key = 2;
-  // In the case that a FetchKey is not sufficient to fetch the item, this will contain additional metadata.
+  // Additional attributes needed to fetch items. such request headers, space IDs, tokens, that might need to be on the fetch request in order to get the item from the external service.
   string fetch_metadata_json = 3;
-  // Add this metadata to the parse output.
+  // Metadata elements are added to each parsed document's output as additional metadata fields.
   string added_metadata_json = 4;
 }
 
