@@ -23,6 +23,11 @@
       <version>${s3.version}</version>
     </dependency>
     <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>sts</artifactId>
+        <version>${s3.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.pf4j</groupId>
       <artifactId>pf4j</artifactId>
       <scope>provided</scope>
