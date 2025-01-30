@@ -239,22 +239,21 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
         Map<String, Object> addedMetadata = objectMapper.readValue(request.getAddedMetadataJson(), MAP_STRING_OBJ_TYPE_REF);
 
-        Metadata finalMetadata = null;
         for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
             Metadata.Builder metadataBuilder = Metadata.newBuilder();
-            for (Map.Entry<String, Object> entry : metadata.entrySet()) {
-                ValueList.Builder valueListBuilder = ValueList.newBuilder();
-                buildValueList(entry.getValue(), valueListBuilder);
-                metadataBuilder.putFields(entry.getKey(), valueListBuilder.build());
-            }
-            for (Map.Entry<String, Object> entry : addedMetadata.entrySet()) {
-                ValueList.Builder valueListBuilder = ValueList.newBuilder();
-                buildValueList(entry.getValue(), valueListBuilder);
-                metadataBuilder.putFields(entry.getKey(), valueListBuilder.build());
-            }
+            putMetadataFields(metadata, metadataBuilder);
+            putMetadataFields(addedMetadata, metadataBuilder);
             builder.addMetadata(metadataBuilder.build());
         }
         responseObserver.onNext(builder.build());
+    }
+
+    private void putMetadataFields(Map<String, Object> metadata, Metadata.Builder metadataBuilder) throws JsonProcessingException {
+        for (Map.Entry<String, Object> entry : metadata.entrySet()) {
+            ValueList.Builder valueListBuilder = ValueList.newBuilder();
+            buildValueList(entry.getValue(), valueListBuilder);
+            metadataBuilder.putFields(entry.getKey(), valueListBuilder.build());
+        }
     }
 
     private void buildValueList(Object entryValue, ValueList.Builder valueListBuilder) throws JsonProcessingException {
@@ -276,11 +275,12 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         } else if (!(entryValue instanceof Object[])) {
             valueBuilder.setStringValue((String.valueOf(entryValue)));
         }
-        valueListBuilder.addValues(valueBuilder.build());
         if (entryValue instanceof Object[] arrayOfObj) {
             for (Object o : arrayOfObj) {
                 buildValueList(o, valueListBuilder);
             }
+        } else {
+            valueListBuilder.addValues(valueBuilder.build());
         }
     }
 
