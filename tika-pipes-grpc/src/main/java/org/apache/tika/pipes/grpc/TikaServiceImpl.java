@@ -10,6 +10,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.*;
+import org.apache.tika.parser.ParseContext;
 import org.apache.tika.pipes.PipesResult;
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
 import org.apache.tika.pipes.core.emitter.EmitOutput;
@@ -241,7 +242,13 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
         Map<String, Object> addedMetadata = objectMapper.readValue(StringUtils.defaultIfBlank(request.getAddedMetadataJson(), "{}"), MAP_STRING_OBJ_TYPE_REF);
 
-        for (Map<String, Object> metadata : parseService.parseDocument(inputStream)) {
+        ParseContext parseContext;
+        if (StringUtils.isNotBlank(request.getParseContextJson())) {
+            parseContext = objectMapper.readValue(request.getParseContextJson(), ParseContext.class);
+        } else {
+            parseContext = new ParseContext();
+        }
+        for (Map<String, Object> metadata : parseService.parseDocument(inputStream, parseContext)) {
             Metadata.Builder metadataBuilder = Metadata.newBuilder();
             putMetadataFields(metadata, metadataBuilder);
             putMetadataFields(addedMetadata, metadataBuilder);

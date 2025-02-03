@@ -136,6 +136,8 @@ message FetchAndParseRequest {
   string fetch_metadata_json = 3;
   // Metadata elements are added to each parsed document's output as additional metadata fields.
   string added_metadata_json = 4;
+  // The following is the Tika ParseContext serialized to JSON. 
+  string parse_context_json = 5;
 }
 
 message Value {

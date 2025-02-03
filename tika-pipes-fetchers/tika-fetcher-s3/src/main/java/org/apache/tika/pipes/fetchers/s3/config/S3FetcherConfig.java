@@ -41,7 +41,7 @@ public class S3FetcherConfig extends DefaultFetcherConfig {
     private String sessionToken;
     private String accessKey;
     private String secretKey;
-    private String endpointConfigurationService;
+    private String endpointOverride;
     private boolean pathStyleAccessEnabled;
     private List<Long> throttleSeconds;
 
@@ -55,12 +55,12 @@ public class S3FetcherConfig extends DefaultFetcherConfig {
         }
         S3FetcherConfig that = (S3FetcherConfig) o;
         return spoolToTemp == that.spoolToTemp && extractUserMetadata == that.extractUserMetadata && maxConnections == that.maxConnections && maxLength == that.maxLength && pathStyleAccessEnabled == that.pathStyleAccessEnabled && Objects.equals(region, that.region) && Objects.equals(profile, that.profile) && Objects.equals(bucket, that.bucket) &&
-                Objects.equals(commaDelimitedLongs, that.commaDelimitedLongs) && Objects.equals(prefix, that.prefix) && Objects.equals(credentialsProvider, that.credentialsProvider) && Objects.equals(accessKey, that.accessKey) && Objects.equals(secretKey, that.secretKey) && Objects.equals(endpointConfigurationService, that.endpointConfigurationService) &&
+                Objects.equals(commaDelimitedLongs, that.commaDelimitedLongs) && Objects.equals(prefix, that.prefix) && Objects.equals(credentialsProvider, that.credentialsProvider) && Objects.equals(accessKey, that.accessKey) && Objects.equals(secretKey, that.secretKey) && Objects.equals(endpointOverride, that.endpointOverride) &&
                 Objects.equals(throttleSeconds, that.throttleSeconds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(spoolToTemp, region, profile, bucket, commaDelimitedLongs, prefix, extractUserMetadata, maxConnections, credentialsProvider, maxLength, accessKey, secretKey, endpointConfigurationService, pathStyleAccessEnabled, throttleSeconds);
+        return Objects.hash(spoolToTemp, region, profile, bucket, commaDelimitedLongs, prefix, extractUserMetadata, maxConnections, credentialsProvider, maxLength, accessKey, secretKey, endpointOverride, pathStyleAccessEnabled, throttleSeconds);
     }
 }

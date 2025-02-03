@@ -2,12 +2,7 @@ package org.apache.tika.pipes.fetchers.s3;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.*;
-import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -46,8 +41,8 @@ public class S3ClientManager {
                 .credentialsProvider(provider)
                 .region(Region.of(s3FetcherConfig.getRegion()));
 
-        if (!StringUtils.isBlank(s3FetcherConfig.getEndpointConfigurationService())) {
-            s3ClientBuilder.endpointOverride(URI.create(s3FetcherConfig.getEndpointConfigurationService()));
+        if (!StringUtils.isBlank(s3FetcherConfig.getEndpointOverride())) {
+            s3ClientBuilder.endpointOverride(URI.create(s3FetcherConfig.getEndpointOverride()));
         }
 
         return s3ClientBuilder.build();
