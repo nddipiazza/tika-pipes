@@ -23,13 +23,13 @@ public class S3ClientManager {
     private S3Client initialize() {
         String credentialsProvider = s3FetcherConfig.getCredentialsProvider();
         AwsCredentialsProvider provider;
-        if (credentialsProvider.equals("instance")) {
+        if (StringUtils.equals(credentialsProvider, "instance")) {
             provider = InstanceProfileCredentialsProvider.create();
-        } else if (credentialsProvider.equals("identity")) {
+        } else if (StringUtils.equals(credentialsProvider, "identity")) {
             provider = WebIdentityTokenFileCredentialsProvider.create();
-        } else if (credentialsProvider.equals("profile")) {
+        } else if (StringUtils.equals(credentialsProvider, "profile")) {
             provider = ProfileCredentialsProvider.create(s3FetcherConfig.getProfile());
-        } else if (credentialsProvider.equals("key_secret")) {
+        } else if (StringUtils.equals(credentialsProvider, "key_secret")) {
             provider = StaticCredentialsProvider.create(AwsSessionCredentials.create(s3FetcherConfig.getAccessKey(), s3FetcherConfig.getSecretKey(), s3FetcherConfig.getSessionToken()));
         } else {
             throw new IllegalArgumentException("credentialsProvider must be set and must be either 'instance', 'identity', 'profile' or 'key_secret'");

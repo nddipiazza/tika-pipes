@@ -113,6 +113,7 @@ class S3FetcherExternalTest {
 
         S3FetcherConfig s3FetcherConfig = new S3FetcherConfig();
         s3FetcherConfig.setFetcherId(fetcherId);
+        s3FetcherConfig.setCredentialsProvider("key_secret");
         s3FetcherConfig.setPluginId("s3-fetcher");
         s3FetcherConfig.setBucket(FETCH_BUCKET);
         s3FetcherConfig.setExtractUserMetadata(true);

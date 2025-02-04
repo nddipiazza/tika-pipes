@@ -82,7 +82,7 @@ public class S3Fetcher implements Fetcher {
             String theFetchKey = StringUtils.isBlank(prefix) ? fetchKey : prefix + fetchKey;
             try {
                 long start = System.currentTimeMillis();
-                InputStream is = _fetch(s3Client, s3FetcherConfig, theFetchKey, fetchMetadata, responseMetadata);
+                InputStream is = fetchImpl(s3Client, s3FetcherConfig, theFetchKey, fetchMetadata, responseMetadata);
                 long elapsed = System.currentTimeMillis() - start;
                 log.debug("total to fetch {}", elapsed);
                 return is;
@@ -118,14 +118,16 @@ public class S3Fetcher implements Fetcher {
         }
     }
 
-    private InputStream _fetch(S3Client s3Client, S3FetcherConfig s3FetcherConfig, String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) throws IOException {
+    private InputStream fetchImpl(S3Client s3Client, S3FetcherConfig s3FetcherConfig, String fetchKey, Map<String, Object> fetchMetadata, Map<String, Object> responseMetadata) throws IOException {
         Long startRange = (Long) fetchMetadata.get("startRange");
         Long endRange = (Long) fetchMetadata.get("endRange");
         TemporaryResources tmp = null;
         String bucket = s3FetcherConfig.getBucket();
         try {
             long start = System.currentTimeMillis();
-            GetObjectRequest.Builder builder = GetObjectRequest.builder().bucket(bucket).key(fetchKey);
+            GetObjectRequest.Builder builder = GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(fetchKey);
             if (startRange != null && endRange != null && startRange > -1 && endRange > -1) {
                 builder.range("bytes=" + startRange + "-" + endRange);
             }
