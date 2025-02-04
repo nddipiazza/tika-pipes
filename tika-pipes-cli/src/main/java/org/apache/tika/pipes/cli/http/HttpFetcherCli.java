@@ -5,20 +5,21 @@ import com.beust.jcommander.Parameter;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import io.undertow.Undertow;
-import io.undertow.util.Headers;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.*;
+import org.apache.commons.io.LineIterator;
+import org.apache.tika.FetchAndParseReply;
+import org.apache.tika.FetchAndParseRequest;
+import org.apache.tika.SaveFetcherReply;
+import org.apache.tika.SaveFetcherRequest;
+import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -39,40 +40,18 @@ public class HttpFetcherCli {
     @Parameter(names = {"-h", "-H", "--help"}, description = "Display help menu")
     private boolean help;
 
-    public static int getRandomAvailablePort() {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not find an available port", e);
-        }
-    }
-    static int httpServerPort;
     public static void main(String[] args) throws Exception {
-        httpServerPort = getRandomAvailablePort();
-        Undertow server = Undertow
-                .builder()
-                .addHttpListener(httpServerPort, InetAddress.getLocalHost().getHostAddress())
-                .setHandler(exchange -> {
-                                      exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
-                                      exchange.getResponseSender().send("<html><body>test</body></html>");
-                                  }).build();
-
-        try {
-            server.start();
-            HttpFetcherCli bulkParser = new HttpFetcherCli();
-            JCommander commander = JCommander
-                    .newBuilder()
-                    .addObject(bulkParser)
-                    .build();
-            commander.parse(args);
-            if (bulkParser.help) {
-                commander.usage();
-                return;
-            }
-            bulkParser.runFetch();
-        } finally {
-            server.stop();
+        HttpFetcherCli bulkParser = new HttpFetcherCli();
+        JCommander commander = JCommander
+                .newBuilder()
+                .addObject(bulkParser)
+                .build();
+        commander.parse(args);
+        if (bulkParser.help) {
+            commander.usage();
+            return;
         }
+        bulkParser.runFetch();
     }
 
     private void runFetch() throws IOException {
@@ -123,12 +102,16 @@ public class HttpFetcherCli {
             }
         });
 
-        requestStreamObserver.onNext(FetchAndParseRequest
-                    .newBuilder()
-                    .setFetcherId(fetcherId)
-                    .setFetchKey("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + httpServerPort)
-                    .setFetchMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
-                    .build());
+        try (LineIterator lineIterator = new LineIterator(new FileReader(urlsToFetchFile))) {
+            while (lineIterator.hasNext()) {
+                String fetchKey = lineIterator.nextLine();
+                requestStreamObserver.onNext(FetchAndParseRequest
+                        .newBuilder()
+                        .setFetcherId(fetcherId)
+                        .setFetchKey(fetchKey)
+                        .build());
+            }
+        }
 
         log.info("Done submitting URLs to {}", fetcherId);
         requestStreamObserver.onCompleted();

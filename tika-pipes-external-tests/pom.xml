@@ -18,8 +18,14 @@
         <testcontainers.version>1.20.4</testcontainers.version>
         <s3.version>2.30.8</s3.version>
         <jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
+        <undertow-core.version>2.3.5.Final</undertow-core.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>${undertow-core.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>

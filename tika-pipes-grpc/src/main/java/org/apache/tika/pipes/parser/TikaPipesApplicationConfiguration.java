@@ -1,19 +1,26 @@
 package org.apache.tika.pipes.parser;
 
-import java.util.Properties;
-import javax.annotation.PostConstruct;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
+import java.util.Properties;
+
 @Configuration
 @ComponentScan(basePackages = {"org.apache.tika.pipes"})
 @Slf4j
 public class TikaPipesApplicationConfiguration {
+
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	static {
+		OBJECT_MAPPER.registerModule(new GuavaModule());
+	}
+
 	@PostConstruct
 	public void init() {
 		log.info("""
@@ -36,8 +43,11 @@ public class TikaPipesApplicationConfiguration {
 
 	@Bean
 	public ObjectMapper objectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new GuavaModule());
-		return objectMapper;
+		return OBJECT_MAPPER;
+	}
+
+	@Bean
+	public JsonSchemaGenerator jsonSchemaGenerator() {
+		return new JsonSchemaGenerator(OBJECT_MAPPER);
 	}
 }

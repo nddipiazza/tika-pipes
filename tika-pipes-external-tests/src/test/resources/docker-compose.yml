@@ -9,6 +9,6 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
   tika-pipes:
-    image: docker.io/ndipiazza/tika-pipes:3.0.0-beta3
+    image: docker.io/ndipiazza/tika-pipes:3.0.0-beta3-attempt1
     ports:
       - "50051:50051"

@@ -3,13 +3,54 @@ package org.apache.tika.pipes.grpc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tika.*;
+import org.apache.tika.DeleteEmitterReply;
+import org.apache.tika.DeleteEmitterRequest;
+import org.apache.tika.DeleteFetcherReply;
+import org.apache.tika.DeleteFetcherRequest;
+import org.apache.tika.DeletePipeIteratorReply;
+import org.apache.tika.DeletePipeIteratorRequest;
+import org.apache.tika.FetchAndParseReply;
+import org.apache.tika.FetchAndParseRequest;
+import org.apache.tika.GetEmitterConfigJsonSchemaReply;
+import org.apache.tika.GetEmitterConfigJsonSchemaRequest;
+import org.apache.tika.GetEmitterReply;
+import org.apache.tika.GetEmitterRequest;
+import org.apache.tika.GetFetcherConfigJsonSchemaReply;
+import org.apache.tika.GetFetcherConfigJsonSchemaRequest;
+import org.apache.tika.GetFetcherReply;
+import org.apache.tika.GetFetcherRequest;
+import org.apache.tika.GetPipeIteratorConfigJsonSchemaReply;
+import org.apache.tika.GetPipeIteratorConfigJsonSchemaRequest;
+import org.apache.tika.GetPipeIteratorReply;
+import org.apache.tika.GetPipeIteratorRequest;
+import org.apache.tika.GetPipeJobReply;
+import org.apache.tika.GetPipeJobRequest;
+import org.apache.tika.ListEmittersReply;
+import org.apache.tika.ListEmittersRequest;
+import org.apache.tika.ListFetchersReply;
+import org.apache.tika.ListFetchersRequest;
+import org.apache.tika.ListPipeIteratorsReply;
+import org.apache.tika.ListPipeIteratorsRequest;
+import org.apache.tika.Metadata;
+import org.apache.tika.RunPipeJobReply;
+import org.apache.tika.RunPipeJobRequest;
+import org.apache.tika.SaveEmitterReply;
+import org.apache.tika.SaveEmitterRequest;
+import org.apache.tika.SaveFetcherReply;
+import org.apache.tika.SaveFetcherRequest;
+import org.apache.tika.SavePipeIteratorReply;
+import org.apache.tika.SavePipeIteratorRequest;
+import org.apache.tika.TikaGrpc;
+import org.apache.tika.Value;
+import org.apache.tika.ValueList;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.pipes.PipesResult;
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
@@ -38,8 +79,16 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @GrpcService
@@ -51,6 +100,8 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     };
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private JsonSchemaGenerator jsonSchemaGenerator;
 
     @Autowired
     private FetcherRepository fetcherRepository;
@@ -353,7 +404,20 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Override
     public void getFetcherConfigJsonSchema(GetFetcherConfigJsonSchemaRequest request, StreamObserver<GetFetcherConfigJsonSchemaReply> responseObserver) {
-        throw new NotImplementedException();
+        GetFetcherConfigJsonSchemaReply.Builder builder = GetFetcherConfigJsonSchemaReply.newBuilder();
+        try {
+            FetcherConfig fetcherConfig = getFetcherConfig(request.getPluginId());
+            if (fetcherConfig == null) {
+                responseObserver.onError(Status.NOT_FOUND.withDescription("Could not find fetcher config for " + request.getPluginId()).asException());
+            } else {
+                JsonSchema jsonSchema = jsonSchemaGenerator.generateSchema(fetcherConfig.getClass());
+                builder.setFetcherConfigJsonSchema(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonSchema));
+            }
+        } catch (JsonProcessingException e) {
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not process config - json issues " + request.getPluginId() + " - " + e).asException());
+        }
+        responseObserver.onNext(builder.build());
+        responseObserver.onCompleted();
     }
 
     @Override

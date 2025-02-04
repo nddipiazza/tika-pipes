@@ -30,6 +30,7 @@
     <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
     <tika-version>3.0.0</tika-version>
     <commons-io.version>2.18.0</commons-io.version>
+    <json-schema-validator.version>2.2.14</json-schema-validator.version>
   </properties>
   <dependencies>
     <dependency>
@@ -51,6 +52,12 @@
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
       <version>1.9.0</version> <!-- Make sure to use the latest version -->
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.java-json-tools</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>${json-schema-validator.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
