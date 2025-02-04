@@ -79,7 +79,12 @@ public class S3Fetcher implements Fetcher {
             if (org.apache.commons.lang3.StringUtils.isNotBlank(prefix) && !prefix.endsWith("/")) {
                 prefix += "/";
             }
-            String theFetchKey = StringUtils.isBlank(prefix) ? fetchKey : prefix + fetchKey;
+            String theFetchKey;
+            if (StringUtils.isBlank(prefix) || fetchKey.startsWith(prefix)) {
+                theFetchKey = fetchKey;
+            } else {
+                theFetchKey = prefix + fetchKey;
+            }
             try {
                 long start = System.currentTimeMillis();
                 InputStream is = fetchImpl(s3Client, s3FetcherConfig, theFetchKey, fetchMetadata, responseMetadata);
