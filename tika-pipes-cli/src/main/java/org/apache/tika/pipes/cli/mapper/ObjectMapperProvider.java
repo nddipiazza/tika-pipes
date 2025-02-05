@@ -7,6 +7,5 @@ public class ObjectMapperProvider {
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     static {
         OBJECT_MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
-        OBJECT_MAPPER.findAndRegisterModules();
     }
 }

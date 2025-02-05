@@ -16,9 +16,6 @@ import java.util.Properties;
 public class TikaPipesApplicationConfiguration {
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-	static {
-		OBJECT_MAPPER.findAndRegisterModules();
-	}
 
 	@PostConstruct
 	public void init() {
