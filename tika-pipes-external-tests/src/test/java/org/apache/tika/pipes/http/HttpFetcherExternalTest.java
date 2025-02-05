@@ -39,9 +39,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 class HttpFetcherExternalTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    static {
-        OBJECT_MAPPER.findAndRegisterModules();
-    }
     public static final int MAX_STARTUP_TIMEOUT = 120;
     private static final DockerComposeContainer<?> composeContainer = new DockerComposeContainer<>(
             new File("src/test/resources/docker-compose.yml")).withStartupTimeout(

@@ -27,9 +27,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HttpFetcherCli {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    static {
-        OBJECT_MAPPER.findAndRegisterModules();
-    }
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
     public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 50051;
     @Parameter(names = {"--fetch-urls"}, description = "File of URLs to fetch", help = true)

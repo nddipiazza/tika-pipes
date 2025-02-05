@@ -36,9 +36,6 @@ import java.util.List;
 @Extension
 public class FileSystemEmitter implements Emitter {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    static {
-        OBJECT_MAPPER.findAndRegisterModules();
-    }
 
     private FileSystemEmitterConfig fileSystemEmitterConfig;
 
