@@ -1,7 +1,5 @@
 package org.apache.tika.pipes.core.iterators;
 
-import java.util.Map;
-
 import org.apache.ignite.cache.query.annotations.QuerySqlField;
 
 public class DefaultPipeIteratorConfig implements PipeIteratorConfig {
@@ -9,7 +7,7 @@ public class DefaultPipeIteratorConfig implements PipeIteratorConfig {
     private String pluginId;
     @QuerySqlField(index = true)
     private String pipeIteratorId;
-    private Map<String, Object> config;
+    private String configJson;
 
     @Override
     public String getPluginId() {
@@ -34,13 +32,13 @@ public class DefaultPipeIteratorConfig implements PipeIteratorConfig {
     }
 
     @Override
-    public Map<String, Object> getConfig() {
-        return config;
+    public String getConfigJson() {
+        return configJson;
     }
 
     @Override
-    public DefaultPipeIteratorConfig setConfig(Map<String, Object> config) {
-        this.config = config;
+    public DefaultPipeIteratorConfig setConfigJson(String configJson) {
+        this.configJson = configJson;
         return this;
     }
 }

@@ -1,7 +1,5 @@
 package org.apache.tika.pipes.core.emitter;
 
-import java.util.Map;
-
 import org.apache.ignite.cache.query.annotations.QuerySqlField;
 
 public class DefaultEmitterConfig implements EmitterConfig {
@@ -9,7 +7,7 @@ public class DefaultEmitterConfig implements EmitterConfig {
     private String pluginId;
     @QuerySqlField(index = true)
     private String emitterId;
-    private Map<String, Object> config;
+    private String configJson;
 
     public String getPluginId() {
         return pluginId;
@@ -29,12 +27,13 @@ public class DefaultEmitterConfig implements EmitterConfig {
         return this;
     }
 
-    public Map<String, Object> getConfig() {
-        return config;
+    public String getConfigJson() {
+        return configJson;
     }
 
-    public DefaultEmitterConfig setConfig(Map<String, Object> config) {
-        this.config = config;
+    public DefaultEmitterConfig setConfigJson(String configJson) {
+        this.configJson = configJson;
         return this;
     }
+
 }

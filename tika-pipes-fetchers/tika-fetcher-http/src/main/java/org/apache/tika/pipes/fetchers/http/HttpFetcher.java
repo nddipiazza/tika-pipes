@@ -17,25 +17,6 @@
 package org.apache.tika.pipes.fetchers.http;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.security.PrivateKey;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.nimbusds.jose.JOSEException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -53,8 +34,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.conn.ConnectionShutdownException;
 import org.apache.http.util.EntityUtils;
-import org.pf4j.Extension;
-
 import org.apache.tika.client.HttpClientFactory;
 import org.apache.tika.exception.TikaConfigException;
 import org.apache.tika.exception.TikaException;
@@ -73,6 +52,26 @@ import org.apache.tika.pipes.fetchers.http.jwt.JwtGenerator;
 import org.apache.tika.pipes.fetchers.http.jwt.JwtPrivateKeyCreds;
 import org.apache.tika.pipes.fetchers.http.jwt.JwtSecretCreds;
 import org.apache.tika.utils.StringUtils;
+import org.pf4j.Extension;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.security.PrivateKey;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Based on Apache httpclient
@@ -139,8 +138,11 @@ public class HttpFetcher implements Fetcher {
         }
         if (httpFetcherConfig.getHttpRequestHeaders() != null) {
             httpFetcherConfig.getHttpRequestHeaders()
-                    .getHeaders()
-                    .forEach(httpGet::addHeader);
+                    .forEach((header, values) -> {
+                        for (String value : values) {
+                            httpGet.addHeader(header, value);
+                        }
+                    });
         }
         if (jwtGenerator != null) {
             try {

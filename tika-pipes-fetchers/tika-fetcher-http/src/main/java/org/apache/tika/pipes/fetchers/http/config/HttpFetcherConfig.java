@@ -16,12 +16,13 @@
  */
 package org.apache.tika.pipes.fetchers.http.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 import org.pf4j.Extension;
 
-import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Extension
 public class HttpFetcherConfig extends DefaultFetcherConfig {
@@ -33,7 +34,7 @@ public class HttpFetcherConfig extends DefaultFetcherConfig {
     private Long maxSpoolSize = -1L;
     private Integer maxRedirects = 0;
     private List<String> httpHeaders = new ArrayList<>();
-    private HttpHeaders httpRequestHeaders = new HttpHeaders();
+    private Map<String, List<String>> httpRequestHeaders = new LinkedHashMap<>();
     private Long overallTimeout = 120000L;
     private Integer maxErrMsgSize = 10000000;
     private String userAgent;
@@ -112,11 +113,11 @@ public class HttpFetcherConfig extends DefaultFetcherConfig {
         return this;
     }
 
-    public HttpHeaders getHttpRequestHeaders() {
+    public Map<String, List<String>> getHttpRequestHeaders() {
         return httpRequestHeaders;
     }
 
-    public HttpFetcherConfig setHttpRequestHeaders(HttpHeaders httpRequestHeaders) {
+    public HttpFetcherConfig setHttpRequestHeaders(Map<String, List<String>> httpRequestHeaders) {
         this.httpRequestHeaders = httpRequestHeaders;
         return this;
     }

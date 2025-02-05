@@ -1,7 +1,5 @@
 package org.apache.tika.pipes.core.emitter;
 
-import java.util.Map;
-
 import org.pf4j.ExtensionPoint;
 
 public interface EmitterConfig extends ExtensionPoint {
@@ -9,6 +7,6 @@ public interface EmitterConfig extends ExtensionPoint {
     EmitterConfig setPluginId(String pluginId);
     String getEmitterId();
     EmitterConfig setEmitterId(String fetcherId);
-    Map<String, Object> getConfig();
-    EmitterConfig setConfig(Map<String, Object> config);
+    String getConfigJson();
+    EmitterConfig setConfigJson(String configJson);
 }

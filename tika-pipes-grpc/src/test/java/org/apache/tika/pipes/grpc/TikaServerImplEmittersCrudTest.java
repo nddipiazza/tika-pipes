@@ -1,16 +1,9 @@
 package org.apache.tika.pipes.grpc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.net.InetAddress;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import org.apache.tika.DeleteEmitterReply;
 import org.apache.tika.DeleteEmitterRequest;
 import org.apache.tika.GetEmitterReply;
@@ -22,6 +15,13 @@ import org.apache.tika.SaveEmitterRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.TikaPipesIntegrationTestBase;
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.net.InetAddress;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TikaServerImplEmittersCrudTest extends TikaPipesIntegrationTestBase {
     @Test
@@ -64,7 +64,7 @@ class TikaServerImplEmittersCrudTest extends TikaPipesIntegrationTestBase {
         DefaultEmitterConfig emitterConfig = new DefaultEmitterConfig();
         emitterConfig.setEmitterId(emitterId);
         emitterConfig.setPluginId(pluginId);
-        emitterConfig.setConfig(Map.of("key", "value"));
+        emitterConfig.setConfigJson(new ObjectMapper().writeValueAsString(Map.of("foo", "bar")));
 
         SaveEmitterReply saveEmitterReply = tikaBlockingStub.saveEmitter(
                 SaveEmitterRequest.newBuilder().setEmitterId(emitterId).setPluginId(pluginId)

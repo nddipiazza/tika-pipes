@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.tika.DeleteEmitterReply;
 import org.apache.tika.DeleteEmitterRequest;
 import org.apache.tika.DeleteFetcherReply;
@@ -100,6 +101,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     };
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private JsonSchemaGenerator jsonSchemaGenerator;
 
@@ -136,7 +138,11 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         DefaultFetcherConfig fetcherConfig = new DefaultFetcherConfig();
         fetcherConfig.setPluginId(pluginId);
         fetcherConfig.setFetcherId(fetcherId);
-        fetcherConfig.setConfig(objectMapper.convertValue(getFetcherConfig(pluginId), new TypeReference<>() {}));
+        try {
+            fetcherConfig.setConfigJson(objectMapper.writeValueAsString(getFetcherConfig(pluginId)));
+        } catch (JsonProcessingException e) {
+            throw new TikaPipesException("Could not parse JSON config for pluginid=" + pluginId + ", fetcherId=" + fetcherId, e);
+        }
         return fetcherConfig;
     }
 
@@ -168,7 +174,11 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         DefaultEmitterConfig emitterConfig = new DefaultEmitterConfig();
         emitterConfig.setPluginId(pluginId);
         emitterConfig.setEmitterId(emitterId);
-        emitterConfig.setConfig(objectMapper.convertValue(getEmitterConfig(pluginId), new TypeReference<>() {}));
+        try {
+            emitterConfig.setConfigJson(objectMapper.writeValueAsString(getEmitterConfig(pluginId)));
+        } catch (JsonProcessingException e) {
+            throw new TikaPipesException("Could not parse JSON config for pluginid=" + pluginId + ", emitterId=" + emitterId, e);
+        }
         return emitterConfig;
     }
 
@@ -192,7 +202,11 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         DefaultPipeIteratorConfig pipeIteratorConfig = new DefaultPipeIteratorConfig();
         pipeIteratorConfig.setPluginId(pluginId);
         pipeIteratorConfig.setPipeIteratorId(pipeIteratorId);
-        pipeIteratorConfig.setConfig(objectMapper.convertValue(getPipeIteratorConfig(pluginId), new TypeReference<>() {}));
+        try {
+            pipeIteratorConfig.setConfigJson(objectMapper.writeValueAsString(getPipeIteratorConfig(pluginId)));
+        } catch (JsonProcessingException e) {
+            throw new TikaPipesException("Could not parse JSON config for pluginid=" + pluginId + ", pipeIteratorId=" + pipeIteratorId, e);
+        }
         return pipeIteratorConfig;
     }
 
@@ -202,17 +216,14 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             FetcherConfig fetcherConfig = newFetcherConfig(request.getPluginId(), request.getFetcherId());
             fetcherConfig.setFetcherId(request.getFetcherId())
                     .setPluginId(request.getPluginId())
-                    .setConfig(objectMapper.readValue(request
-                            .getFetcherConfigJsonBytes()
-                            .toByteArray(), new TypeReference<>() {
-                    }));
+                    .setConfigJson(request.getFetcherConfigJson());
             fetcherRepository.save(fetcherConfig.getFetcherId(), newFetcherConfig(request));
             responseObserver.onNext(SaveFetcherReply
                     .newBuilder()
                     .setFetcherId(request.getFetcherId())
                     .build());
         } catch (IOException e) {
-            responseObserver.onError(Status.INTERNAL.withDescription("Could not save - " + e.getMessage()).withCause(e).asException());
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not save - " + ExceptionUtils.getStackTrace(e)).withCause(e).asException());
         }
         responseObserver.onCompleted();
     }
@@ -221,8 +232,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         return new DefaultFetcherConfig()
                 .setFetcherId(request.getFetcherId())
                 .setPluginId(request.getPluginId())
-                .setConfig(objectMapper.readValue(request.getFetcherConfigJson(), new TypeReference<>() {
-                }));
+                .setConfigJson(request.getFetcherConfigJson());
     }
 
     @Override
@@ -269,7 +279,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             fetchAndParseImpl(request, responseObserver);
             responseObserver.onCompleted();
         } catch (Exception e) {
-            responseObserver.onError(Status.NOT_FOUND.withDescription("Could not fetch and parse - " + e.getMessage()).withCause(e).asException());
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Could not fetch and parse - " + ExceptionUtils.getStackTrace(e)).withCause(e).asException());
         }
     }
 
@@ -284,7 +294,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
         // But the fetcher.fetch will be done within the pf4j plugin.
         // If you send DefaultFetcherConfig and try to cast to the respective config you'll get a class loading error.
         // To get past this, get the correct class from the plugin manager, and convert to it.
-        FetcherConfig fetcherConfigFromPluginManager = objectMapper.convertValue(fetcherConfig.getConfig(), getFetcherConfigClassFromPluginManager(fetcherConfig));
+        FetcherConfig fetcherConfigFromPluginManager = objectMapper.readValue(fetcherConfig.getConfigJson(), getFetcherConfigClassFromPluginManager(fetcherConfig));
         Map<String, Object> fetchMetadata = objectMapper.readValue(StringUtils.defaultIfBlank(request.getFetchMetadataJson(), "{}"), MAP_STRING_OBJ_TYPE_REF);
         InputStream inputStream = fetcher.fetch(fetcherConfigFromPluginManager, request.getFetchKey(), fetchMetadata, responseMetadata);
         FetchAndParseReply.Builder builder = FetchAndParseReply.newBuilder();
@@ -374,7 +384,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
             fetchAndParseImpl(request, responseObserver);
             responseObserver.onCompleted();
         } catch (IOException e) {
-            responseObserver.onError(Status.INTERNAL.withDescription("Could not fetch and parse - " + e.getMessage()).withCause(e).asException());
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not fetch and parse - " + ExceptionUtils.getStackTrace(e)).withCause(e).asException());
         }
     }
 
@@ -386,7 +396,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                 try {
                     fetchAndParseImpl(fetchAndParseRequest, responseObserver);
                 } catch (Exception e) {
-                    responseObserver.onError(Status.NOT_FOUND.withDescription("Could not handle next fetch and parse request " + fetchAndParseRequest + " - " + e.getMessage()).withCause(e).asRuntimeException());
+                    responseObserver.onError(Status.NOT_FOUND.withDescription("Could not handle next fetch and parse request " + fetchAndParseRequest + " - " + ExceptionUtils.getStackTrace(e)).withCause(e).asRuntimeException());
                 }
             }
 
@@ -422,16 +432,12 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Override
     public void saveEmitter(SaveEmitterRequest request, StreamObserver<SaveEmitterReply> responseObserver) {
-        try {
-            DefaultEmitterConfig emitterConfig = newEmitterConfig(request.getPluginId(), request.getEmitterId());
-            emitterConfig.setEmitterId(request.getEmitterId())
-                         .setPluginId(request.getPluginId())
-                         .setConfig(objectMapper.readValue(request.getEmitterConfigJson(), new TypeReference<>() {}));
-            emitterRepository.save(emitterConfig.getEmitterId(), emitterConfig);
-            responseObserver.onNext(SaveEmitterReply.newBuilder().setEmitterId(request.getEmitterId()).build());
-        } catch (IOException e) {
-            responseObserver.onError(Status.INTERNAL.withDescription("Could not save emitter - " + e.getMessage()).withCause(e).asException());
-        }
+        DefaultEmitterConfig emitterConfig = newEmitterConfig(request.getPluginId(), request.getEmitterId());
+        emitterConfig.setEmitterId(request.getEmitterId())
+                     .setPluginId(request.getPluginId())
+                     .setConfigJson(request.getEmitterConfigJson());
+        emitterRepository.save(emitterConfig.getEmitterId(), emitterConfig);
+        responseObserver.onNext(SaveEmitterReply.newBuilder().setEmitterId(request.getEmitterId()).build());
         responseObserver.onCompleted();
     }
 
@@ -473,16 +479,12 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Override
     public void savePipeIterator(SavePipeIteratorRequest request, StreamObserver<SavePipeIteratorReply> responseObserver) {
-        try {
-            DefaultPipeIteratorConfig pipeIteratorConfig = newPipeIteratorConfig(request.getPluginId(), request.getPipeIteratorId());
-            pipeIteratorConfig.setPipeIteratorId(request.getPipeIteratorId())
-                              .setPluginId(request.getPluginId())
-                              .setConfig(objectMapper.readValue(request.getPipeIteratorConfigJson(), new TypeReference<>() {}));
-            pipeIteratorRepository.save(pipeIteratorConfig.getPipeIteratorId(), pipeIteratorConfig);
-            responseObserver.onNext(SavePipeIteratorReply.newBuilder().setPipeIteratorId(request.getPipeIteratorId()).build());
-        } catch (IOException e) {
-            responseObserver.onError(Status.INTERNAL.withDescription("Could not save pipe iterator").withCause(e).asException());
-        }
+        DefaultPipeIteratorConfig pipeIteratorConfig = newPipeIteratorConfig(request.getPluginId(), request.getPipeIteratorId());
+        pipeIteratorConfig.setPipeIteratorId(request.getPipeIteratorId())
+                          .setPluginId(request.getPluginId())
+                          .setConfigJson(request.getPipeIteratorConfigJson());
+        pipeIteratorRepository.save(pipeIteratorConfig.getPipeIteratorId(), pipeIteratorConfig);
+        responseObserver.onNext(SavePipeIteratorReply.newBuilder().setPipeIteratorId(request.getPipeIteratorId()).build());
         responseObserver.onCompleted();
     }
 
@@ -546,11 +548,11 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     private void runPipeJobImpl(RunPipeJobRequest request, StreamObserver<RunPipeJobReply> responseObserver, String jobId) {
         try {
             DefaultPipeIteratorConfig pipeIteratorConfig = pipeIteratorRepository.findByPipeIteratorId(request.getPipeIteratorId());
-            PipeIteratorConfig pipeIteratorConfigFromPluginManager = objectMapper.convertValue(pipeIteratorConfig.getConfig(), getPipeIteratorConfigClassFromPluginManager(pipeIteratorConfig));
+            PipeIteratorConfig pipeIteratorConfigFromPluginManager = objectMapper.readValue(pipeIteratorConfig.getConfigJson(), getPipeIteratorConfigClassFromPluginManager(pipeIteratorConfig));
             PipeIterator pipeIterator = getPipeIterator(pipeIteratorConfig.getPluginId());
             pipeIterator.init(pipeIteratorConfigFromPluginManager);
             DefaultEmitterConfig emitterConfig = emitterRepository.findByEmitterId(request.getEmitterId());
-            EmitterConfig emitterConfigFromPluginManager = objectMapper.convertValue(emitterConfig.getConfig(), getEmitterConfigClassFromPluginManager(emitterConfig));
+            EmitterConfig emitterConfigFromPluginManager = objectMapper.readValue(emitterConfig.getConfigJson(), getEmitterConfigClassFromPluginManager(emitterConfig));
             Emitter emitter = getEmitter(emitterConfig.getPluginId());
             emitter.init(emitterConfigFromPluginManager);
             CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -567,7 +569,7 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
                                 log.error("Error emitting fetch key {}",
                                         fetchAndParseReply.getFetchKey(), e);
                                 updateJobStatus(jobId, true, false, false);
-                                responseObserver.onError(Status.INTERNAL.withDescription("Could not handle next fetchAndParseReply " + fetchAndParseReply + " - " + e.getMessage()).withCause(e).asException());
+                                responseObserver.onError(Status.INTERNAL.withDescription("Could not handle next fetchAndParseReply " + fetchAndParseReply + " - " + ExceptionUtils.getStackTrace(e)).withCause(e).asException());
                             }
                         }
 

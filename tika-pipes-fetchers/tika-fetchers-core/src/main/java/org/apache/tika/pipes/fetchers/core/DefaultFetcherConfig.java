@@ -2,15 +2,13 @@ package org.apache.tika.pipes.fetchers.core;
 
 import org.apache.ignite.cache.query.annotations.QuerySqlField;
 
-import java.util.Map;
-
 public class DefaultFetcherConfig implements FetcherConfig {
     @QuerySqlField(index = true)
     private String pluginId;
     @QuerySqlField(index = true)
     private String fetcherId;
 
-    private Map<String, Object> config;
+    private String configJson;
 
     public String getPluginId() {
         return pluginId;
@@ -30,12 +28,12 @@ public class DefaultFetcherConfig implements FetcherConfig {
         return this;
     }
 
-    public Map<String, Object> getConfig() {
-        return config;
+    public String getConfigJson() {
+        return configJson;
     }
 
-    public DefaultFetcherConfig setConfig(Map<String, Object> config) {
-        this.config = config;
+    public DefaultFetcherConfig setConfigJson(String configJson) {
+        this.configJson = configJson;
         return this;
     }
 }

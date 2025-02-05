@@ -1,16 +1,9 @@
 package org.apache.tika.pipes.grpc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.net.InetAddress;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import org.apache.tika.DeletePipeIteratorReply;
 import org.apache.tika.DeletePipeIteratorRequest;
 import org.apache.tika.GetPipeIteratorReply;
@@ -22,6 +15,13 @@ import org.apache.tika.SavePipeIteratorRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.TikaPipesIntegrationTestBase;
 import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.net.InetAddress;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TikaServerImplPipeIteratorsCrudTest extends TikaPipesIntegrationTestBase {
     @Test
@@ -66,7 +66,7 @@ class TikaServerImplPipeIteratorsCrudTest extends TikaPipesIntegrationTestBase {
         DefaultPipeIteratorConfig pipeIteratorConfig = new DefaultPipeIteratorConfig();
         pipeIteratorConfig.setPipeIteratorId(pipeIteratorId);
         pipeIteratorConfig.setPluginId(pluginId);
-        pipeIteratorConfig.setConfig(Map.of("key", "value"));
+        pipeIteratorConfig.setConfigJson(new ObjectMapper().writeValueAsString(Map.of("key", "value")));
 
         SavePipeIteratorReply savePipeIteratorReply = tikaBlockingStub.savePipeIterator(
                 SavePipeIteratorRequest.newBuilder().setPipeIteratorId(pipeIteratorId)

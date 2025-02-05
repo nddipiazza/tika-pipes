@@ -2,6 +2,7 @@ package org.apache.tika.pipes.cli.http;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -23,10 +24,12 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPER;
-
 @Slf4j
 public class HttpFetcherCli {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    static {
+        OBJECT_MAPPER.findAndRegisterModules();
+    }
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
     public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 50051;
     @Parameter(names = {"--fetch-urls"}, description = "File of URLs to fetch", help = true)
@@ -121,8 +124,7 @@ public class HttpFetcherCli {
                 log.error("Timed out waiting for parse to complete");
             }
         } catch (InterruptedException e) {
-            Thread
-                    .currentThread()
+            Thread.currentThread()
                     .interrupt();
         }
         log.info("Fetched: success={}", successes);

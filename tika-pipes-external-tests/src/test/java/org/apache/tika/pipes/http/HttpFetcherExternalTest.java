@@ -3,16 +3,20 @@ package org.apache.tika.pipes.http;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 import io.undertow.Undertow;
 import io.undertow.util.Headers;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.FetchAndParseReply;
+import org.apache.tika.FetchAndParseRequest;
+import org.apache.tika.SaveFetcherReply;
+import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
+import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -22,13 +26,22 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
 @Slf4j
 class HttpFetcherExternalTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final Logger LOG = LoggerFactory.getLogger(HttpFetcherExternalTest.class);
+    static {
+        OBJECT_MAPPER.findAndRegisterModules();
+    }
     public static final int MAX_STARTUP_TIMEOUT = 120;
     private static final DockerComposeContainer<?> composeContainer = new DockerComposeContainer<>(
             new File("src/test/resources/docker-compose.yml")).withStartupTimeout(
@@ -65,13 +78,75 @@ class HttpFetcherExternalTest {
 
     @Test
     void httpFetcher() throws Exception {
+        String fetcherId = UUID.randomUUID().toString();
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(host, port)
+                .forAddress(composeContainer.getServiceHost("tika-pipes", 50051), composeContainer.getServicePort("tika-pipes", 50051))
                 .usePlaintext()
                 .directExecutor()
                 .build();
         TikaGrpc.TikaBlockingStub blockingStub = TikaGrpc.newBlockingStub(channel);
         TikaGrpc.TikaStub tikaStub = TikaGrpc.newStub(channel);
 
+        HttpFetcherConfig httpFetcherConfig = new HttpFetcherConfig();
+        httpFetcherConfig.setPluginId("http-fetcher");
+
+        SaveFetcherReply reply = blockingStub.saveFetcher(SaveFetcherRequest
+                .newBuilder()
+                .setFetcherId(fetcherId)
+                .setPluginId(httpFetcherConfig.getPluginId())
+                .setFetcherConfigJson(OBJECT_MAPPER.writeValueAsString(httpFetcherConfig))
+                .build());
+        log.info("Saved fetcher with ID {}", reply.getFetcherId());
+
+        List<FetchAndParseReply> successes = Collections.synchronizedList(new ArrayList<>());
+        List<FetchAndParseReply> errors = Collections.synchronizedList(new ArrayList<>());
+
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        StreamObserver<FetchAndParseRequest> requestStreamObserver = tikaStub.fetchAndParseBiDirectionalStreaming(new StreamObserver<FetchAndParseReply>() {
+            @Override
+            public void onNext(FetchAndParseReply fetchAndParseReply) {
+                log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
+                if ("FetchException"
+                        .equals(fetchAndParseReply.getStatus())) {
+                    errors.add(fetchAndParseReply);
+                } else {
+                    successes.add(fetchAndParseReply);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                log.error("Received an error", throwable);
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                log.info("Completed fetch and parse");
+                countDownLatch.countDown();
+            }
+        });
+
+        log.info("Done submitting URLs to {}", fetcherId);
+
+        requestStreamObserver.onNext(FetchAndParseRequest
+                .newBuilder()
+                .setFetcherId(fetcherId)
+                .setFetchKey("http://localhost:" + httpServerPort)
+                .setFetchMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
+                .build());
+
+        requestStreamObserver.onCompleted();
+
+        try {
+            if (!countDownLatch.await(3, TimeUnit.MINUTES)) {
+                log.error("Timed out waiting for parse to complete");
+            }
+        } catch (InterruptedException e) {
+            Thread
+                    .currentThread()
+                    .interrupt();
+        }
+        log.info("Fetched: success={}", successes);
     }
 }

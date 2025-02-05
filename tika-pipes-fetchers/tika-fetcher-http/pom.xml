@@ -13,7 +13,7 @@
   <description>A Fetcher that uses an HTTP client to acquire documents for Tika to parse.</description>
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
-    <guava.version>33.2.1-jre</guava.version>
+    <guava.version>33.4.0-jre</guava.version>
     <nimbus-jose-jwt.version>9.40</nimbus-jose-jwt.version>
   </properties>
   <dependencies>

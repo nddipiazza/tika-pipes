@@ -12,7 +12,7 @@
   <name>Tika Pipes CLI</name>
   <description>Tika pipes clients for each fetcher.</description>
   <properties>
-    <guava.version>33.2.1-jre</guava.version>
+    <guava.version>33.4.0-jre</guava.version>
     <jcommander.version>1.82</jcommander.version>
     <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
     <jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
