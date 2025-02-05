@@ -26,6 +26,7 @@
     <ignite-spring-data-ext.version>3.0.0</ignite-spring-data-ext.version>
     <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
     <tika-version>3.0.0</tika-version>
+    <grpc-google.version>2.51.0</grpc-google.version>
   </properties>
   <dependencies>
     <dependency>
@@ -57,6 +58,16 @@
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>3.25.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.api.grpc</groupId>
+      <artifactId>proto-google-common-protos</artifactId>
+      <version>${grpc-google.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.api.grpc</groupId>
+      <artifactId>grpc-google-cloud-translate-v3</artifactId>
+      <version>${grpc-google.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hsqldb</groupId>
