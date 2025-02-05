@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class HttpFetcherCli {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
-    public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 50051;
+    public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
     @Parameter(names = {"--fetch-urls"}, description = "File of URLs to fetch", help = true)
     private File urlsToFetchFile;
     @Parameter(names = {"--grpcHost"}, description = "The grpc host", help = true)

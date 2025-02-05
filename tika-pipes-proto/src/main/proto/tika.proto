@@ -45,10 +45,6 @@ service Tika {
     };
   }
   rpc FetchAndParseBiDirectionalStreaming(stream FetchAndParseRequest) returns (stream FetchAndParseReply) {
-    option (google.api.http) = {
-      post: "/v1/fetchAndParseBiDirectionalStreaming"
-      body: "*"
-    };
   }
   rpc GetFetcherConfigJsonSchema(GetFetcherConfigJsonSchemaRequest) returns (GetFetcherConfigJsonSchemaReply) {
     option (google.api.http) = {

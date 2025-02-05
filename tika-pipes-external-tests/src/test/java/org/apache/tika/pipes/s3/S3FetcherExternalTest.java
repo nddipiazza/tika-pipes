@@ -5,7 +5,11 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.*;
+import org.apache.tika.FetchAndParseReply;
+import org.apache.tika.FetchAndParseRequest;
+import org.apache.tika.SaveFetcherReply;
+import org.apache.tika.SaveFetcherRequest;
+import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,7 +31,13 @@ import java.io.File;
 import java.net.URI;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +53,7 @@ class S3FetcherExternalTest {
             new File("src/test/resources/docker-compose.yml")).withStartupTimeout(
                     Duration.of(MAX_STARTUP_TIMEOUT, ChronoUnit.SECONDS))
             .withExposedService("minio-service", 9000)
-            .withExposedService("tika-pipes", 50051);
+            .withExposedService("tika-pipes", 9090);
     private static final String MINIO_ENDPOINT = "http://localhost:9000";
     private static final String ACCESS_KEY = "minio";
     private static final String SECRET_KEY = "minio123";
@@ -102,7 +112,7 @@ class S3FetcherExternalTest {
         // create some test files and insert into fetch bucket
         createTestFiles();
 
-        int grpcPort = composeContainer.getServicePort("tika-pipes", 50051);
+        int grpcPort = composeContainer.getServicePort("tika-pipes", 9090);
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress(composeContainer.getServiceHost("tika-pipes", grpcPort), grpcPort)
                 .usePlaintext()

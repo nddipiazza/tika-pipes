@@ -5,14 +5,14 @@
   <parent>
     <groupId>org.apache.tika</groupId>
     <artifactId>tika-pipes-parent</artifactId>
-    <version>3.0.0-beta3</version>
+    <version>3.0.0-beta4</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>tika-pipes-proto</artifactId>
   <name>Tika Pipes GRPC Server Proto Stubs</name>
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
-    <grpc.version>1.60.0</grpc.version>
+    <grpc.version>1.70.0</grpc.version>
     <protobuf.version>3.24.0</protobuf.version>
     <protoc.version>3.24.0</protoc.version>
     <asarkar-grpc-test.version>1.2.2</asarkar-grpc-test.version>
@@ -50,11 +50,6 @@
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>net.devh</groupId>
-      <artifactId>grpc-server-spring-boot-starter</artifactId>
-      <version>3.1.0.RELEASE</version>
-    </dependency>
-    <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>3.25.4</version>
@@ -82,23 +77,23 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty-shaded</artifactId>
-      <version>1.60.0</version>
+      <version>${grpc.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
-      <version>1.60.0</version>
+      <version>${grpc.version}</version>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-services</artifactId>
-      <version>1.60.0</version>
+      <version>${grpc.version}</version>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
-      <version>1.60.0</version>
+      <version>${grpc.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
