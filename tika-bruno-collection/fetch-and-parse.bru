@@ -1,0 +1,25 @@
+meta {
+  name: fetch-and-parse
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{endpoint}}/v1/fetchAndParse
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "fetcher_id": "http-fetcher-1",
+    "fetch_key": "https://gist.githubusercontent.com/gcollazo/884a489a50aec7b53765405f40c6fbd1/raw/49d1568c34090587ac82e80612a9c350108b62c5/sample.json",
+    "fetch_metadata_json": "{}",
+    "added_metadata_json": "{}",
+    "parse_context_json": "{}"
+  }
+}
+
+vars:pre-request {
+  json: 
+}

@@ -1,0 +1,23 @@
+meta {
+  name: save-fetcher
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{endpoint}}/v1/fetcher
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "fetcher_id": "http-fetcher-1",
+    "plugin_id": "http-fetcher",
+    "fetcher_config_json": "{}"
+  }
+}
+
+vars:pre-request {
+  json: 
+}

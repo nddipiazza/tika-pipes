@@ -1,0 +1,23 @@
+meta {
+  name: delete-fetcher
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{endpoint}}/v1/fetcher/http-fetcher-1
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "fetcher_id": "http-fetcher-1",
+    "plugin_id": "http-fetcher",
+    "fetcher_config_json": "{}"
+  }
+}
+
+vars:pre-request {
+  json: 
+}
