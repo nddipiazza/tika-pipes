@@ -25,9 +25,9 @@ import java.net.InetAddress;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TikaServerImplJsonSchemaTest extends TikaPipesIntegrationTestBase {
+class TikaGrpcServerJsonSchemaTest extends TikaPipesIntegrationTestBase {
     @Test
-    void fetchersCrud() throws Exception {
+    void testJsonSchema() throws Exception {
         String fetcherId1 = "filesystem-fetcher-example1";
         String pluginId = "filesystem-fetcher";
         ManagedChannel channel =

@@ -5,7 +5,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.*;
+import org.apache.tika.GetEmitterReply;
+import org.apache.tika.GetEmitterRequest;
+import org.apache.tika.GetFetcherReply;
+import org.apache.tika.GetFetcherRequest;
+import org.apache.tika.GetPipeIteratorReply;
+import org.apache.tika.GetPipeIteratorRequest;
+import org.apache.tika.GetPipeJobReply;
+import org.apache.tika.GetPipeJobRequest;
+import org.apache.tika.RunPipeJobReply;
+import org.apache.tika.RunPipeJobRequest;
+import org.apache.tika.SaveEmitterReply;
+import org.apache.tika.SaveEmitterRequest;
+import org.apache.tika.SaveFetcherReply;
+import org.apache.tika.SaveFetcherRequest;
+import org.apache.tika.SavePipeIteratorReply;
+import org.apache.tika.SavePipeIteratorRequest;
+import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.TikaPipesIntegrationTestBase;
 import org.apache.tika.pipes.fetcher.fs.config.FileSystemFetcherConfig;
 import org.apache.tika.pipes.fetchers.filesystem.CsvPipeIteratorConfig;
@@ -30,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
-class TikaServerImplPipeJobTest extends TikaPipesIntegrationTestBase {
+class TikaGrpcServerPipeJobTest extends TikaPipesIntegrationTestBase {
     ObjectMapper objectMapper = new ObjectMapper();
     String pipeIteratorId = "pipe-iterator-example1";
     String pipeIteratorPluginId = "csv-pipe-iterator";

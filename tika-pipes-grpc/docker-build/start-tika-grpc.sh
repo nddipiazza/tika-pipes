@@ -6,7 +6,7 @@ ls "/tika/plugins"
 echo "Tika Pipes Log4j config:"
 cat /tika/config/log4j2.xml
 exec java \
-  -Dgrpc.server.port=50051 \
+  -Dgrpc.server.port=9090 \
   "-Dlog4j.configurationFile=/tika/config/log4j2.xml" \
   --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED \
   --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED \

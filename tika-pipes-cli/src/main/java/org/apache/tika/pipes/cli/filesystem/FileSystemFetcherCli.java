@@ -7,7 +7,11 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.*;
+import org.apache.tika.FetchAndParseReply;
+import org.apache.tika.FetchAndParseRequest;
+import org.apache.tika.SaveFetcherReply;
+import org.apache.tika.SaveFetcherRequest;
+import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.fetchers.filesystem.FileSystemFetcherConfig;
 
 import java.io.File;
@@ -29,7 +33,7 @@ import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPE
 @Slf4j
 public class FileSystemFetcherCli {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
-    public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 50051;
+    public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
     @Parameter(names = {"--base-directory"}, description = "Base directory", required = true)
     private File baseDirectory;
     @Parameter(names = {"--grpcHost"}, description = "The grpc host", help = true)

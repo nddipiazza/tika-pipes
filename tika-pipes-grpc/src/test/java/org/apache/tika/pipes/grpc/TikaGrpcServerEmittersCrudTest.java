@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TikaServerImplEmittersCrudTest extends TikaPipesIntegrationTestBase {
+class TikaGrpcServerEmittersCrudTest extends TikaPipesIntegrationTestBase {
     @Test
     void emittersCrud() throws Exception {
         String emitterId1 = "emitter-example1";

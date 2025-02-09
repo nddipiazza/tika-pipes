@@ -3,7 +3,9 @@ spring:
     name: tika-pipes
 grpc:
   server:
-    port: 50051
+    port: 9090
+    health:
+      enabled: false
 ignite:
   workDir: 'ignite/work'
   persistence:

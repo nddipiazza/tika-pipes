@@ -4,7 +4,7 @@ COPY plugins/ /tika/plugins/
 COPY config/ /tika/config/
 COPY bin/ /tika/bin
 ARG JRE='openjdk-17-jre-headless'
-ARG VERSION='3.0.0-beta3'
+ARG VERSION='3.0.0-beta4'
 RUN set -eux \
     && apt-get update \
     && apt-get install --yes --no-install-recommends gnupg2 software-properties-common \
@@ -27,7 +27,8 @@ RUN set -eux \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-EXPOSE 50051
+EXPOSE 8080
+EXPOSE 9090
 ENV TIKA_PIPES_VERSION=$VERSION
 RUN chmod +x "/tika/bin/start-tika-grpc.sh"
 ENTRYPOINT ["/tika/bin/start-tika-grpc.sh"]

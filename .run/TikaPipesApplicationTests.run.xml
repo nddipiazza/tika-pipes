@@ -3,7 +3,7 @@
     <module name="tika-pipes-grpc" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="org.apache.tika.pipes.*" />
+        <option name="PATTERN" value="org.apache.tika.pipes.TikaPipesApplication" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

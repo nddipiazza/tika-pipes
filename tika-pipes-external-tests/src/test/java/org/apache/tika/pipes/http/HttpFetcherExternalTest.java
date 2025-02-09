@@ -43,7 +43,7 @@ class HttpFetcherExternalTest {
     private static final DockerComposeContainer<?> composeContainer = new DockerComposeContainer<>(
             new File("src/test/resources/docker-compose.yml")).withStartupTimeout(
                     Duration.of(MAX_STARTUP_TIMEOUT, ChronoUnit.SECONDS))
-            .withExposedService("tika-pipes", 50051);
+            .withExposedService("tika-pipes", 9090);
     public static int getRandomAvailablePort() {
         try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();
@@ -77,7 +77,7 @@ class HttpFetcherExternalTest {
     void httpFetcher() throws Exception {
         String fetcherId = UUID.randomUUID().toString();
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(composeContainer.getServiceHost("tika-pipes", 50051), composeContainer.getServicePort("tika-pipes", 50051))
+                .forAddress(composeContainer.getServiceHost("tika-pipes", 9090), composeContainer.getServicePort("tika-pipes", 9090))
                 .usePlaintext()
                 .directExecutor()
                 .build();

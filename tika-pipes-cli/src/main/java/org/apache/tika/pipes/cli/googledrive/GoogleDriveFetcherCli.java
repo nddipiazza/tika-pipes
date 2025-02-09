@@ -8,7 +8,11 @@ import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.tika.*;
+import org.apache.tika.FetchAndParseReply;
+import org.apache.tika.FetchAndParseRequest;
+import org.apache.tika.SaveFetcherReply;
+import org.apache.tika.SaveFetcherRequest;
+import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.fetchers.googledrive.config.GoogleDriveFetcherConfig;
 
 import java.io.File;
@@ -27,7 +31,7 @@ import static org.apache.tika.pipes.cli.mapper.ObjectMapperProvider.OBJECT_MAPPE
 @Slf4j
 public class GoogleDriveFetcherCli {
     public static final String TIKA_SERVER_GRPC_DEFAULT_HOST = "localhost";
-    public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 50051;
+    public static final int TIKA_SERVER_GRPC_DEFAULT_PORT = 9090;
 
     @Parameter(names = {"--fetch-urls"}, description = "File of URLs to fetch", help = true)
     private File urlsToFetchFile;

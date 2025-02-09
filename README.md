@@ -58,7 +58,7 @@ Finally, the Emitter takes these parsed Tika metadata `FetchAndParseReply` objec
 ![tika-pipes-jobs.drawio.png](readme-files%2Ftika-pipes-jobs.drawio.png)
 ![tika-pipes-jobs-inner.drawio.png](readme-files%2Ftika-pipes-jobs-inner.drawio.png)
 
-For an example client, see [TikaServerImplPipeJobTest.java](tika-pipes-grpc%2Fsrc%2Ftest%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fgrpc%2FTikaServerImplPipeJobTest.java) for an example.
+For an example client, see [TikaGrpcServerPipeJobTest.java](tika-pipes-grpc%2Fsrc%2Ftest%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fgrpc%2FTikaGrpcServerPipeJobTest.java) for an example.
 
 Basically you can see it starts the managed channel, creates the pipe iterator, emitter and fetcher, then runs the pipe job.
 
@@ -109,14 +109,14 @@ Environment variables are present, the [docker-build.sh](tika-pipes-grpc%2Fdocke
 For example:
 
 ```bash
-MULTI_ARCH=false DOCKER_ID=ndipiazza PROJECT_NAME=tika-pipes RELEASE_IMAGE_TAG=3.0.0-beta30 mvn clean package
+MULTI_ARCH=false DOCKER_ID=ndipiazza PROJECT_NAME=tika-pipes RELEASE_IMAGE_TAG=3.0.0-beta40 mvn clean package
 ```
 
 Would result in:
 
 ```
  ===================================================================================================
- Done running docker build with tag -t ndipiazza/tika-pipes:3.0.0-beta30
+ Done running docker build with tag -t ndipiazza/tika-pipes:3.0.0-beta40
  ===================================================================================================
 ```
 # Docker Usage
@@ -126,6 +126,6 @@ You can pull down the version you would like using:
 
 Then to run the container, execute the following command:
 
-`docker run -d -p 127.0.0.1::50051 ndipiazza/tika-pipes:<version>`
+`docker run -d -p 127.0.0.1::9090 ndipiazza/tika-pipes:<version>`
 
 Where <version> is the Apache Tika Server version - e.g. 3.0.0

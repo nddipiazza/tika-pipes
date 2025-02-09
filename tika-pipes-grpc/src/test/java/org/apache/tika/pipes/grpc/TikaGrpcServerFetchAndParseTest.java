@@ -6,7 +6,16 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.*;
+import org.apache.tika.FetchAndParseReply;
+import org.apache.tika.FetchAndParseRequest;
+import org.apache.tika.GetFetcherReply;
+import org.apache.tika.GetFetcherRequest;
+import org.apache.tika.Metadata;
+import org.apache.tika.SaveFetcherReply;
+import org.apache.tika.SaveFetcherRequest;
+import org.apache.tika.TikaGrpc;
+import org.apache.tika.Value;
+import org.apache.tika.ValueList;
 import org.apache.tika.pipes.TikaPipesIntegrationTestBase;
 import org.apache.tika.pipes.fetchers.filesystem.FileSystemFetcherConfig;
 import org.junit.jupiter.api.Assertions;
@@ -31,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
-class TikaServerImplFetchAndParseTest extends TikaPipesIntegrationTestBase {
+class TikaGrpcServerFetchAndParseTest extends TikaPipesIntegrationTestBase {
     Map<String, String> additionalMetadata = Map.of("additional", "metadata");
     ObjectMapper objectMapper = new ObjectMapper();
     String pluginId = "filesystem-fetcher";

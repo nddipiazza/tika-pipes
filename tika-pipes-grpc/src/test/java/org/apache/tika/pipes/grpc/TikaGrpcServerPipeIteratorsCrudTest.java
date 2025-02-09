@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TikaServerImplPipeIteratorsCrudTest extends TikaPipesIntegrationTestBase {
+class TikaGrpcServerPipeIteratorsCrudTest extends TikaPipesIntegrationTestBase {
     @Test
     void pipeIteratorsCrud() throws Exception {
         String pipeIteratorId1 = "pipe-iterator-example1";

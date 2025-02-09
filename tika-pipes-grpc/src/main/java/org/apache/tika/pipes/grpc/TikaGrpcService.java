@@ -5,11 +5,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
+import grpcstarter.server.GrpcService;
 import io.grpc.Status;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
-import net.devh.boot.grpc.server.service.GrpcService;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.tika.DeleteEmitterReply;
@@ -92,10 +92,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@GrpcService
 @Service
 @Slf4j
-public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
+@GrpcService
+public class TikaGrpcService extends TikaGrpc.TikaImplBase {
     private final ExecutorService executorService = Executors.newCachedThreadPool(new TikaRunnerThreadFactory());
     public static final TypeReference<Map<String, Object>> MAP_STRING_OBJ_TYPE_REF = new TypeReference<>() {
     };
@@ -211,7 +211,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void saveFetcher(SaveFetcherRequest request, StreamObserver<SaveFetcherReply> responseObserver) {
+    public void saveFetcher(SaveFetcherRequest request, StreamObserver<SaveFetcherReply> plainResponseObserver) {
+        ServerCallStreamObserver<SaveFetcherReply> responseObserver =
+                (ServerCallStreamObserver<SaveFetcherReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         try {
             FetcherConfig fetcherConfig = newFetcherConfig(request.getPluginId(), request.getFetcherId());
             fetcherConfig.setFetcherId(request.getFetcherId())
@@ -236,7 +239,11 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void getFetcher(GetFetcherRequest request, StreamObserver<GetFetcherReply> responseObserver) {
+    public void getFetcher(GetFetcherRequest request, StreamObserver<GetFetcherReply> plainResponseObserver) {
+        ServerCallStreamObserver<GetFetcherReply> responseObserver =
+                (ServerCallStreamObserver<GetFetcherReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
+
         DefaultFetcherConfig fetcherConfig = fetcherRepository.findByFetcherId(request.getFetcherId());
         responseObserver.onNext(GetFetcherReply
                 .newBuilder()
@@ -247,7 +254,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void listFetchers(ListFetchersRequest request, StreamObserver<ListFetchersReply> responseObserver) {
+    public void listFetchers(ListFetchersRequest request, StreamObserver<ListFetchersReply> plainResponseObserver) {
+        ServerCallStreamObserver<ListFetchersReply> responseObserver =
+                (ServerCallStreamObserver<ListFetchersReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         ListFetchersReply.Builder builder = ListFetchersReply.newBuilder();
         fetcherRepository
                 .findAll()
@@ -261,7 +271,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void deleteFetcher(DeleteFetcherRequest request, StreamObserver<DeleteFetcherReply> responseObserver) {
+    public void deleteFetcher(DeleteFetcherRequest request, StreamObserver<DeleteFetcherReply> plainResponseObserver) {
+        ServerCallStreamObserver<DeleteFetcherReply> responseObserver =
+                (ServerCallStreamObserver<DeleteFetcherReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         boolean exists = fetcherRepository.findByFetcherId(request.getFetcherId()) != null;
         if (exists) {
             fetcherRepository.deleteByFetcherId(request.getFetcherId());
@@ -274,7 +287,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void fetchAndParse(FetchAndParseRequest request, StreamObserver<FetchAndParseReply> responseObserver) {
+    public void fetchAndParse(FetchAndParseRequest request, StreamObserver<FetchAndParseReply> plainResponseObserver) {
+        ServerCallStreamObserver<FetchAndParseReply> responseObserver =
+                (ServerCallStreamObserver<FetchAndParseReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         try {
             fetchAndParseImpl(request, responseObserver);
             responseObserver.onCompleted();
@@ -379,7 +395,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void fetchAndParseServerSideStreaming(FetchAndParseRequest request, StreamObserver<FetchAndParseReply> responseObserver) {
+    public void fetchAndParseServerSideStreaming(FetchAndParseRequest request, StreamObserver<FetchAndParseReply> plainResponseObserver) {
+        ServerCallStreamObserver<FetchAndParseReply> responseObserver =
+                (ServerCallStreamObserver<FetchAndParseReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         try {
             fetchAndParseImpl(request, responseObserver);
             responseObserver.onCompleted();
@@ -389,7 +408,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public StreamObserver<FetchAndParseRequest> fetchAndParseBiDirectionalStreaming(StreamObserver<FetchAndParseReply> responseObserver) {
+    public StreamObserver<FetchAndParseRequest> fetchAndParseBiDirectionalStreaming(StreamObserver<FetchAndParseReply> plainResponseObserver) {
+        ServerCallStreamObserver<FetchAndParseReply> responseObserver =
+                (ServerCallStreamObserver<FetchAndParseReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         return new StreamObserver<>() {
             @Override
             public void onNext(FetchAndParseRequest fetchAndParseRequest) {
@@ -413,7 +435,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void getFetcherConfigJsonSchema(GetFetcherConfigJsonSchemaRequest request, StreamObserver<GetFetcherConfigJsonSchemaReply> responseObserver) {
+    public void getFetcherConfigJsonSchema(GetFetcherConfigJsonSchemaRequest request, StreamObserver<GetFetcherConfigJsonSchemaReply> plainResponseObserver) {
+        ServerCallStreamObserver<GetFetcherConfigJsonSchemaReply> responseObserver =
+                (ServerCallStreamObserver<GetFetcherConfigJsonSchemaReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         GetFetcherConfigJsonSchemaReply.Builder builder = GetFetcherConfigJsonSchemaReply.newBuilder();
         try {
             FetcherConfig fetcherConfig = getFetcherConfig(request.getPluginId());
@@ -431,7 +456,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void saveEmitter(SaveEmitterRequest request, StreamObserver<SaveEmitterReply> responseObserver) {
+    public void saveEmitter(SaveEmitterRequest request, StreamObserver<SaveEmitterReply> plainResponseObserver) {
+        ServerCallStreamObserver<SaveEmitterReply> responseObserver =
+                (ServerCallStreamObserver<SaveEmitterReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         DefaultEmitterConfig emitterConfig = newEmitterConfig(request.getPluginId(), request.getEmitterId());
         emitterConfig.setEmitterId(request.getEmitterId())
                      .setPluginId(request.getPluginId())
@@ -452,7 +480,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void listEmitters(ListEmittersRequest request, StreamObserver<ListEmittersReply> responseObserver) {
+    public void listEmitters(ListEmittersRequest request, StreamObserver<ListEmittersReply> plainResponseObserver) {
+        ServerCallStreamObserver<ListEmittersReply> responseObserver =
+                (ServerCallStreamObserver<ListEmittersReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         ListEmittersReply.Builder builder = ListEmittersReply.newBuilder();
         emitterRepository.findAll().forEach(emitterConfig -> builder.addGetEmitterReplies(GetEmitterReply.newBuilder()
                                                                                                          .setEmitterId(emitterConfig.getEmitterId())
@@ -463,7 +494,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void deleteEmitter(DeleteEmitterRequest request, StreamObserver<DeleteEmitterReply> responseObserver) {
+    public void deleteEmitter(DeleteEmitterRequest request, StreamObserver<DeleteEmitterReply> plainResponseObserver) {
+        ServerCallStreamObserver<DeleteEmitterReply> responseObserver =
+                (ServerCallStreamObserver<DeleteEmitterReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         boolean exists = emitterRepository.findByEmitterId(request.getEmitterId()) != null;
         if (exists) {
             emitterRepository.deleteByEmitterId(request.getEmitterId());
@@ -473,8 +507,24 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void getEmitterConfigJsonSchema(GetEmitterConfigJsonSchemaRequest request, StreamObserver<GetEmitterConfigJsonSchemaReply> responseObserver) {
-        throw new NotImplementedException();
+    public void getEmitterConfigJsonSchema(GetEmitterConfigJsonSchemaRequest request, StreamObserver<GetEmitterConfigJsonSchemaReply> plainResponseObserver) {
+        ServerCallStreamObserver<GetEmitterConfigJsonSchemaReply> responseObserver =
+                (ServerCallStreamObserver<GetEmitterConfigJsonSchemaReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
+        GetEmitterConfigJsonSchemaReply.Builder builder = GetEmitterConfigJsonSchemaReply.newBuilder();
+        try {
+            EmitterConfig emitterConfig = getEmitterConfig(request.getPluginId());
+            if (emitterConfig == null) {
+                responseObserver.onError(Status.NOT_FOUND.withDescription("Could not find emitter config for " + request.getPluginId()).asException());
+            } else {
+                JsonSchema jsonSchema = jsonSchemaGenerator.generateSchema(emitterConfig.getClass());
+                builder.setEmitterConfigJsonSchema(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonSchema));
+            }
+        } catch (JsonProcessingException e) {
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not process config - json issues " + request.getPluginId() + " - " + e).asException());
+        }
+        responseObserver.onNext(builder.build());
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -520,8 +570,24 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
     }
 
     @Override
-    public void getPipeIteratorConfigJsonSchema(GetPipeIteratorConfigJsonSchemaRequest request, StreamObserver<GetPipeIteratorConfigJsonSchemaReply> responseObserver) {
-        throw new NotImplementedException();
+    public void getPipeIteratorConfigJsonSchema(GetPipeIteratorConfigJsonSchemaRequest request, StreamObserver<GetPipeIteratorConfigJsonSchemaReply> plainResponseObserver) {
+        ServerCallStreamObserver<GetPipeIteratorConfigJsonSchemaReply> responseObserver =
+                (ServerCallStreamObserver<GetPipeIteratorConfigJsonSchemaReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
+        GetPipeIteratorConfigJsonSchemaReply.Builder builder = GetPipeIteratorConfigJsonSchemaReply.newBuilder();
+        try {
+            PipeIteratorConfig pipeIteratorConfig = getPipeIteratorConfig(request.getPluginId());
+            if (pipeIteratorConfig == null) {
+                responseObserver.onError(Status.NOT_FOUND.withDescription("Could not find pipe iterator config for " + request.getPluginId()).asException());
+            } else {
+                JsonSchema jsonSchema = jsonSchemaGenerator.generateSchema(pipeIteratorConfig.getClass());
+                builder.setPipeIteratorConfigJsonSchema(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonSchema));
+            }
+        } catch (JsonProcessingException e) {
+            responseObserver.onError(Status.INTERNAL.withDescription("Could not process config - json issues " + request.getPluginId() + " - " + e).asException());
+        }
+        responseObserver.onNext(builder.build());
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -641,7 +707,10 @@ public class TikaServiceImpl extends TikaGrpc.TikaImplBase {
 
     @Override
     public void getPipeJob(GetPipeJobRequest request,
-                           StreamObserver<GetPipeJobReply> responseObserver) {
+                           StreamObserver<GetPipeJobReply> plainResponseObserver) {
+        ServerCallStreamObserver<GetPipeJobReply> responseObserver =
+                (ServerCallStreamObserver<GetPipeJobReply>) plainResponseObserver;
+        responseObserver.setCompression("gzip");
         JobStatus jobStatus = jobStatusRepository.findByJobId(request.getPipeJobId());
         if (jobStatus == null) {
             responseObserver.onError(Status.NOT_FOUND.withDescription("Could not find pipe job id " + request.getPipeJobId()).asException());
