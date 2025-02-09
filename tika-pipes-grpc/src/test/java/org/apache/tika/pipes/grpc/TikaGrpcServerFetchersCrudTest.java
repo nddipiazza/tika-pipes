@@ -1,15 +1,8 @@
 package org.apache.tika.pipes.grpc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.net.InetAddress;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import org.apache.tika.DeleteFetcherReply;
 import org.apache.tika.DeleteFetcherRequest;
 import org.apache.tika.GetFetcherReply;
@@ -21,8 +14,14 @@ import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.TikaPipesIntegrationTestBase;
 import org.apache.tika.pipes.fetcher.fs.config.FileSystemFetcherConfig;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-class TikaServerImplFetchersCrudTest extends TikaPipesIntegrationTestBase {
+import java.net.InetAddress;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TikaGrpcServerFetchersCrudTest extends TikaPipesIntegrationTestBase {
     @Test
     void fetchersCrud() throws Exception {
         String fetcherId1 = "filesystem-fetcher-example1";

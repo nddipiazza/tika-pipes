@@ -58,7 +58,7 @@ Finally, the Emitter takes these parsed Tika metadata `FetchAndParseReply` objec
 ![tika-pipes-jobs.drawio.png](readme-files%2Ftika-pipes-jobs.drawio.png)
 ![tika-pipes-jobs-inner.drawio.png](readme-files%2Ftika-pipes-jobs-inner.drawio.png)
 
-For an example client, see [TikaServerImplPipeJobTest.java](tika-pipes-grpc%2Fsrc%2Ftest%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fgrpc%2FTikaServerImplPipeJobTest.java) for an example.
+For an example client, see [TikaGrpcServerPipeJobTest.java](tika-pipes-grpc%2Fsrc%2Ftest%2Fjava%2Forg%2Fapache%2Ftika%2Fpipes%2Fgrpc%2FTikaGrpcServerPipeJobTest.java) for an example.
 
 Basically you can see it starts the managed channel, creates the pipe iterator, emitter and fetcher, then runs the pipe job.
 
