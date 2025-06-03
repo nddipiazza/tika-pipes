@@ -12,3 +12,5 @@ services:
     image: docker.io/ndipiazza/tika-pipes:3.0.0-beta4-attempt1
     ports:
       - "9090:9090"
+    volumes:
+      - test-files:/tika/govdocs1

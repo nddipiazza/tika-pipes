@@ -63,6 +63,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
+            <artifactId>tika-fetcher-file-system</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
             <artifactId>tika-fetcher-http</artifactId>
             <version>${project.version}</version>
         </dependency>
