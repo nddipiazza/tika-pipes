@@ -75,7 +75,6 @@ class TikaGrpcServerPipeJobTest extends TikaPipesIntegrationTestBase {
     }
 
     @Test
-    @Disabled
     void runPipeJob() throws Exception {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(InetAddress.getLocalHost().getHostAddress(), port) // Ensure the port is correct
                 .usePlaintext().build();
