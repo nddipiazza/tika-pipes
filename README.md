@@ -109,14 +109,14 @@ Environment variables are present, the [docker-build.sh](tika-pipes-grpc%2Fdocke
 For example:
 
 ```bash
-MULTI_ARCH=false DOCKER_ID=ndipiazza PROJECT_NAME=tika-pipes RELEASE_IMAGE_TAG=3.0.0-beta40 mvn clean package
+MULTI_ARCH=false DOCKER_ID=ndipiazza PROJECT_NAME=tika-pipes RELEASE_IMAGE_TAG=3.0.0-beta50 mvn clean package
 ```
 
 Would result in:
 
 ```
  ===================================================================================================
- Done running docker build with tag -t ndipiazza/tika-pipes:3.0.0-beta40
+ Done running docker build with tag -t ndipiazza/tika-pipes:3.0.0-beta50
  ===================================================================================================
 ```
 # Docker Usage
