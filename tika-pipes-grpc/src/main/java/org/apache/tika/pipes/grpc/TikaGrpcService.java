@@ -412,6 +412,10 @@ public class TikaGrpcService extends TikaGrpc.TikaImplBase {
         ServerCallStreamObserver<FetchAndParseReply> responseObserver =
                 (ServerCallStreamObserver<FetchAndParseReply>) plainResponseObserver;
         responseObserver.setCompression("gzip");
+        return fetchAndParseAsync(responseObserver);
+    }
+
+    private StreamObserver<FetchAndParseRequest> fetchAndParseAsync(StreamObserver<FetchAndParseReply> responseObserver) {
         return new StreamObserver<>() {
             @Override
             public void onNext(FetchAndParseRequest fetchAndParseRequest) {
@@ -622,7 +626,7 @@ public class TikaGrpcService extends TikaGrpc.TikaImplBase {
             Emitter emitter = getEmitter(emitterConfig.getPluginId());
             emitter.init(emitterConfigFromPluginManager);
             CountDownLatch countDownLatch = new CountDownLatch(1);
-            StreamObserver<FetchAndParseRequest> requestStreamObserver = fetchAndParseBiDirectionalStreaming(new StreamObserver<>() {
+            StreamObserver<FetchAndParseRequest> requestStreamObserver = fetchAndParseAsync(new StreamObserver<>() {
                         @Override
                         public void onNext(FetchAndParseReply fetchAndParseReply) {
                             try {
