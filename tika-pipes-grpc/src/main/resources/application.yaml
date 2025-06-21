@@ -4,6 +4,7 @@ spring:
 grpc:
   server:
     port: 9090
+    max-inbound-message-size: 1600777216 # 1600MB
     health:
       enabled: false
 ignite:

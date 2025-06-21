@@ -232,7 +232,7 @@ message FetchAndParseReply {
   string fetch_key = 1;
   // List of Metadata fields from the parse output.
   repeated Metadata metadata = 2;
-  // The status from the message. See javadoc for org.apache.tika.pipes.PipesResult.STATUS for the list of status.
+  // The status from the message. See javadoc for org.apache.tika.pipes.PipesResultStatus. for the list of status.
   string status = 3;
   // If there was an error, this will contain the error message.
   string error_message = 4;

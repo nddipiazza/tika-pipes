@@ -5,8 +5,11 @@ echo "Tika Pipes Plugins:"
 ls "/tika/plugins"
 echo "Tika Pipes Log4j config:"
 cat /tika/config/log4j2.xml
+echo "Tika Pipes Max Inbound Message Size:"
+echo "${TIKA_PIPES_MAX_INBOUND_MESSAGE_SIZE}"
 exec java \
   -Dgrpc.server.port=9090 \
+  "-Dgrpc.server.max-inbound-message-size=${TIKA_PIPES_MAX_INBOUND_MESSAGE_SIZE}" \
   "-Dlog4j.configurationFile=/tika/config/log4j2.xml" \
   --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED \
   --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED \

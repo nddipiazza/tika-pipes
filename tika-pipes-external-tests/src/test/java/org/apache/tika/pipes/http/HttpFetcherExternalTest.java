@@ -1,31 +1,20 @@
 package org.apache.tika.pipes.http;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import io.undertow.Undertow;
-import io.undertow.util.Headers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.FetchAndParseReply;
 import org.apache.tika.FetchAndParseRequest;
 import org.apache.tika.SaveFetcherReply;
 import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
+import org.apache.tika.pipes.ExternalTestBase;
 import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,54 +22,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Testcontainers
 @Slf4j
-class HttpFetcherExternalTest {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    public static final int MAX_STARTUP_TIMEOUT = 120;
-    private static final DockerComposeContainer<?> composeContainer = new DockerComposeContainer<>(
-            new File("src/test/resources/docker-compose.yml")).withStartupTimeout(
-                    Duration.of(MAX_STARTUP_TIMEOUT, ChronoUnit.SECONDS))
-            .withExposedService("tika-pipes", 9090);
-    public static int getRandomAvailablePort() {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not find an available port", e);
-        }
-    }
-    static int httpServerPort;
-    static Undertow server;
-    @BeforeAll
-    void setup() throws Exception {
-        httpServerPort = getRandomAvailablePort();
-        server = Undertow
-                .builder()
-                .addHttpListener(httpServerPort, InetAddress.getLocalHost().getHostAddress())
-                .setHandler(exchange -> {
-                    exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
-                    exchange.getResponseSender().send("<html><body>test</body></html>");
-                }).build();
-
-        composeContainer.start();
-    }
-
-    @AfterAll
-    void close() {
-        composeContainer.close();
-        server.stop();
-    }
-
+class HttpFetcherExternalTest extends ExternalTestBase {
     @Test
     void httpFetcher() throws Exception {
         String fetcherId = UUID.randomUUID().toString();
-        ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(composeContainer.getServiceHost("tika-pipes", 9090), composeContainer.getServicePort("tika-pipes", 9090))
-                .usePlaintext()
-                .directExecutor()
-                .build();
+        ManagedChannel channel = getManagedChannel();
         TikaGrpc.TikaBlockingStub blockingStub = TikaGrpc.newBlockingStub(channel);
         TikaGrpc.TikaStub tikaStub = TikaGrpc.newStub(channel);
 
@@ -124,14 +73,23 @@ class HttpFetcherExternalTest {
             }
         });
 
+        String baseUrl = "http://web";
+        try (Stream<Path> paths = Files.walk(testFolder.toPath())) {
+            paths.filter(Files::isRegularFile)
+                    .forEach(file -> {
+                        try {
+                            requestStreamObserver.onNext(FetchAndParseRequest
+                                    .newBuilder()
+                                    .setFetcherId(fetcherId)
+                                    .setFetchKey(baseUrl + "/" + testFolder.toPath().relativize(file))
+                                    .setFetchMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
+                                    .build());
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+        }
         log.info("Done submitting URLs to {}", fetcherId);
-
-        requestStreamObserver.onNext(FetchAndParseRequest
-                .newBuilder()
-                .setFetcherId(fetcherId)
-                .setFetchKey("http://localhost:" + httpServerPort)
-                .setFetchMetadataJson(OBJECT_MAPPER.writeValueAsString(Map.of()))
-                .build());
 
         requestStreamObserver.onCompleted();
 

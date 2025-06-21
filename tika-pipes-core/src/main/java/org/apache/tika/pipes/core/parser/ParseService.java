@@ -3,6 +3,7 @@ package org.apache.tika.pipes.core.parser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.EncryptedDocumentException;
+import org.apache.tika.exception.TikaException;
 import org.apache.tika.exception.WriteLimitReachedException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
@@ -63,27 +64,23 @@ public class ParseService {
         return new AutoDetectParser(tikaConfig);
     }
 
-    public List<Map<String, Object>> parseDocument(InputStream inputStream, ParseContext parseContext) {
-        try {
-            TikaConfig tikaConfig = new TikaConfig();
-            Metadata metadata = new Metadata();
-            TesseractOCRConfig config = new TesseractOCRConfig();
-            config.setSkipOcr(skipOcr);
-            parseContext.set(TesseractOCRConfig.class, config);
+    public List<Map<String, Object>> parseDocument(InputStream inputStream, ParseContext parseContext) throws TikaException, IOException {
+        TikaConfig tikaConfig = new TikaConfig();
+        Metadata metadata = new Metadata();
+        TesseractOCRConfig config = new TesseractOCRConfig();
+        config.setSkipOcr(skipOcr);
+        parseContext.set(TesseractOCRConfig.class, config);
 
-            Parser parser = createParser(tikaConfig);
-            RecursiveParserWrapper wrapper = new RecursiveParserWrapper(parser);
-            RecursiveParserWrapperHandler handler = getRecursiveParserWrapperHandler(parseContext, tikaConfig);
-            parse(wrapper, inputStream, handler, metadata, parseContext);
-            return handler
-                    .getMetadataList()
-                    .stream()
-                    .map(ParseService::convertMetadataToMap)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            log.error("Parse document failed", e);
-            throw new RuntimeException(e);
-        }
+        Parser parser = createParser(tikaConfig);
+        RecursiveParserWrapper wrapper = new RecursiveParserWrapper(parser);
+        RecursiveParserWrapperHandler handler = getRecursiveParserWrapperHandler(parseContext, tikaConfig);
+        parse(wrapper, inputStream, handler, metadata, parseContext);
+        return handler
+                .getMetadataList()
+                .stream()
+                .map(ParseService::convertMetadataToMap)
+                .collect(Collectors.toList());
+
     }
 
     private RecursiveParserWrapperHandler getRecursiveParserWrapperHandler(ParseContext context, TikaConfig tikaConfig) {

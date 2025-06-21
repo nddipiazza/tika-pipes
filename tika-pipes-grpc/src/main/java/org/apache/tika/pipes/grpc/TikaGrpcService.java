@@ -52,13 +52,14 @@ import org.apache.tika.SavePipeIteratorRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.Value;
 import org.apache.tika.ValueList;
+import org.apache.tika.exception.TikaException;
 import org.apache.tika.parser.ParseContext;
-import org.apache.tika.pipes.PipesResult;
 import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
 import org.apache.tika.pipes.core.emitter.EmitOutput;
 import org.apache.tika.pipes.core.emitter.Emitter;
 import org.apache.tika.pipes.core.emitter.EmitterConfig;
 import org.apache.tika.pipes.core.exception.TikaPipesException;
+import org.apache.tika.pipes.core.exception.TikaServerParseException;
 import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
 import org.apache.tika.pipes.core.iterators.PipeInput;
 import org.apache.tika.pipes.core.iterators.PipeIterator;
@@ -68,6 +69,7 @@ import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 import org.apache.tika.pipes.fetchers.core.Fetcher;
 import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 import org.apache.tika.pipes.job.JobStatus;
+import org.apache.tika.pipes.model.PipesResultStatus;
 import org.apache.tika.pipes.repo.EmitterRepository;
 import org.apache.tika.pipes.repo.FetcherRepository;
 import org.apache.tika.pipes.repo.JobStatusRepository;
@@ -314,7 +316,6 @@ public class TikaGrpcService extends TikaGrpc.TikaImplBase {
         Map<String, Object> fetchMetadata = objectMapper.readValue(StringUtils.defaultIfBlank(request.getFetchMetadataJson(), "{}"), MAP_STRING_OBJ_TYPE_REF);
         InputStream inputStream = fetcher.fetch(fetcherConfigFromPluginManager, request.getFetchKey(), fetchMetadata, responseMetadata);
         FetchAndParseReply.Builder builder = FetchAndParseReply.newBuilder();
-        builder.setStatus(PipesResult.STATUS.EMIT_SUCCESS.name());
         builder.setFetchKey(request.getFetchKey());
 
         Map<String, Object> addedMetadata = objectMapper.readValue(StringUtils.defaultIfBlank(request.getAddedMetadataJson(), "{}"), MAP_STRING_OBJ_TYPE_REF);
@@ -325,11 +326,17 @@ public class TikaGrpcService extends TikaGrpc.TikaImplBase {
         } else {
             parseContext = new ParseContext();
         }
-        for (Map<String, Object> metadata : parseService.parseDocument(inputStream, parseContext)) {
-            Metadata.Builder metadataBuilder = Metadata.newBuilder();
-            putMetadataFields(metadata, metadataBuilder);
-            putMetadataFields(addedMetadata, metadataBuilder);
-            builder.addMetadata(metadataBuilder.build());
+        try {
+            for (Map<String, Object> metadata : parseService.parseDocument(inputStream, parseContext)) {
+                Metadata.Builder metadataBuilder = Metadata.newBuilder();
+                putMetadataFields(metadata, metadataBuilder);
+                putMetadataFields(addedMetadata, metadataBuilder);
+                builder.addMetadata(metadataBuilder.build());
+            }
+            builder.setStatus(PipesResultStatus.FETCH_AND_PARSE_SUCCESS.name());
+        } catch (TikaServerParseException | TikaException e) {
+            builder.setStatus(PipesResultStatus.FETCH_AND_PARSE_EXCEPTION.name());
+            builder.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
         }
         responseObserver.onNext(builder.build());
     }

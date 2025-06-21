@@ -4,7 +4,8 @@ COPY plugins/ /tika/plugins/
 COPY config/ /tika/config/
 COPY bin/ /tika/bin
 ARG JRE='openjdk-17-jre-headless'
-ARG VERSION='3.0.0-beta5'
+ARG VERSION='3.0.0-beta6'
+ARG TIKA_PIPES_MAX_INBOUND_MESSAGE_SIZE=104857600
 RUN set -eux \
     && apt-get update \
     && apt-get install --yes --no-install-recommends gnupg2 software-properties-common \
@@ -30,5 +31,6 @@ RUN set -eux \
 EXPOSE 8080
 EXPOSE 9090
 ENV TIKA_PIPES_VERSION=$VERSION
+ENV TIKA_PIPES_MAX_INBOUND_MESSAGE_SIZE=$TIKA_PIPES_MAX_INBOUND_MESSAGE_SIZE
 RUN chmod +x "/tika/bin/start-tika-grpc.sh"
 ENTRYPOINT ["/tika/bin/start-tika-grpc.sh"]

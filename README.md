@@ -99,7 +99,7 @@ When Maven is executing, you have the choice to specify several environment vari
 Environment variables are present, the [docker-build.sh](tika-pipes-grpc%2Fdocker-build%2Fdocker-build.sh) script will build the Docker image..
 
 
-* `RELEASE_IMAGE_TAG` will serve as the image tag across all deployed repositories. For example: `RELEASE_IMAGE_TAG=3.0.0-beta5`. Defaults to TIKA_PIPES_VERSION when unspecified.
+* `RELEASE_IMAGE_TAG` will serve as the image tag across all deployed repositories. For example: `RELEASE_IMAGE_TAG=3.0.0-beta6`. Defaults to TIKA_PIPES_VERSION when unspecified.
 * `AWS_ACCOUNT_ID` pushes the docker image to the specified AWS Account. `AWS_ACCOUNT_ID=<aws-account-id>`
 * `AZURE_REGISTRY_NAME` pushes the docker image to the specified Azure registry. `AZURE_REGISTRY_NAME=<registry-name>`
 * `DOCKER_ID` pushes the docker image to the specified account within Docker Hub. `DOCKER_ID=nddipiazza`
@@ -109,14 +109,14 @@ Environment variables are present, the [docker-build.sh](tika-pipes-grpc%2Fdocke
 For example:
 
 ```bash
-MULTI_ARCH=false DOCKER_ID=ndipiazza PROJECT_NAME=tika-pipes RELEASE_IMAGE_TAG=3.0.0-beta50 mvn clean package
+MULTI_ARCH=false DOCKER_ID=ndipiazza PROJECT_NAME=tika-pipes RELEASE_IMAGE_TAG=3.0.0-beta60 mvn clean package
 ```
 
 Would result in:
 
 ```
  ===================================================================================================
- Done running docker build with tag -t ndipiazza/tika-pipes:3.0.0-beta50
+ Done running docker build with tag -t ndipiazza/tika-pipes:3.0.0-beta60
  ===================================================================================================
 ```
 # Docker Usage

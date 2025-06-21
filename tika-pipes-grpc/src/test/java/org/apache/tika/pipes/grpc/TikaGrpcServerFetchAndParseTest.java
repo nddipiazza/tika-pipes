@@ -73,14 +73,13 @@ class TikaGrpcServerFetchAndParseTest extends TikaPipesIntegrationTestBase {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
                 log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
-                Metadata metadata = fetchAndParseReply.getMetadataList().get(0);
-                ValueList additional = metadata.getFieldsOrThrow("additional");
-                List<Value> valuesList = additional.getValuesList();
-                Assertions.assertEquals(additionalMetadata.get("additional"), valuesList.iterator().next().getStringValue());
-                if ("FetchException"
-                        .equals(fetchAndParseReply.getStatus())) {
+                if ("FETCH_AND_PARSE_EXCEPTION".equals(fetchAndParseReply.getStatus())) {
                     errors.add(fetchAndParseReply);
                 } else {
+                    Metadata metadata = fetchAndParseReply.getMetadataList().get(0);
+                    ValueList additional = metadata.getFieldsOrThrow("additional");
+                    List<Value> valuesList = additional.getValuesList();
+                    Assertions.assertEquals(additionalMetadata.get("additional"), valuesList.iterator().next().getStringValue());
                     successes.add(fetchAndParseReply);
                 }
             }
@@ -88,6 +87,7 @@ class TikaGrpcServerFetchAndParseTest extends TikaPipesIntegrationTestBase {
             @Override
             public void onError(Throwable throwable) {
                 log.error("Received an error", throwable);
+                Assertions.fail(throwable);
                 countDownLatch.countDown();
             }
 
@@ -143,7 +143,8 @@ class TikaGrpcServerFetchAndParseTest extends TikaPipesIntegrationTestBase {
                     .interrupt();
         }
 
-        log.info("Fetched: success={}", successes);
+        Assertions.assertEquals(7, successes.size());
+        Assertions.assertEquals(1, errors.size());
     }
 
     private void saveFetcher(TikaGrpc.TikaBlockingStub tikaBlockingStub, String fetcherId,

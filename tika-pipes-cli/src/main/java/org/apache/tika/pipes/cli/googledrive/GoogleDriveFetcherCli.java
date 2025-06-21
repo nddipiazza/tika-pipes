@@ -69,6 +69,7 @@ public class GoogleDriveFetcherCli {
                 .forAddress(host, port)
                 .usePlaintext()
                 .directExecutor()
+                .maxInboundMessageSize(160 * 1024 * 1024) // 160 MB
                 .build();
         TikaGrpc.TikaBlockingStub blockingStub = TikaGrpc.newBlockingStub(channel);
         TikaGrpc.TikaStub tikaStub = TikaGrpc.newStub(channel);
