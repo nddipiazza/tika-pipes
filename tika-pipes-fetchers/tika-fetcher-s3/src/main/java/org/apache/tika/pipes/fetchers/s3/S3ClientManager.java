@@ -2,7 +2,13 @@ package org.apache.tika.pipes.fetchers.s3;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
-import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -30,7 +36,11 @@ public class S3ClientManager {
         } else if (StringUtils.equals(credentialsProvider, "profile")) {
             provider = ProfileCredentialsProvider.create(s3FetcherConfig.getProfile());
         } else if (StringUtils.equals(credentialsProvider, "key_secret")) {
-            provider = StaticCredentialsProvider.create(AwsSessionCredentials.create(s3FetcherConfig.getAccessKey(), s3FetcherConfig.getSecretKey(), s3FetcherConfig.getSessionToken()));
+            if (StringUtils.isNotBlank(s3FetcherConfig.getSessionToken())) {
+                provider = StaticCredentialsProvider.create(AwsSessionCredentials.create(s3FetcherConfig.getAccessKey(), s3FetcherConfig.getSecretKey(), s3FetcherConfig.getSessionToken()));
+            } else {
+                provider = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3FetcherConfig.getAccessKey(), s3FetcherConfig.getSecretKey()));
+            }
         } else {
             throw new IllegalArgumentException("credentialsProvider must be set and must be either 'instance', 'identity', 'profile' or 'key_secret'");
         }
