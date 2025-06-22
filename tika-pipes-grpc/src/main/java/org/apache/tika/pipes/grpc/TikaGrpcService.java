@@ -69,7 +69,7 @@ import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 import org.apache.tika.pipes.fetchers.core.Fetcher;
 import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 import org.apache.tika.pipes.job.JobStatus;
-import org.apache.tika.pipes.model.PipesResultStatus;
+import org.apache.tika.pipes.model.FetchAndParseStatus;
 import org.apache.tika.pipes.repo.EmitterRepository;
 import org.apache.tika.pipes.repo.FetcherRepository;
 import org.apache.tika.pipes.repo.JobStatusRepository;
@@ -327,15 +327,18 @@ public class TikaGrpcService extends TikaGrpc.TikaImplBase {
             parseContext = new ParseContext();
         }
         try {
+            log.info("Beginning parse for fetchKey={} with fetcherId={}", request.getFetchKey(), request.getFetcherId());
             for (Map<String, Object> metadata : parseService.parseDocument(inputStream, parseContext)) {
                 Metadata.Builder metadataBuilder = Metadata.newBuilder();
                 putMetadataFields(metadata, metadataBuilder);
                 putMetadataFields(addedMetadata, metadataBuilder);
                 builder.addMetadata(metadataBuilder.build());
             }
-            builder.setStatus(PipesResultStatus.FETCH_AND_PARSE_SUCCESS.name());
+            builder.setStatus(FetchAndParseStatus.FETCH_AND_PARSE_SUCCESS.name());
+            log.info("Successful parse for fetchKey={} with fetcherId={}", request.getFetchKey(), request.getFetcherId());
         } catch (TikaServerParseException | TikaException e) {
-            builder.setStatus(PipesResultStatus.FETCH_AND_PARSE_EXCEPTION.name());
+            log.info("Failed parse for fetchKey={} with fetcherId={} with message={}", request.getFetchKey(), request.getFetcherId(), e.getMessage());
+            builder.setStatus(FetchAndParseStatus.FETCH_AND_PARSE_EXCEPTION.name());
             builder.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
         }
         responseObserver.onNext(builder.build());

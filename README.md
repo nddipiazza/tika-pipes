@@ -14,6 +14,14 @@ Tika Pipes plugins can be used to create customizable fetchers, pipe iterators, 
 * Apache Tika
 * Apache Ignite
 
+## Credits
+
+This project was written by Nicholas DiPiazza of the Apache Software Foundation. 
+
+Thank you to contirbutors who have helped with the project, including but not limited to:
+
+Bartek 
+
 ## How to Start Tika Pipes Server
 
 The [tika-pipes-grpc](tika-pipes-grpc) module is a Spring Boot powered gRPC service that can be used to download and parse files.
