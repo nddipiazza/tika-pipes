@@ -52,3 +52,7 @@ jobs:
         file: ./target/tika-docker/Dockerfile
         push: true
         tags: ndipiazza/tika-pipes:${{ github.event.release.tag_name }}
+    - name: Maven - Run a build
+      run: mvn -B install --file pom.xml -DskipTests=true
+    - name: Maven - Run external test
+      run: mvn -B verify --file tika-pipes-external-tests/pom.xml
