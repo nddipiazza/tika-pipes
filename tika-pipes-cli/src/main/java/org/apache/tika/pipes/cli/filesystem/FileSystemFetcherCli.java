@@ -92,8 +92,7 @@ public class FileSystemFetcherCli {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
                 log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
-                if ("FetchException"
-                        .equals(fetchAndParseReply.getStatus())) {
+                if ("FETCH_AND_PARSE_EXCEPTION".equals(fetchAndParseReply.getStatus())) {
                     errors.add(fetchAndParseReply);
                 } else {
                     successes.add(fetchAndParseReply);

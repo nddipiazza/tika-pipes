@@ -12,5 +12,5 @@ The tests will begin by downloading the zip file(s) from the above URL, then ext
 
 ## JVM system properties you can use to customize the test
 
-`-Dgovdocs1.fromIndex` - The first digital corpora file to download from the zip folder. min is 1. Default: 1 
-`-Dgovdocs1.toIndex` - the last digital corpora file to download from the zip folder. max is 999. Default: 1
+`-Dgovdocs1.fromIndex` - The first digital corpora file to download from the zip folder. min is 1. max is 999. Default: 1 
+`-Dgovdocs1.toIndex` - the last digital corpora file to download from the zip folder. min is 1. max is 999. Default: 1

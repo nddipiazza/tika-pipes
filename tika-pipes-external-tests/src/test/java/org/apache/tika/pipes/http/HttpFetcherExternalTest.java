@@ -11,6 +11,7 @@ import org.apache.tika.SaveFetcherRequest;
 import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.ExternalTestBase;
 import org.apache.tika.pipes.fetchers.http.config.HttpFetcherConfig;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
@@ -48,12 +49,12 @@ class HttpFetcherExternalTest extends ExternalTestBase {
         List<FetchAndParseReply> errors = Collections.synchronizedList(new ArrayList<>());
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        StreamObserver<FetchAndParseRequest> requestStreamObserver = tikaStub.fetchAndParseBiDirectionalStreaming(new StreamObserver<FetchAndParseReply>() {
+        StreamObserver<FetchAndParseRequest>
+                requestStreamObserver = tikaStub.fetchAndParseBiDirectionalStreaming(new StreamObserver<>() {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
                 log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
-                if ("FetchException"
-                        .equals(fetchAndParseReply.getStatus())) {
+                if ("FETCH_AND_PARSE_EXCEPTION".equals(fetchAndParseReply.getStatus())) {
                     errors.add(fetchAndParseReply);
                 } else {
                     successes.add(fetchAndParseReply);
@@ -63,12 +64,13 @@ class HttpFetcherExternalTest extends ExternalTestBase {
             @Override
             public void onError(Throwable throwable) {
                 log.error("Received an error", throwable);
+                Assertions.fail(throwable);
                 countDownLatch.countDown();
             }
 
             @Override
             public void onCompleted() {
-                log.info("Completed fetch and parse");
+                log.info("Finished streaming fetch and parse replies");
                 countDownLatch.countDown();
             }
         });

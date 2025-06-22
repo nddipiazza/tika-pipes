@@ -31,7 +31,7 @@
     <tika-version>3.0.0</tika-version>
     <commons-io.version>2.18.0</commons-io.version>
     <json-schema-validator.version>2.2.14</json-schema-validator.version>
-    <grpc-starter-dependencies.version>3.3.5.2</grpc-starter-dependencies.version>
+    <grpc-starter-dependencies.version>3.5.0.1</grpc-starter-dependencies.version>
   </properties>
   <dependencyManagement>
     <dependencies>

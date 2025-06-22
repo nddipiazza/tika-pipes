@@ -8,6 +8,7 @@ import org.apache.tika.FetchAndParseReply;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -27,8 +28,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -39,6 +41,7 @@ import java.util.zip.ZipInputStream;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
 @Slf4j
+@Tag("ExternalTest")
 public abstract class ExternalTestBase {
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     public static final int MAX_STARTUP_TIMEOUT = 120;
@@ -119,34 +122,43 @@ public abstract class ExternalTestBase {
         }
     }
 
-    public static void assertAllFilesFetched(Path baseDir, List<FetchAndParseReply> successes) {
-        Set<String> fetchKeys = successes.stream()
-                .map(FetchAndParseReply::getFetchKey)
-                .collect(Collectors.toSet());
+    public static void assertAllFilesFetched(Path baseDir, List<FetchAndParseReply> successes, List<FetchAndParseReply> errors) {
+        Set<String> allFetchKeys = new HashSet<>();
+        for (FetchAndParseReply reply : successes) {
+            allFetchKeys.add(reply.getFetchKey());
+        }
+        for (FetchAndParseReply reply : errors) {
+            allFetchKeys.add(reply.getFetchKey());
+        }
         Set<String> keysFromGovdocs1 = new HashSet<>();
         try (Stream<Path> paths = Files.walk(baseDir)) {
             paths.filter(Files::isRegularFile)
                     .forEach(file -> {
                         String relPath = baseDir.relativize(file).toString();
+                        if (Pattern.compile("\\d{3}\\.zip").matcher(relPath).find()) {
+                            // Skip zip files
+                            return;
+                        }
                         keysFromGovdocs1.add(relPath);
                     });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(keysFromGovdocs1, fetchKeys, () -> {
+        Assertions.assertNotEquals(0, successes.size(), "Should have been some successful fetches");
+        Assertions.assertNotEquals(0, errors.size(), "Should have been some failed fetches");
+        Assertions.assertEquals(keysFromGovdocs1, allFetchKeys, () -> {
             Set<String> missing = new HashSet<>(keysFromGovdocs1);
-            missing.removeAll(fetchKeys);
+            missing.removeAll(allFetchKeys);
             return "Missing fetch keys: " + missing;
         });
     }
 
     public static ManagedChannel getManagedChannel() {
-        ManagedChannel channel = ManagedChannelBuilder
+        return ManagedChannelBuilder
                 .forAddress(composeContainer.getServiceHost("tika-pipes", 9090), composeContainer.getServicePort("tika-pipes", 9090))
                 .usePlaintext()
-                .directExecutor()
+                .executor(Executors.newCachedThreadPool())
                 .maxInboundMessageSize(160 * 1024 * 1024) // 160 MB
                 .build();
-        return channel;
     }
 }

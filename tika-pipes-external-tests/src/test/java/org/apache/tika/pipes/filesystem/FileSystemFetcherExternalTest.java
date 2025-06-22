@@ -2,7 +2,6 @@ package org.apache.tika.pipes.filesystem;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.FetchAndParseReply;
@@ -31,12 +30,7 @@ class FileSystemFetcherExternalTest extends ExternalTestBase {
     @Test
     void fileSystemFetcher() throws Exception {
         String fetcherId = UUID.randomUUID().toString();
-        ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(composeContainer.getServiceHost("tika-pipes", 9090), composeContainer.getServicePort("tika-pipes", 9090))
-                .usePlaintext()
-                .directExecutor()
-                .maxInboundMessageSize(160 * 1024 * 1024) // 160 MB
-                .build();
+        ManagedChannel channel = getManagedChannel();
         TikaGrpc.TikaBlockingStub blockingStub = TikaGrpc.newBlockingStub(channel);
         TikaGrpc.TikaStub tikaStub = TikaGrpc.newStub(channel);
 
@@ -62,12 +56,12 @@ class FileSystemFetcherExternalTest extends ExternalTestBase {
         List<FetchAndParseReply> errors = Collections.synchronizedList(new ArrayList<>());
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        StreamObserver<FetchAndParseRequest> requestStreamObserver = tikaStub.fetchAndParseBiDirectionalStreaming(new StreamObserver<>() {
+        StreamObserver<FetchAndParseRequest>
+                requestStreamObserver = tikaStub.fetchAndParseBiDirectionalStreaming(new StreamObserver<>() {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
                 log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
-                if ("FetchException"
-                        .equals(fetchAndParseReply.getStatus())) {
+                if ("FETCH_AND_PARSE_EXCEPTION".equals(fetchAndParseReply.getStatus())) {
                     errors.add(fetchAndParseReply);
                 } else {
                     successes.add(fetchAndParseReply);
@@ -77,12 +71,13 @@ class FileSystemFetcherExternalTest extends ExternalTestBase {
             @Override
             public void onError(Throwable throwable) {
                 log.error("Received an error", throwable);
+                Assertions.fail(throwable);
                 countDownLatch.countDown();
             }
 
             @Override
             public void onCompleted() {
-                log.info("Completed fetch and parse");
+                log.info("Finished streaming fetch and parse replies");
                 countDownLatch.countDown();
             }
         });
@@ -115,7 +110,7 @@ class FileSystemFetcherExternalTest extends ExternalTestBase {
                     .currentThread()
                     .interrupt();
         }
-        assertAllFilesFetched(testFolder.toPath(), successes);
+        assertAllFilesFetched(testFolder.toPath(), successes, errors);
         log.info("Fetched: success={}", successes);
     }
 }

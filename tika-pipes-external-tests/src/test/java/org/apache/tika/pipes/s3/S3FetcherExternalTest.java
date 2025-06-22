@@ -2,7 +2,6 @@ package org.apache.tika.pipes.s3;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.FetchAndParseReply;
@@ -13,6 +12,7 @@ import org.apache.tika.TikaGrpc;
 import org.apache.tika.pipes.ExternalTestBase;
 import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -99,13 +99,7 @@ class S3FetcherExternalTest extends ExternalTestBase {
         // create some test files and insert into fetch bucket
         copyGovdocs1ToBucket();
 
-        int grpcPort = composeContainer.getServicePort("tika-pipes", 9090);
-        ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(composeContainer.getServiceHost("tika-pipes", grpcPort), grpcPort)
-                .usePlaintext()
-                .directExecutor()
-                .maxInboundMessageSize(160 * 1024 * 1024) // 160 MB
-                .build();
+        ManagedChannel channel = getManagedChannel();
         TikaGrpc.TikaBlockingStub blockingStub = TikaGrpc.newBlockingStub(channel);
         TikaGrpc.TikaStub tikaStub = TikaGrpc.newStub(channel);
 
@@ -123,12 +117,12 @@ class S3FetcherExternalTest extends ExternalTestBase {
         List<FetchAndParseReply> errors = Collections.synchronizedList(new ArrayList<>());
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        StreamObserver<FetchAndParseRequest> requestStreamObserver = tikaStub.fetchAndParseBiDirectionalStreaming(new StreamObserver<FetchAndParseReply>() {
+        StreamObserver<FetchAndParseRequest>
+                requestStreamObserver = tikaStub.fetchAndParseBiDirectionalStreaming(new StreamObserver<>() {
             @Override
             public void onNext(FetchAndParseReply fetchAndParseReply) {
                 log.debug("Reply from fetch-and-parse - key={}, metadata={}", fetchAndParseReply.getFetchKey(), fetchAndParseReply.getMetadataList());
-                if ("FetchException"
-                        .equals(fetchAndParseReply.getStatus())) {
+                if ("FETCH_AND_PARSE_EXCEPTION".equals(fetchAndParseReply.getStatus())) {
                     errors.add(fetchAndParseReply);
                 } else {
                     successes.add(fetchAndParseReply);
@@ -138,12 +132,13 @@ class S3FetcherExternalTest extends ExternalTestBase {
             @Override
             public void onError(Throwable throwable) {
                 log.error("Received an error", throwable);
+                Assertions.fail(throwable);
                 countDownLatch.countDown();
             }
 
             @Override
             public void onCompleted() {
-                log.info("Completed fetch and parse");
+                log.info("Finished streaming fetch and parse replies");
                 countDownLatch.countDown();
             }
         });
