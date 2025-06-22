@@ -1,5 +1,6 @@
 package org.apache.tika.pipes.fetchers.s3;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -14,8 +15,10 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
+import java.net.Socket;
 import java.net.URI;
 
+@Slf4j
 public class S3ClientManager {
 
     private final ThreadLocal<S3Client> s3ClientThreadLocal;
@@ -52,10 +55,30 @@ public class S3ClientManager {
                 .region(Region.of(s3FetcherConfig.getRegion()));
 
         if (!StringUtils.isBlank(s3FetcherConfig.getEndpointOverride())) {
+           if (!testEndpointConnectivity()) {
+                throw new IllegalArgumentException("Failed to connect to the specified S3 endpoint: " + s3FetcherConfig.getEndpointOverride());
+            }
             s3ClientBuilder.endpointOverride(URI.create(s3FetcherConfig.getEndpointOverride()));
         }
 
         return s3ClientBuilder.build();
+    }
+
+    public boolean testEndpointConnectivity() {
+        String endpoint = s3FetcherConfig.getEndpointOverride();
+        try {
+            URI uri = URI.create(endpoint);
+            String host = uri.getHost();
+            int port = uri.getPort() != -1 ? uri.getPort() : (uri.getScheme().equals("https") ? 443 : 80);
+            try (Socket socket = new Socket()) {
+                socket.connect(new java.net.InetSocketAddress(host, port), 3000);
+                log.info("Successfully connected to {}:{}", host, port);
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("Failed to connect to endpoint: {}", endpoint, e);
+            return false;
+        }
     }
 
     public S3Client getS3Client() {

@@ -170,7 +170,6 @@ class S3FetcherExternalTest extends ExternalTestBase {
                     .currentThread()
                     .interrupt();
         }
-        log.info("Fetched: success={}", successes);
     }
 
     @NotNull

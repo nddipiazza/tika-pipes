@@ -22,6 +22,7 @@ import org.apache.tika.io.FilenameUtils;
 import org.apache.tika.io.TemporaryResources;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.pipes.core.exception.TikaPipesException;
 import org.apache.tika.pipes.fetchers.core.Fetcher;
 import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 import org.apache.tika.pipes.fetchers.s3.config.S3FetcherConfig;
@@ -108,7 +109,7 @@ public class S3Fetcher implements Fetcher {
             handlePostFail(throttleSeconds, tries);
         } while (++tries < throttleSeconds.size());
 
-        throw new RuntimeException(ex);
+        throw new TikaPipesException("S3 operation failed after max number of retries " + tries, ex);
     }
 
     private static void handlePostFail(List<Long> throttleSeconds, int tries) {

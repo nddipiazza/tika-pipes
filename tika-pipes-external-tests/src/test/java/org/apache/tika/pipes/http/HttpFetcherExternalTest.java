@@ -104,6 +104,5 @@ class HttpFetcherExternalTest extends ExternalTestBase {
                     .currentThread()
                     .interrupt();
         }
-        log.info("Fetched: success={}", successes);
     }
 }

@@ -111,6 +111,5 @@ class FileSystemFetcherExternalTest extends ExternalTestBase {
                     .interrupt();
         }
         assertAllFilesFetched(testFolder.toPath(), successes, errors);
-        log.info("Fetched: success={}", successes);
     }
 }

@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.apache.tika</groupId>
   <artifactId>tika-pipes-parent</artifactId>
-  <version>3.0.0-beta8</version>
+  <version>3.0.0-beta7</version>
   <name>Tika Pipes</name>
   <description>Tika Pipes Parent Pom</description>
   <properties>

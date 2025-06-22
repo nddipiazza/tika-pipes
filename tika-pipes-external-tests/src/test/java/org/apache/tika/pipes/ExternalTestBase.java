@@ -49,18 +49,24 @@ public abstract class ExternalTestBase {
     public static final File testFolder = new File("target", "govdocs1");
     public static final int govDocsFromIdx = Integer.parseInt(System.getProperty("govdocs1.fromIndex", "1"));
     public static final int govDocsToIdx = Integer.parseInt(System.getProperty("govdocs1.toIndex", "1"));
-    public static final DockerComposeContainer<?> composeContainer = new DockerComposeContainer<>(
-            new File("src/test/resources/docker-compose.yml"))
-            .withEnv("HOST_GOVDOCS1_DIR", testFolder.getAbsolutePath())
-            .withStartupTimeout(Duration.of(MAX_STARTUP_TIMEOUT, ChronoUnit.SECONDS))
-            .withExposedService("tika-pipes", 9090)
-            .withExposedService("minio-service", 9000)
-            .withExposedService("web", 80)
-            .withLogConsumer("tika-pipes", new Slf4jLogConsumer(log));
+    public static DockerComposeContainer<?> composeContainer;
     public static final String DIGITAL_CORPA_ZIP_FILES_URL = "https://corp.digitalcorpora.org/corpora/files/govdocs1/zipfiles";
 
     @BeforeAll
     static void setup() throws Exception {
+        composeContainer = new DockerComposeContainer<>(
+                new File("src/test/resources/docker-compose.yml"))
+                .withEnv("HOST_GOVDOCS1_DIR", testFolder.getAbsolutePath())
+                .withStartupTimeout(Duration.of(MAX_STARTUP_TIMEOUT, ChronoUnit.SECONDS))
+                .withExposedService("tika-pipes", 9090)
+                .withExposedService("minio-service", 9000)
+                .withExposedService("web", 80)
+                .withLogConsumer("tika-pipes", new Slf4jLogConsumer(log));
+        loadGovdocs1();
+        composeContainer.start();
+    }
+
+    private static void loadGovdocs1() throws IOException, InterruptedException {
         int retries = 3;
         int attempt = 0;
         while (true) {
@@ -76,7 +82,6 @@ public abstract class ExternalTestBase {
                 TimeUnit.SECONDS.sleep(10);
             }
         }
-        composeContainer.start();
     }
 
     @AfterAll
