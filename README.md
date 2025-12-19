@@ -12,7 +12,23 @@ Tika Pipes plugins can be used to create customizable fetchers, pipe iterators, 
 * gRPC
 * Spring Boot 3.x
 * Apache Tika
-* Apache Ignite
+* Apache Ignite (optional - for distributed deployments)
+
+## Configuration Store Options
+
+Tika Pipes supports two configuration store backends:
+
+1. **In-Memory Store (Default)** - Lightweight, no external dependencies, syncs configs via gRPC
+2. **Apache Ignite Store (Optional)** - Distributed cache for multi-instance deployments
+
+By default, Tika Pipes uses an in-memory configuration store that synchronizes all configurations (fetchers, emitters, pipe iterators) over gRPC. This eliminates the need to manage Apache Ignite infrastructure for single-instance deployments.
+
+To enable Apache Ignite for distributed deployments, start with the `ignite` profile:
+```bash
+java -jar tika-pipes-grpc.jar --spring.profiles.active=ignite
+```
+
+For more details, see [CONFIG_STORE.md](tika-pipes-grpc/CONFIG_STORE.md).
 
 ## How to Start Tika Pipes Server
 

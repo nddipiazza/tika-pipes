@@ -11,7 +11,8 @@ import org.apache.tika.pipes.fetchers.core.DefaultFetcherConfig;
 
 @Repository
 @RepositoryConfig(cacheName = "FetcherCache")
-public interface FetcherRepository extends IgniteRepository<DefaultFetcherConfig, String> {
+@org.springframework.context.annotation.Profile("ignite")
+public interface FetcherRepository extends IgniteRepository<DefaultFetcherConfig, String>, BaseFetcherRepository {
     DefaultFetcherConfig findByFetcherId(String fetcherId);
     @NotNull
     List<DefaultFetcherConfig> findAll();

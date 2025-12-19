@@ -11,7 +11,8 @@ import org.apache.tika.pipes.core.iterators.DefaultPipeIteratorConfig;
 
 @Repository
 @RepositoryConfig(cacheName = "PipeIteratorCache")
-public interface PipeIteratorRepository extends IgniteRepository<DefaultPipeIteratorConfig, String> {
+@org.springframework.context.annotation.Profile("ignite")
+public interface PipeIteratorRepository extends IgniteRepository<DefaultPipeIteratorConfig, String>, BasePipeIteratorRepository {
     DefaultPipeIteratorConfig findByPipeIteratorId(String pipeIteratorId);
     @NotNull
     List<DefaultPipeIteratorConfig> findAll();

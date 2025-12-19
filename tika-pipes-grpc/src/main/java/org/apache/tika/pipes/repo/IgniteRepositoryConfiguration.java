@@ -21,6 +21,7 @@ import java.io.IOException;
 @Configuration
 @EnableIgniteRepositories
 @Slf4j
+@org.springframework.context.annotation.Profile("ignite")
 public class IgniteRepositoryConfiguration {
     @Value("${ignite.workDir:#{null}}")
     private String igniteWorkDir;

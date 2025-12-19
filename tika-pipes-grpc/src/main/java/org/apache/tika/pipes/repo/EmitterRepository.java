@@ -11,7 +11,8 @@ import org.apache.tika.pipes.core.emitter.DefaultEmitterConfig;
 
 @Repository
 @RepositoryConfig(cacheName = "EmitterCache")
-public interface EmitterRepository extends IgniteRepository<DefaultEmitterConfig, String> {
+@org.springframework.context.annotation.Profile("ignite")
+public interface EmitterRepository extends IgniteRepository<DefaultEmitterConfig, String>, BaseEmitterRepository {
     DefaultEmitterConfig findByEmitterId(String emitterId);
     @NotNull
     List<DefaultEmitterConfig> findAll();

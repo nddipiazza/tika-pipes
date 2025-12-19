@@ -70,10 +70,10 @@ import org.apache.tika.pipes.fetchers.core.Fetcher;
 import org.apache.tika.pipes.fetchers.core.FetcherConfig;
 import org.apache.tika.pipes.job.JobStatus;
 import org.apache.tika.pipes.model.FetchAndParseStatus;
-import org.apache.tika.pipes.repo.EmitterRepository;
-import org.apache.tika.pipes.repo.FetcherRepository;
-import org.apache.tika.pipes.repo.JobStatusRepository;
-import org.apache.tika.pipes.repo.PipeIteratorRepository;
+import org.apache.tika.pipes.repo.BaseEmitterRepository;
+import org.apache.tika.pipes.repo.BaseFetcherRepository;
+import org.apache.tika.pipes.repo.BaseJobStatusRepository;
+import org.apache.tika.pipes.repo.BasePipeIteratorRepository;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,16 +108,16 @@ public class TikaGrpcService extends TikaGrpc.TikaImplBase {
     private JsonSchemaGenerator jsonSchemaGenerator;
 
     @Autowired
-    private FetcherRepository fetcherRepository;
+    private BaseFetcherRepository fetcherRepository;
 
     @Autowired
-    private EmitterRepository emitterRepository;
+    private BaseEmitterRepository emitterRepository;
 
     @Autowired
-    private PipeIteratorRepository pipeIteratorRepository;
+    private BasePipeIteratorRepository pipeIteratorRepository;
 
     @Autowired
-    private JobStatusRepository jobStatusRepository;
+    private BaseJobStatusRepository jobStatusRepository;
 
     @Autowired
     private Environment environment;

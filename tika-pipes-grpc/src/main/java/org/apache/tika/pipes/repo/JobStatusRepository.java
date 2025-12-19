@@ -10,7 +10,8 @@ import java.util.List;
 
 @Repository
 @RepositoryConfig(cacheName = "JobStatusCache")
-public interface JobStatusRepository extends IgniteRepository<JobStatus, String> {
+@org.springframework.context.annotation.Profile("ignite")
+public interface JobStatusRepository extends IgniteRepository<JobStatus, String>, BaseJobStatusRepository {
     JobStatus findByJobId(String jobId);
     @NotNull
     List<JobStatus> findAll();
