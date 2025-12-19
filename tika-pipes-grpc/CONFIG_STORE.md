@@ -87,6 +87,10 @@ The Ignite repositories are implemented in the `org.apache.tika.pipes.repo` pack
 
 ## Example: Using In-Memory Store with Multiple Clients
 
+For a complete working example, see [ConfigSyncExample.java](src/test/java/org/apache/tika/pipes/examples/ConfigSyncExample.java).
+
+Here's a simplified example showing config synchronization:
+
 ```java
 // Client 1: Save a fetcher configuration
 ManagedChannel channel = ManagedChannelBuilder
